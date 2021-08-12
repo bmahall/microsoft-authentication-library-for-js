@@ -20,9 +20,9 @@ export type BaseAuthRequest = {
     authority: string;
     correlationId: string;
     scopes: Array<string>;
-    authenticationScheme?: AuthenticationScheme;
+    authenticationScheme?: AuthenticationScheme; /* authentication Scheme*/
     claims?: string;
     shrClaims?: string;
-    resourceRequestMethod?: string;
-    resourceRequestUri?: string;
-};
+    resourceRequestMethod?: string; /* resourceRequest Method*/
+    resourceRequestUri?: string;  /* resourcerequesturi*/
+}; 
