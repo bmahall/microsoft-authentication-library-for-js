@@ -41,6 +41,7 @@ jobs:
         id: pr
         uses: peter-evans/create-pull-request@v3
         with:
+          base: release/staging
           commit-message: Release ; version bump; PR->master
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@microsoft.com>
