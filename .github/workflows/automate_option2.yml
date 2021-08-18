@@ -32,7 +32,7 @@ jobs:
       - run: npm ci
 
       - name: switch to staging branch
-        run: git checkout -b release/staging
+        run: git checkout -b release-staging
 
       - name: bump package versions
         run: npm run beachball:bump
@@ -41,7 +41,7 @@ jobs:
         id: pr
         uses: peter-evans/create-pull-request@v3
         with:
-          base: release/staging
+          base: release-staging
           commit-message: Release ; version bump; PR->master
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@microsoft.com>
