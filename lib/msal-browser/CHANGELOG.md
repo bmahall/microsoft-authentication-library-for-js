@@ -1,8 +1,16 @@
 # Change Log - @azure/msal-browser
 
-This log was last generated on Wed, 11 Aug 2021 20:45:13 GMT and should not be manually modified.
+This log was last generated on Thu, 19 Aug 2021 21:02:24 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.16.2
+
+Thu, 19 Aug 2021 21:02:24 GMT
+
+### Patches
+
+- added  comment (bmahal@microsoft.com)
 
 ## 2.16.1
 
