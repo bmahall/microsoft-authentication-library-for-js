@@ -23,6 +23,12 @@ jobs:
         with:
           fetch-depth: 0
       
+      - name: create staging branch
+        run: |
+         git checkout -b release/staging
+         git push master
+
+      
 
       # Install node_modules here
       - name: Use Node.js
