@@ -25,8 +25,8 @@ jobs:
       
       - name: create staging branch
         run: |
-         git checkout -b release/staging
-         git push -u origin release/staging
+         git checkout -b release-staging
+         git push -u origin release-staging
 
       
 
