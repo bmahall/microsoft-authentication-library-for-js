@@ -17,12 +17,12 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           registry-url: "https://registry.npmjs.org"
-      # Run yarn install to install project packages
-      - run: yarn install
-      # yarn build to build the project
-      - run: yarn build
+      # Run  install to install project packages
+      - run: npm install
+      #  to build the project
+      - run: npm build
       # publish the files to NPM
-      - run: npm publish --access public
+      - run: npm publish --dry-run
       # for publishing, npm need authorization. We add the NPM token to the environment which will take care of authorization to publish to the package
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
