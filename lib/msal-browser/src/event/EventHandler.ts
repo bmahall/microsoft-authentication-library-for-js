@@ -43,6 +43,7 @@ export class EventHandler {
     removeEventCallback(callbackId: string): void {
         this.eventCallbacks.delete(callbackId);
         this.logger.verbose(`Event callback ${callbackId} removed.`);
+        /* event callback func*/
     }
 
     /**
