@@ -41,6 +41,8 @@ jobs:
       - name: bump package versions
         run: npm run beachball:bump
 
+      - run: npm install
+
       - name: Create Pull Request
         id: pr
         uses: peter-evans/create-pull-request@v3
