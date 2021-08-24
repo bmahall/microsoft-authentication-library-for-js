@@ -585,7 +585,7 @@ export abstract class ClientApplication {
             /*
              *  Create auth code request and generate PKCE params
              * generating auth code request
-             * here
+             * here so that 
              */
             const authCodeRequest: CommonAuthorizationCodeRequest = await this.initializeAuthorizationCodeRequest(silentRequest);
 
