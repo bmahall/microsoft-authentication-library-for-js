@@ -11,6 +11,6 @@ import { AzureRegion } from "./AzureRegion";
  * - environmentRegionFunc      - Environment specific way of fetching the region from the environment
  */
 export type AzureRegionConfiguration = {
-    azureRegion?: AzureRegion,
+    azureRegion?: AzureRegion, /* specify the azure region*/
     environmentRegion: string | undefined; 
 };
