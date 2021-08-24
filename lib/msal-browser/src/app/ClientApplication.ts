@@ -578,13 +578,14 @@ export abstract class ClientApplication {
             prompt: PromptValue.NONE
         }, InteractionType.Silent);
 
-        const browserRequestLogger = this.logger.clone(name, version, silentRequest.correlationId);
+        const browserRequestLogger = this.logger.clone(name, version, silentRequest.correlationId); /* browser request logger*/
         const serverTelemetryManager = this.initializeServerTelemetryManager(apiId, silentRequest.correlationId);
 
         try {
             /*
              *  Create auth code request and generate PKCE params
              * generating auth code request
+             * here
              */
             const authCodeRequest: CommonAuthorizationCodeRequest = await this.initializeAuthorizationCodeRequest(silentRequest);
 
