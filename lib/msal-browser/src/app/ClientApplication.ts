@@ -674,7 +674,7 @@ export abstract class ClientApplication {
      */
     async logout(logoutRequest?: EndSessionRequest): Promise<void> {
         this.logger.warning("logout API is deprecated and will be removed in msal-browser v3.0.0. Use logoutRedirect instead.");
-        return this.logoutRedirect(logoutRequest);
+        return this.logoutRedirect(logoutRequest); /* call logout redirect*/
     }
 
     /**
