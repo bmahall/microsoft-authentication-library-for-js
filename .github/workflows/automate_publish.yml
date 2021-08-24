@@ -19,7 +19,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       # Run  install to install project packages
       - run: |
-              npm ci --only=production
+              npm i --package-lock-only
       #  to build the project
       - run: npm build
       # publish the files to NPM
