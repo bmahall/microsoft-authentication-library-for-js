@@ -2,6 +2,21 @@
   "name": "@azure/msal-node-extensions",
   "entries": [
     {
+      "date": "Wed, 01 Sep 2021 19:37:25 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.5",
+      "version": "1.0.5",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-common to v4.8.2",
+            "author": "bmahal@microsoft.com",
+            "commit": "9f03de5167dece516bd64eb2b919810dc88dc6fa",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
       "date": "Wed, 01 Sep 2021 18:34:35 GMT",
       "tag": "@azure/msal-node-extensions_v1.0.4",
       "version": "1.0.4",
