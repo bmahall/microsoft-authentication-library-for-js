@@ -40,7 +40,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
             cache: 'npm'
-        run: npm ci
+      - run: npm ci
 
       - if: "!contains(github.head_ref, 'release')"
         name: bump package versions
