@@ -104,15 +104,7 @@ jobs:
       - name: Extract Head Branch Name
         run: echo "BRANCH=$(echo ${{ github.head_ref }})" >> $GITHUB_ENV
 
-        
-      # Install node_modules here
-      - name: Use Node.js
-        uses: actions/setup-node@v2
-        with:
-            cache: 'npm'
-      - run: npm ci
 
-    
       - name: Create Pull Request
         if: >-  
             ${{
