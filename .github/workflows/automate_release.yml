@@ -40,7 +40,7 @@ jobs:
         uses: actions/setup-node@v2
         with:
             cache: 'npm'
-      - run: npm ci
+        run: npm ci
 
       - if: "!contains(github.head_ref, 'release')"
         name: bump package versions
@@ -84,13 +84,13 @@ jobs:
         env:
           GITHUB_EVENT: ${{ toJson(github.event.push) }}
         run: echo "$GITHUB_EVENT"
-
+      
 
   update_master:
     needs: release
     name: Create PR from dev to master post release 
     runs-on: ubuntu-latest
-    if: "contains(github.head_ref, 'release')"
+    if:  contains(${{needs.release.outputs.output1}}, 'release-staging')
     steps:
 
       - run: echo "${{needs.release.outputs.output1}}"
@@ -104,15 +104,22 @@ jobs:
       - name: Extract Head Branch Name
         run: echo "BRANCH=$(echo ${{ github.head_ref }})" >> $GITHUB_ENV
 
+      - name: Get base branch
+        id: vars
+        run: |
+              base_ref=${{ github.head_ref || github.ref }}
+              echo ::set-output name=base_branch::${base_ref#refs/*/}
 
+      # Install node_modules here
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+            cache: 'npm'
+      - run: npm ci
+
+    
       - name: Create Pull Request
-        if: >-  
-            ${{
-            github.event.pull_request.merged == true &&
-            (
-              contains(github.head_ref, 'release')
-            )
-            }}
+        if: github.event.pull_request.merged == true & contains(${{needs.release.outputs.output1}}, 'release-staging')
         id: pr
         uses: peter-evans/create-pull-request@v3
         with:
@@ -120,7 +127,7 @@ jobs:
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@microsoft.com>
           branch: dev
-          base: master
+          base: ${{ steps.vars.outputs.base_branch }}
           title: 'Creating PR From :dev to master post release' 
           body: |
             New  PR post-release 
