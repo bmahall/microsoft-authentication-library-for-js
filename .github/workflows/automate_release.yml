@@ -107,13 +107,14 @@ jobs:
       - name: Get base branch
         id: vars
         run: |
-              base_ref=${{ github.head_ref || github.ref }}
+              base_ref=${{github.ref }}
               echo ::set-output name=base_branch::${base_ref#refs/*/}
 
       - name: Reset promotion branch
         run: |
           git fetch origin dev:dev
           git reset --hard dev
+
     
       - name: Create Pull Request
         if: github.event.pull_request.merged == true & contains(${{ github.head_ref }}, 'release-staging')
