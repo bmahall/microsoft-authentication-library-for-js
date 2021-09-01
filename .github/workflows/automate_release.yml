@@ -85,7 +85,7 @@ jobs:
   update_master:
     needs: release
     if:  "contains(${GITHUB_HEAD_REF}, 'release-staging')"
-    name: Create PR from dev to master post release 
+    name: Create PR from dev to master post releasee
     runs-on: ubuntu-latest
     steps:
       # verify
