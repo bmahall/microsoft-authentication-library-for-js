@@ -29,7 +29,8 @@ jobs:
 
   
       - name: Extract Head Branch Name
-        run: echo "BRANCH=$(echo ${{ github.head_ref }})" >> $GITHUB_ENV
+        run: echo "BRANCH=$(echo ${{ github.head_ref }})" >> $GITHUB_ENV\
+        
       
       # Install node_modules  here
       - name: Use Node.js
@@ -83,10 +84,13 @@ jobs:
 
   update_master:
     needs: release
-    if:  "contains(github.head_ref, 'release-staging')"
+    if:  "contains(${GITHUB_HEAD_REF}, 'release-staging')"
     name: Create PR from dev to master post release 
     runs-on: ubuntu-latest
     steps:
+      # verify
+      - name: Extract Head Branch Name
+        run: echo "BRANCH=$(echo ${{ github.head_ref }})" >> $GITHUB_ENV\
 
       # Check-out repo
       - uses: actions/checkout@v2
