@@ -267,7 +267,7 @@ export class BrowserCacheManager extends CacheManager {
         }
 
         this.logger.trace("BrowserCacheManager.getRefreshTokenCredential: cache hit");
-        return CacheManager.toObject(new RefreshTokenEntity(), parsedRefreshToken);
+        return CacheManager.toObject(new RefreshTokenEntity(), parsedRefreshToken); /* ...*/
     }
 
     /**
