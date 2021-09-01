@@ -90,7 +90,7 @@ jobs:
     needs: release
     name: Create PR from dev to master post release 
     runs-on: ubuntu-latest
-    if:  contains(${{needs.release.outputs.output1}}, 'release-staging')
+    if:  contains(${{ github.head_ref }}, 'release-staging')
     steps:
 
       - run: echo "${{needs.release.outputs.output1}}"
@@ -110,16 +110,10 @@ jobs:
               base_ref=${{ github.head_ref || github.ref }}
               echo ::set-output name=base_branch::${base_ref#refs/*/}
 
-      # Install node_modules here
-      - name: Use Node.js
-        uses: actions/setup-node@v2
-        with:
-            cache: 'npm'
-      - run: npm ci
-
+    
     
       - name: Create Pull Request
-        if: github.event.pull_request.merged == true & contains(${{needs.release.outputs.output1}}, 'release-staging')
+        if: github.event.pull_request.merged == true & contains(${{ github.head_ref }}, 'release-staging')
         id: pr
         uses: peter-evans/create-pull-request@v3
         with:
