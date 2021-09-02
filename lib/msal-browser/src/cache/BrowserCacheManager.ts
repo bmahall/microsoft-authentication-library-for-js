@@ -332,7 +332,7 @@ export class BrowserCacheManager extends CacheManager {
     }
 
     /**
-     * set server telemetry entity to the platform cache
+     * set server telemetry entity to the platform cachee
      * @param serverTelemetryKey
      * @param serverTelemetry
      */
