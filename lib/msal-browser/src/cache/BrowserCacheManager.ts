@@ -405,7 +405,7 @@ export class BrowserCacheManager extends CacheManager {
     }
 
     /**
-     * Gets a list of accounts that match all of the filters provided
+     * Gets a list of accounts that match all of the filters provided here
      * @param account 
      */
     getAccountInfoByFilter(accountFilter: Partial<Omit<AccountInfo, "idTokenClaims"|"name">>): AccountInfo[] {
