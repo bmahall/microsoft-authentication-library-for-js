@@ -1,7 +1,7 @@
 {
   "type": "patch",
-  "comment": "cc4",
-  "packageName": "@azure/msal-browser",
+  "comment": "comment 2?",
+  "packageName": "@azure/msal-node",
   "email": "bmahal@microsoft.com",
   "dependentChangeType": "patch"
 }
