@@ -120,7 +120,7 @@ jobs:
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@microsoft.com>
           branch: dev
-          base: ${{ steps.vars.outputs.base_branch }}
+          base: master
           title: 'Creating PR From :dev to master post release' 
           body: |
             New  PR post-release 
