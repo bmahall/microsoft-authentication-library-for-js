@@ -69,7 +69,7 @@ export abstract class BaseClient {
         // Set TelemetryManager here
         this.serverTelemetryManager = this.config.serverTelemetryManager;
 
-        // set Authority
+        // set Authority here
         this.authority = this.config.authOptions.authority;
     }
 
