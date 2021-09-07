@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "comment 2?",
-  "packageName": "@azure/msal-angular",
-  "email": "bmahal@microsoft.com",
-  "dependentChangeType": "patch"
-}

@@ -1,8 +1,16 @@
 # Change Log - @azure/msal-react
 
-This log was last generated on Wed, 01 Sep 2021 19:37:25 GMT and should not be manually modified.
+This log was last generated on Tue, 07 Sep 2021 17:28:08 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 1.0.11
+
+Tue, 07 Sep 2021 17:28:08 GMT
+
+### Patches
+
+- comment 2? (bmahal@microsoft.com)
 
 ## 1.0.10
 
