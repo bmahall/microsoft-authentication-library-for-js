@@ -2,9 +2,10 @@
 name: Automate Release
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
-      - master
+      - dev
   workflow_dispatch:
     inputs:
       versionName:
@@ -16,42 +17,112 @@ on:
 
 jobs:
   release:
+    if: github.event.pull_request.merged == true
     name: Bump versions and create changelog PR --updation
     runs-on: ubuntu-latest
+    outputs:
+      output1: ${{ steps.step1.outputs.test }}
+      
     steps:
-       
-       #get current date
-      - name: Get current date
-        id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
 
       # Check-out repo
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-      
 
-      # Install node_modules here
+  
+      - id: step1
+        name: Extract Head Branch Name
+        run: echo "set-output name=test::${{ github.head_ref }}"
+      
+      # Install node_modules  here
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
             cache: 'npm'
       - run: npm ci
 
-      - name: bump package versions
-        run: npm run beachball:bump
+      - if: "!contains(github.head_ref, 'release')"
+        name: bump package versions
+        run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
+  
 
-      - run: npm install
+      - name: Step that prints name of pull request's base branch
+        run: |
+           echo "Pull request's base branch is: ${BASE_BRANCH}"
+        env:
+              BASE_BRANCH: ${{ github.base_ref }}
+        if: github.event_name == 'pull_request'
 
-      - name: Create Pull Request
+      - name: Echo out branch values
+        run: | 
+          echo github.base_ref: ${{ github.base_ref }}
+          echo github.head_ref: ${{ github.head_ref }}
+          echo github.ref: ${{ github.ref }}
+   
+      - if: "!contains(github.head_ref, 'release')"
+        name: Create Pull Request
         id: pr
         uses: peter-evans/create-pull-request@v3
         with:
           commit-message: Release ; version bump; PR->master
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@microsoft.com>
-          branch: release/${{ steps.date.outputs.date }}
-          title: 'Creating PR From :release/${{ steps.date.outputs.date }}' 
+          branch: release-staging
+          title: 'Creating PR From :release-staging' 
           body: |
             New release PR
+          draft: false
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+        
+
+
+      - name: Print event details
+        env:
+          GITHUB_EVENT: ${{ toJson(github.event.push) }}
+        run: echo "$GITHUB_EVENT"
+
+
+  update_master:
+    needs: release
+    name: Create PR from dev to master post release 
+    runs-on: ubuntu-latest
+    if: "contains(github.head_ref, 'release')"
+    steps:
+
+      - run: echo "${{needs.release.outputs.output1}}"
+     
+
+      # Check-out repo
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          
+      - name: Extract Head Branch Name
+        run: echo "BRANCH=$(echo ${{ github.head_ref }})" >> $GITHUB_ENV
+
+
+      - name: Create Pull Request
+        if: >-  
+            ${{
+            github.event.pull_request.merged == true &&
+            (
+              contains(github.head_ref, 'release')
+            )
+            }}
+        id: pr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: PR:dev->master post release 
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@microsoft.com>
+          branch: dev
+          base: master
+          title: 'Creating PR From :dev to master post release' 
+          body: |
+            New  PR post-release 
           draft: false
