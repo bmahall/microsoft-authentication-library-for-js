@@ -2,6 +2,47 @@
   "name": "@azure/msal-react",
   "entries": [
     {
+      "date": "Tue, 07 Sep 2021 23:47:36 GMT",
+      "tag": "@azure/msal-react_v1.0.3",
+      "version": "1.0.3",
+      "comments": {
+        "none": [
+          {
+            "comment": "Update docs with self-service sign-up FAQ #3934",
+            "author": "joliuac@gmail.com",
+            "commit": "323d7eabbbd95c499d2c2a2446cdea4531af71c5",
+            "package": "@azure/msal-react"
+          },
+          {
+            "comment": "patch fix",
+            "author": "ellymakuba@microsoft.com",
+            "commit": "6f6c1fa9987d62a68583c513c4baabe4041eaf17",
+            "package": "@azure/msal-react"
+          },
+          {
+            "comment": "Unit test updates #3947",
+            "author": "thomas.norling@microsoft.com",
+            "commit": "75dbe00f7982abf5734698b7ab35fd55b1b8e030",
+            "package": "@azure/msal-react"
+          }
+        ],
+        "patch": [
+          {
+            "comment": "Fix inProgress state bug when returning from a redirect #4013",
+            "author": "thomas.norling@microsoft.com",
+            "commit": "09f8cece289c07dd9c5681a31ec285e4111db4ae",
+            "package": "@azure/msal-react"
+          },
+          {
+            "comment": "added  comment",
+            "author": "bmahal@microsoft.com",
+            "commit": "9533ce1f9234e289a57e7b60a0fedd426be87e91",
+            "package": "@azure/msal-react"
+          }
+        ]
+      }
+    },
+    {
       "date": "Wed, 11 Aug 2021 20:45:13 GMT",
       "tag": "@azure/msal-react_v1.0.2",
       "version": "1.0.2",
