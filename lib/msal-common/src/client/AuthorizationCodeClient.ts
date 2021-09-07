@@ -57,7 +57,7 @@ export class AuthorizationCodeClient extends BaseClient {
 
     /**
      * API to acquire a token in exchange of 'authorization_code` acquired by the user in the first leg of the
-     * authorization_code_grant
+     * authorization_code_grant here.
      * @param request
      */
     async acquireToken(request: CommonAuthorizationCodeRequest, authCodePayload?: AuthorizationCodePayload): Promise<AuthenticationResult> {
