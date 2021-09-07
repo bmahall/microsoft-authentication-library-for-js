@@ -28,7 +28,7 @@ export class AuthToken {
     }
 
     /**
-     * Extract token by decoding the rawToken
+     * Extract token by decoding the rawToken here
      *
      * @param encodedToken
      */
