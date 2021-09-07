@@ -35,12 +35,93 @@ jobs:
         name: Extract Head Branch Name
         run: echo "set-output name=test::${{ github.head_ref }}"
       
+      # Install node_modules  here
+      - name: Use Node.js
+        uses: actions/setup-node@v2
+        with:
+            cache: 'npm'
+      - run: npm ci
+
+      - if: "!contains(github.head_ref, 'release')"
+        name: bump package versions
+        run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
+  
+
+      - name: Step that prints name of pull request's base branch
+        run: |
+           echo "Pull request's base branch is: ${BASE_BRANCH}"
+        env:
+              BASE_BRANCH: ${{ github.base_ref }}
+        if: github.event_name == 'pull_request'
+
       - name: Echo out branch values
         run: | 
           echo github.base_ref: ${{ github.base_ref }}
           echo github.head_ref: ${{ github.head_ref }}
           echo github.ref: ${{ github.ref }}
-          
-      - name: Get diff
-        run: git diff ${{ github.head_ref }}...origin/dev
+   
+      - if: "!contains(github.head_ref, 'release')"
+        name: Create Pull Request
+        id: pr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: Release ; version bump; PR->master
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@microsoft.com>
+          branch: release-staging
+          title: 'Creating PR From :release-staging' 
+          body: |
+            New release PR
+          draft: false
+
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+
+
+      - name: Print event details
+        env:
+          GITHUB_EVENT: ${{ toJson(github.event.push) }}
+        run: echo "$GITHUB_EVENT"
       
+
+  update_master:
+    needs: release
+    name: Create PR from dev to master post release 
+    runs-on: ubuntu-latest
+    if:  contains(${{ github.head_ref }}, 'release-staging')
+    steps:
+
+      - run: echo "${{needs.release.outputs.output1}}"
+     
+
+      # Check-out repo
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+          
+      - name: Extract Head Branch Name
+        run: echo "BRANCH=$(echo ${{ github.head_ref }})" >> $GITHUB_ENV
+
+      - name: Get base branch
+        id: vars
+        run: |
+              base_ref=${{github.ref }}
+              echo ::set-output name=base_branch::${base_ref#refs/*/}
+
+    
+      - name: Create Pull Request
+        if: github.event.pull_request.merged == true & contains(${{ github.head_ref }}, 'release-staging')
+        id: pr
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: PR:dev->master post release 
+          committer: GitHub <noreply@github.com>
+          author: ${{ github.actor }} <${{ github.actor }}@microsoft.com>
+          branch: dev
+          base: master
+          title: 'Creating PR From :dev to master post release' 
+          body: |
+            New  PR post-release 
+          draft: false
