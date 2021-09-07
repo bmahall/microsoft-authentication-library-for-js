@@ -40,7 +40,7 @@ export class AuthToken {
         try {
             const base64TokenPayload = decodedToken.JWSPayload;
 
-            // base64Decode() should throw an error if there is an issue
+            // base64Decode() should throw an error if there is an issue here
             const base64Decoded = crypto.base64Decode(base64TokenPayload);
             return JSON.parse(base64Decoded) as TokenClaims;
         } catch (err) {
