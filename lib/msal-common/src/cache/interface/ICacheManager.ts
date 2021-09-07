@@ -24,7 +24,7 @@ import { AuthorityMetadataEntity } from "../entities/AuthorityMetadataEntity";
 export interface ICacheManager {
 
     /**
-     * fetch the account entity from the platform cache
+     * fetch the account entity from the platform cache here or set to null
      * @param accountKey
      */
     getAccount(accountKey: string): AccountEntity | null;
