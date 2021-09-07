@@ -1,8 +1,16 @@
 # Change Log - msal-node-extensions-sample
 
-This log was last generated on Wed, 01 Sep 2021 18:34:35 GMT and should not be manually modified.
+This log was last generated on Tue, 07 Sep 2021 18:55:31 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 1.0.0
+
+Tue, 07 Sep 2021 18:55:31 GMT
+
+### Patches
+
+- Bump @azure/msal-node to v1.3.6 (bmahal@microsoft.com)
 
 ## 1.0.0
 
