@@ -258,7 +258,7 @@ export class BrowserCacheManager extends CacheManager {
         const value = this.getItem(refreshTokenKey);
         if (!value) {
             this.logger.trace("BrowserCacheManager.getRefreshTokenCredential: called, no cache hit");
-            return null; /* return null */
+            return null;
         }
         const parsedRefreshToken = this.validateAndParseJson(value);
         if (!parsedRefreshToken || !RefreshTokenEntity.isRefreshTokenEntity(parsedRefreshToken)) {
@@ -267,7 +267,7 @@ export class BrowserCacheManager extends CacheManager {
         }
 
         this.logger.trace("BrowserCacheManager.getRefreshTokenCredential: cache hit");
-        return CacheManager.toObject(new RefreshTokenEntity(), parsedRefreshToken); /* ...*/
+        return CacheManager.toObject(new RefreshTokenEntity(), parsedRefreshToken);
     }
 
     /**
@@ -332,7 +332,7 @@ export class BrowserCacheManager extends CacheManager {
     }
 
     /**
-     * set server telemetry entity to the platform cachee
+     * set server telemetry entity to the platform cache
      * @param serverTelemetryKey
      * @param serverTelemetry
      */
@@ -405,7 +405,7 @@ export class BrowserCacheManager extends CacheManager {
     }
 
     /**
-     * Gets a list of accounts that match all of the filters provided here
+     * Gets a list of accounts that match all of the filters provided
      * @param account 
      */
     getAccountInfoByFilter(accountFilter: Partial<Omit<AccountInfo, "idTokenClaims"|"name">>): AccountInfo[] {

@@ -10,7 +10,7 @@ import { StringUtils } from "../utils/StringUtils";
 import { ICrypto } from "../crypto/ICrypto";
 
 /**
- * JWT Token representation class. It parses  the token string and generates claims object.
+ * JWT Token representation class. it parses token string and generates claims object.
  */
 export class AuthToken {
 
@@ -28,7 +28,7 @@ export class AuthToken {
     }
 
     /**
-     * Extract token by decoding the rawToken here
+     * Extract token by decoding the rawToken
      *
      * @param encodedToken
      */
@@ -40,7 +40,7 @@ export class AuthToken {
         try {
             const base64TokenPayload = decodedToken.JWSPayload;
 
-            // base64Decode() should throw an error if there is an issue here
+            // base64Decode() should throw an error if there is an issue
             const base64Decoded = crypto.base64Decode(base64TokenPayload);
             return JSON.parse(base64Decoded) as TokenClaims;
         } catch (err) {

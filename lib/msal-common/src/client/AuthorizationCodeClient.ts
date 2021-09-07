@@ -46,7 +46,7 @@ export class AuthorizationCodeClient extends BaseClient {
      *
      * Once the user inputs their credentials and consents, the authority will send a response to the redirect URI
      * sent in the request and should contain an authorization code, which can then be used to acquire tokens via
-     * acquireToken(AuthorizationCodeRequest) change here 2
+     * acquireToken(AuthorizationCodeRequest)
      * @param request
      */
     async getAuthCodeUrl(request: CommonAuthorizationUrlRequest): Promise<string> {

@@ -4,7 +4,7 @@
  */
 
 /**
- * Protocol modes supported by MSAL. protocol mode
+ * Protocol modes supported by MSAL.
  */
 export enum ProtocolMode {
     AAD = "AAD",

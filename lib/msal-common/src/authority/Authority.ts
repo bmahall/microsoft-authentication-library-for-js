@@ -106,7 +106,7 @@ export class Authority {
     }
 
     /**
-     * Get hostname and port i.e. login.microsoftonline.com change here 1
+     * Get hostname and port i.e. login.microsoftonline.com
      * gets the hostname and port 
      */
     public get hostnameAndPort(): string {
