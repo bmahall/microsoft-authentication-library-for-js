@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "my feature change ",
+  "packageName": "@azure/msal-common",
+  "email": "bmahal@microsoft.com",
+  "dependentChangeType": "patch"
+}
