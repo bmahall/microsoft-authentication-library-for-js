@@ -1,16 +1,8 @@
 # Change Log - @azure/msal-angular
 
-This log was last generated on Wed, 08 Sep 2021 16:52:43 GMT and should not be manually modified.
+This log was last generated on Wed, 01 Sep 2021 18:34:35 GMT and should not be manually modified.
 
 <!-- Start content -->
-
-## 2.0.10
-
-Wed, 08 Sep 2021 16:52:43 GMT
-
-### Patches
-
-- delete mocha setup file (bmahal@microsoft.com)
 
 ## 2.0.9
 
