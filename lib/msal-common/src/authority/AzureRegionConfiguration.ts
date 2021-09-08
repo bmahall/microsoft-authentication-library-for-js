@@ -7,7 +7,7 @@ import { AzureRegion } from "./AzureRegion";
 
 /*
  * AzureRegionConfiguration
- * - preferredAzureRegion       - Preferred azure region from the user 
+ * - preferredAzureRegion       - Preferred azure region from the user -preferred region
  * - environmentRegionFunc      - Environment specific way of fetching the region from the environment
  */
 export type AzureRegionConfiguration = {
