@@ -2,15 +2,36 @@
   "name": "@azure/msal-node",
   "entries": [
     {
-      "date": "Wed, 08 Sep 2021 16:52:43 GMT",
+      "date": "Tue, 07 Sep 2021 17:28:08 GMT",
+      "tag": "@azure/msal-node_v1.3.7",
+      "version": "1.3.7",
+      "comments": {
+        "patch": [
+          {
+            "comment": "cc5",
+            "author": "bmahal@microsoft.com",
+            "commit": "681cbe3325480f21b7b0f7206a1cd9da13b267ea",
+            "package": "@azure/msal-node"
+          },
+          {
+            "comment": "comment 2?",
+            "author": "bmahal@microsoft.com",
+            "commit": "34ed36c6798edb3c4e4a936b2ad3763c7fc6941b",
+            "package": "@azure/msal-node"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 01 Sep 2021 19:37:25 GMT",
       "tag": "@azure/msal-node_v1.3.6",
       "version": "1.3.6",
       "comments": {
         "patch": [
           {
-            "comment": "def   ",
+            "comment": "Bump @azure/msal-common to v4.8.2",
             "author": "bmahal@microsoft.com",
-            "commit": "a0cd9b81c0701b471bbc148e5e5b55d0cd563e50",
+            "commit": "9f03de5167dece516bd64eb2b919810dc88dc6fa",
             "package": "@azure/msal-node"
           }
         ]

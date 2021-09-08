@@ -1,17 +1,34 @@
 # Change Log - @azure/msal-browser
 
-This log was last generated on Wed, 08 Sep 2021 16:52:43 GMT and should not be manually modified.
+This log was last generated on Tue, 07 Sep 2021 17:28:08 GMT and should not be manually modified.
 
 <!-- Start content -->
 
+## 2.19.3
+
+Tue, 07 Sep 2021 17:28:08 GMT
+
+### Patches
+
+- cc7 (bmahal@microsoft.com)
+- comment-patch in browser (bmahal@microsoft.com)
+- ipublic (bmahal@microsoft.com)
+
+## 2.19.2
+
+Wed, 01 Sep 2021 19:37:25 GMT
+
+### Patches
+
+- Bump @azure/msal-common to v4.8.2 (bmahal@microsoft.com)
+
 ## 2.19.1
 
-Wed, 08 Sep 2021 16:52:43 GMT
+Wed, 01 Sep 2021 19:06:33 GMT
 
 ### Patches
 
 - cc4 (bmahal@microsoft.com)
-- def     (bmahal@microsoft.com)
 
 ## 2.19.0
 
