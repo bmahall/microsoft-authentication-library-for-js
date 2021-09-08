@@ -26,7 +26,7 @@ import { CcsCredentialType } from "../account/CcsCredential";
 import { buildClientInfoFromHomeAccountId } from "../account/ClientInfo";
 
 /**
- * OAuth2.0 refresh token client
+ * OAuth2.0 refresh token client refresh
  */
 export class RefreshTokenClient extends BaseClient {
 
