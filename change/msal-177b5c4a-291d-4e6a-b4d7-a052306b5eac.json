@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "chg -bbb",
-  "packageName": "msal",
-  "email": "bmahal@microsoft.com",
-  "dependentChangeType": "patch"
-}
