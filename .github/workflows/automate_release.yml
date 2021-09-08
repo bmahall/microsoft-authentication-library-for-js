@@ -114,6 +114,7 @@ jobs:
             )
             }}
         run: |
+          git checkout -b new-feature-branch-bm
           git fetch origin dev:dev
           git reset --hard dev
       
