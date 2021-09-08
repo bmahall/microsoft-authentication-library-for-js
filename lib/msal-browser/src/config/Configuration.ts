@@ -26,6 +26,7 @@ export const DEFAULT_REDIRECT_TIMEOUT_MS = 30000;
  * - navigateToLoginRequestUrl  - Boolean indicating whether to navigate to the original request URL after the auth server navigates to the redirect URL.
  * - clientCapabilities         - Array of capabilities which will be added to the claims.access_token.xms_cc request property on every network request.
  * - protocolMode               - Enum that represents the protocol that msal follows. Used for configuring proper endpoints.
+ * - protocolMode               - Enum that represents the protocol that msal follows. Used for configuring proper endpoints.
  */
 export type BrowserAuthOptions = {
     clientId: string;

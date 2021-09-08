@@ -2,66 +2,6 @@
   "name": "@azure/msal-node-extensions",
   "entries": [
     {
-      "date": "Wed, 01 Sep 2021 18:34:35 GMT",
-      "tag": "@azure/msal-node-extensions_v1.0.4",
-      "version": "1.0.4",
-      "comments": {
-        "patch": [
-          {
-            "comment": "Bump @azure/msal-common to v4.8.1",
-            "author": "bmahal@microsoft.com",
-            "commit": "c18e669537f19b50bda99faeb541a80c21b1d251",
-            "package": "@azure/msal-node-extensions"
-          }
-        ]
-      }
-    },
-    {
-      "date": "Wed, 01 Sep 2021 16:43:47 GMT",
-      "tag": "@azure/msal-node-extensions_v1.0.3",
-      "version": "1.0.3",
-      "comments": {
-        "patch": [
-          {
-            "comment": "Bump @azure/msal-common to v4.8.0",
-            "author": "bmahal@microsoft.com",
-            "commit": "09c33ae3c981d4f8075f72b8404d2149a2ada581",
-            "package": "@azure/msal-node-extensions"
-          }
-        ]
-      }
-    },
-    {
-      "date": "Tue, 31 Aug 2021 17:16:32 GMT",
-      "tag": "@azure/msal-node-extensions_v1.0.2",
-      "version": "1.0.2",
-      "comments": {
-        "patch": [
-          {
-            "comment": "Bump @azure/msal-common to v4.7.1",
-            "author": "bmahal@microsoft.com",
-            "commit": "710fbe7780bcc5e42c73e4bf6cd0b8505c0e4cfb",
-            "package": "@azure/msal-node-extensions"
-          }
-        ]
-      }
-    },
-    {
-      "date": "Wed, 25 Aug 2021 18:51:38 GMT",
-      "tag": "@azure/msal-node-extensions_v1.0.1",
-      "version": "1.0.1",
-      "comments": {
-        "patch": [
-          {
-            "comment": "updating client application and automate workflow",
-            "author": "bmahal@microsoft.com",
-            "commit": "23b5d4a43d832445c4708383df78c70478f99058",
-            "package": "@azure/msal-node-extensions"
-          }
-        ]
-      }
-    },
-    {
       "date": "Wed, 11 Aug 2021 21:11:46 GMT",
       "tag": "@azure/msal-node-extensions_v1.0.0",
       "version": "1.0.0",
