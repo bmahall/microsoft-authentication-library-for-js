@@ -1,8 +1,16 @@
 # Change Log - @azure/msal-common
 
-This log was last generated on Wed, 08 Sep 2021 19:04:05 GMT and should not be manually modified.
+This log was last generated on Wed, 08 Sep 2021 19:14:55 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 4.8.6
+
+Wed, 08 Sep 2021 19:14:55 GMT
+
+### Patches
+
+- b6  (bmahal@microsoft.com)
 
 ## 4.8.5
 
