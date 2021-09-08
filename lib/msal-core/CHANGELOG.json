@@ -2,6 +2,7 @@
   "name": "msal",
   "entries": [
     {
+<<<<<<< HEAD
       "date": "Tue, 07 Sep 2021 23:47:36 GMT",
       "tag": "msal_v1.4.14",
       "version": "1.4.14",
@@ -14,6 +15,14 @@
             "package": "msal"
           },
           {
+=======
+      "date": "Tue, 07 Sep 2021 23:22:24 GMT",
+      "tag": "msal_v1.4.13",
+      "version": "1.4.13",
+      "comments": {
+        "patch": [
+          {
+>>>>>>> a5dcd5bc13f17a1d9cc065de3bdf71d0caf889c0
             "comment": "Throw interaction in progress if any msal instance has interaction in progress #4014",
             "author": "thomas.norling@microsoft.com",
             "commit": "b2804eee2f513b6bfac389a422b71b81e8415205",
@@ -31,6 +40,7 @@
       }
     },
     {
+<<<<<<< HEAD
       "date": "Wed, 11 Aug 2021 20:45:13 GMT",
       "tag": "msal_v1.4.13",
       "version": "1.4.13",
@@ -46,6 +56,8 @@
       }
     },
     {
+=======
+>>>>>>> a5dcd5bc13f17a1d9cc065de3bdf71d0caf889c0
       "date": "Thu, 22 Jul 2021 22:50:22 GMT",
       "tag": "msal_v1.4.12",
       "version": "1.4.12",

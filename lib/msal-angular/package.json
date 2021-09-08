@@ -1,6 +1,21 @@
 {
   "name": "@azure/msal-angular",
+<<<<<<< HEAD
   "version": "2.0.15",
+=======
+  "version": "2.0.3",
+  "author": {
+    "name": "Microsoft",
+    "email": "nugetaad@microsoft.com",
+    "url": "https://www.microsoft.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AzureAD/microsoft-authentication-library-for-js.git"
+  },
+  "description": "Microsoft Authentication Library for Angular",
+>>>>>>> a5dcd5bc13f17a1d9cc065de3bdf71d0caf889c0
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -32,7 +47,11 @@
     "@angular/platform-browser": "~11.2.12",
     "@angular/platform-browser-dynamic": "~11.2.12",
     "@angular/router": "~11.2.12",
+<<<<<<< HEAD
     "@azure/msal-browser": "^2.19.6",
+=======
+    "@azure/msal-browser": "^2.17.0",
+>>>>>>> a5dcd5bc13f17a1d9cc065de3bdf71d0caf889c0
     "@types/jasmine": "~3.6.0",
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
@@ -52,7 +71,11 @@
     "zone.js": "~0.10.3"
   },
   "peerDependencies": {
+<<<<<<< HEAD
     "@azure/msal-browser": "^2.19.6",
+=======
+    "@azure/msal-browser": "^2.17.0",
+>>>>>>> a5dcd5bc13f17a1d9cc065de3bdf71d0caf889c0
     "rxjs": "^6.0.0"
   },
   "dependencies": {

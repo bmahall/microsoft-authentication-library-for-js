@@ -74,12 +74,6 @@ Wed, 11 Aug 2021 20:45:13 GMT
 
 ### Patches
 
-<<<<<<< HEAD
 - comments added in common (bmahal@microsoft.com)
 - comment added (bmahal@microsoft.com)
 - Fix double encoding state #3903 (bmahal@microsoft.com)
-=======
-- Fix double encoding state #3903 (bmahal@microsoft.com)
-- comments added in common (bmahal@microsoft.com)
-- comment added (bmahal@microsoft.com)
->>>>>>> fa4052dc5a091278f10123dd195df21e2923e9f7
