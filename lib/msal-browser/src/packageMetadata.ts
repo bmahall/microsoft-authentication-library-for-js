@@ -1,3 +1,3 @@
 /* eslint-disable header/header */
 export const name = "@azure/msal-browser";
-export const version = "2.19.7";
+export const version = "2.19.8";

@@ -2,6 +2,21 @@
   "name": "@azure/msal-common",
   "entries": [
     {
+      "date": "Wed, 15 Sep 2021 03:34:48 GMT",
+      "tag": "@azure/msal-common_v4.9.0",
+      "version": "4.9.0",
+      "comments": {
+        "minor": [
+          {
+            "comment": "this is a minor change- multiple new changes",
+            "author": "bmahal@microsoft.com",
+            "commit": "bb6e3dcedeb76e5a93edf0d08aa12be6c7897906",
+            "package": "@azure/msal-common"
+          }
+        ]
+      }
+    },
+    {
       "date": "Wed, 08 Sep 2021 20:32:45 GMT",
       "tag": "@azure/msal-common_v4.8.7",
       "version": "4.8.7",
