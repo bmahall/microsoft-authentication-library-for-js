@@ -290,6 +290,7 @@ export abstract class ClientApplication {
         this.eventHandler.emitEvent(EventType.SSO_SILENT_START, InteractionType.Silent, request);
 
         try {
+        /* adding a test comment here */
             const silentIframeClient = new SilentIframeClient(this.config, this.browserStorage, this.browserCrypto, this.logger, this.eventHandler, this.navigationClient, ApiId.ssoSilent, request.correlationId);
             const silentTokenResult = await silentIframeClient.acquireToken(request);
             this.eventHandler.emitEvent(EventType.SSO_SILENT_SUCCESS, InteractionType.Silent, silentTokenResult);
@@ -305,6 +306,7 @@ export abstract class ClientApplication {
      *
      * MSAL return's a cached token when available
      * Or it send's a request to the STS to obtain a new token using a refresh token.
+     * Adding a test comment here. 
      *
      * @param {@link SilentRequest}
      *
