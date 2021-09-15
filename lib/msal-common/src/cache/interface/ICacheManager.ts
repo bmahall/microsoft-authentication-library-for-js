@@ -24,7 +24,7 @@ import { AuthorityMetadataEntity } from "../entities/AuthorityMetadataEntity";
 export interface ICacheManager {
 
     /**
-     * fetch the account entity from the platform cache
+     * fetch the account entity from the platform cache here or set to null
      * @param accountKey
      */
     getAccount(accountKey: string): AccountEntity | null;
@@ -148,7 +148,7 @@ export interface ICacheManager {
      * saves a cache record
      * @param cacheRecord
      */
-    saveCacheRecord(cacheRecord: CacheRecord): void;
+    saveCacheRecord(cacheRecord: CacheRecord): Promise<void>;
 
     /**
      * retrieve accounts matching all provided filters; if no filter is set, get all accounts
@@ -172,23 +172,23 @@ export interface ICacheManager {
     /**
      * Removes all accounts and related tokens from cache.
      */
-    removeAllAccounts(): boolean;
+    removeAllAccounts(): Promise<boolean>;
 
     /**
      * returns a boolean if the given account is removed
      * @param account
      */
-    removeAccount(accountKey: string): boolean;
+    removeAccount(accountKey: string): Promise<boolean>;
 
     /**
      * returns a boolean if the given account is removed
      * @param account
      */
-    removeAccountContext(account: AccountEntity): boolean;
+    removeAccountContext(account: AccountEntity): Promise<boolean>;
 
     /**
      * returns a boolean if the given credential is removed
      * @param credential
      */
-    removeCredential(credential: CredentialEntity): boolean;
+    removeCredential(credential: CredentialEntity): Promise<boolean>;
 }

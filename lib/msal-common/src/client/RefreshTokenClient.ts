@@ -26,7 +26,7 @@ import { CcsCredentialType } from "../account/CcsCredential";
 import { buildClientInfoFromHomeAccountId } from "../account/ClientInfo";
 
 /**
- * OAuth2.0 refresh token client
+ * OAuth2.0 refresh token client refresh token client acquire token client
  */
 export class RefreshTokenClient extends BaseClient {
 
@@ -139,7 +139,11 @@ export class RefreshTokenClient extends BaseClient {
         const thumbprint: RequestThumbprint = {
             clientId: this.config.authOptions.clientId,
             authority: authority.canonicalAuthority,
-            scopes: request.scopes
+            scopes: request.scopes,
+            authenticationScheme: request.authenticationScheme,
+            resourceRequestMethod: request.resourceRequestMethod,
+            resourceRequestUri: request.resourceRequestUri,
+            shrClaims: request.shrClaims
         };
 
         const endpoint = UrlString.appendQueryString(authority.tokenEndpoint, queryParameters);

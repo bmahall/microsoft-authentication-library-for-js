@@ -32,7 +32,7 @@ export const BrowserConstants = {
      */
     POPUP_NAME_PREFIX: "msal",
     /**
-     * Default popup monitor poll interval in milliseconds
+     * Default popup monitor poll interval in milliseconds (ms)
      */
     POLL_INTERVAL_MS: 50,
     /**
@@ -70,7 +70,16 @@ export enum TemporaryCacheKeys {
     REQUEST_PARAMS = "request.params",
     SCOPES = "scopes",
     INTERACTION_STATUS_KEY = "interaction.status",
-    CCS_CREDENTIAL = "ccs.credential"
+    CCS_CREDENTIAL = "ccs.credential",
+    CORRELATION_ID = "request.correlationId"
+}
+
+/**
+ * Cache keys stored in-memory
+ */
+export enum InMemoryCacheKeys {
+    WRAPPER_SKU = "wrapper.sku",
+    WRAPPER_VER = "wrapper.version"
 }
 
 /**

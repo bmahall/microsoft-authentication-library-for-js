@@ -13,6 +13,7 @@ import { BrowserConfigurationAuthError } from "../error/BrowserConfigurationAuth
 import { WrapperSKU } from "../utils/BrowserConstants";
 import { INavigationClient } from "../navigation/INavigationClient";
 import { EndSessionPopupRequest } from "../request/EndSessionPopupRequest";
+import { ITokenCache } from "../cache/ITokenCache";
 
 export interface IPublicClientApplication {
     acquireTokenPopup(request: PopupRequest): Promise<AuthenticationResult>;
@@ -20,17 +21,18 @@ export interface IPublicClientApplication {
     acquireTokenSilent(silentRequest: SilentRequest): Promise<AuthenticationResult>;
     addEventCallback(callback: Function): string | null;
     removeEventCallback(callbackId: string): void;
-    getAccountByHomeId(homeAccountId: string): AccountInfo | null;
+    getAccountByHomeId(homeAccountId: string): AccountInfo | null; /* default null home acc id*/
     getAccountByLocalId(localId: string): AccountInfo | null;
     getAccountByUsername(userName: string): AccountInfo | null;
     getAllAccounts(): AccountInfo[];
-    handleRedirectPromise(hash?: string): Promise<AuthenticationResult | null>;
+    handleRedirectPromise(hash?: string): Promise<AuthenticationResult | null>; /* handle redirect promise*/
     loginPopup(request?: PopupRequest): Promise<AuthenticationResult>;
     loginRedirect(request?: RedirectRequest): Promise<void>;
     logout(logoutRequest?: EndSessionRequest): Promise<void>;
     logoutRedirect(logoutRequest?: EndSessionRequest): Promise<void>;
     logoutPopup(logoutRequest?: EndSessionPopupRequest): Promise<void>;
     ssoSilent(request: SsoSilentRequest): Promise<AuthenticationResult>;
+    getTokenCache(): ITokenCache;
     getLogger(): Logger;
     setLogger(logger: Logger): void;
     setActiveAccount(account: AccountInfo | null): void;
@@ -40,6 +42,7 @@ export interface IPublicClientApplication {
 }
 
 export const stubbedPublicClientApplication: IPublicClientApplication = {
+    /* acquire token popup here here  */
     acquireTokenPopup: () => {
         return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError());
     },
@@ -87,6 +90,9 @@ export const stubbedPublicClientApplication: IPublicClientApplication = {
     },
     removeEventCallback: () => {
         return;
+    },
+    getTokenCache: () => {
+        throw BrowserConfigurationAuthError.createStubPcaInstanceCalledError();
     },
     getLogger: () => {
         throw BrowserConfigurationAuthError.createStubPcaInstanceCalledError();
