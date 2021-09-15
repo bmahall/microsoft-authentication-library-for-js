@@ -85,6 +85,6 @@
   },
   "dependencies": {
     "@azure/msal-common": "^4.8.7",
-    "caniuse-lite": "^1.0.30001255"
+    "caniuse-lite": "^1.0.30001257"
   }
 }
