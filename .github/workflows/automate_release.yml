@@ -6,22 +6,12 @@ on:
     types: [closed]
     branches:
       - dev
-  workflow_dispatch:
-    inputs:
-      versionName:
-        description: 'Name of version '
-        required: true
-      versionCode:
-        description: 'Version #'
-        required: true
 
 jobs:
   release:
     if: github.event.pull_request.merged == true
     name: Bump versions and create changelog PR --updation
     runs-on: ubuntu-latest
-    outputs:
-      output1: ${{ steps.step1.outputs.test }}
       
     steps:
 
@@ -30,23 +20,24 @@ jobs:
         with:
           fetch-depth: 0
 
-  
-      - id: step1
+      # Extracting head branch of merged PR
+      - id: head
         name: Extract Head Branch Name
         run: echo "set-output name=test::${{ github.head_ref }}"
       
-      # Install node_modules  here
+      # Install node_modules 
       - name: Use Node.js
         uses: actions/setup-node@v2
         with:
             cache: 'npm'
       - run: npm ci
 
+      # Beachball bump 
       - if: "!contains(github.head_ref, 'release')"
         name: bump package versions
         run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
   
-
+      # Extracting base branch of merged PR
       - name: Step that prints name of pull request's base branch
         run: |
            echo "Pull request's base branch is: ${BASE_BRANCH}"
@@ -54,37 +45,27 @@ jobs:
               BASE_BRANCH: ${{ github.base_ref }}
         if: github.event_name == 'pull_request'
 
+      # Logging branch name values 
       - name: Echo out branch values
         run: | 
           echo github.base_ref: ${{ github.base_ref }}
           echo github.head_ref: ${{ github.head_ref }}
           echo github.ref: ${{ github.ref }}
    
+      # Create/update Pull Request
       - if: "!contains(github.head_ref, 'release')"
         name: Create Pull Request
         id: pr
         uses: peter-evans/create-pull-request@v3
         with:
-          commit-message: Release ; version bump; PR->master
+          commit-message: Automated PR from release-staging to dev 
           committer: GitHub <noreply@github.com>
           author: ${{ github.actor }} <${{ github.actor }}@microsoft.com>
           branch: release-staging
-          title: 'Creating PR From :release-staging' 
+          title: 'Creating PR From :release-staging for review' 
           body: |
-            New release PR
+            Release PR : This PR contains the changelogs and version bumps since the previous release. 
           draft: false
-
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: echo "$GITHUB_CONTEXT"
-        
-
-
-      - name: Print event details
-        env:
-          GITHUB_EVENT: ${{ toJson(github.event.push) }}
-        run: echo "$GITHUB_EVENT"
 
 
   update_master:
@@ -94,20 +75,16 @@ jobs:
     if: "contains(github.head_ref, 'release')"
     steps:
 
-      - run: echo "${{needs.release.outputs.output1}}"
-     
-
       # Check-out repo
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
-          
+
+      # Extracting head branch of merged PR 
       - name: Extract Head Branch Name
         run: echo "BRANCH=$(echo ${{ github.head_ref }})" >> $GITHUB_ENV
 
-
-      
-
+      # Create Pull Request from dev to master for sync post-publish
       - name: Create Pull Request
         if: >-  
             ${{
@@ -126,5 +103,5 @@ jobs:
           base: master
           title: 'Creating PR From :dev to master post release' 
           body: |
-            New  PR post-release 
+            Master-dev sync PR : This PR aims to bring main up-to-date with latest dev changes post successful publish. 
           draft: false
