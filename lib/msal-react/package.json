@@ -56,6 +56,6 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "caniuse-lite": "^1.0.30001255"
+    "caniuse-lite": "^1.0.30001257"
   }
 }
