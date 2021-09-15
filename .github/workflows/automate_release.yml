@@ -84,7 +84,7 @@ jobs:
       # Extracting head branch of merged PR 
       - name: Extract Head Branch Name
         run: echo "BRANCH=$(echo ${{ github.head_ref }})" >> $GITHUB_ENV
-
+        
       - name: Reset promotion branch
         run: |
           git fetch origin dev:dev
