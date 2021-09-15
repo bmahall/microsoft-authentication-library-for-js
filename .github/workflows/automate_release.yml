@@ -79,10 +79,16 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          ref: master
 
       # Extracting head branch of merged PR 
       - name: Extract Head Branch Name
         run: echo "BRANCH=$(echo ${{ github.head_ref }})" >> $GITHUB_ENV
+        
+      - name: Reset promotion branch
+        run: |
+          git fetch origin dev:dev
+          git reset --hard dev
 
       # Create Pull Request from dev to master for sync post-publish
       - name: Create Pull Request
