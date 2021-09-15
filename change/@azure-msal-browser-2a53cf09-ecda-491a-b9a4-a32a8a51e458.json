@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "comment cfhanges only ",
+  "packageName": "@azure/msal-browser",
+  "email": "bmahal@microsoft.com",
+  "dependentChangeType": "patch"
+}

@@ -18,6 +18,7 @@ import { PopupRequest } from "../request/PopupRequest";
 export class PopupClient extends StandardInteractionClient {
     /**
      * Acquires tokens by opening a popup window to the /authorize endpoint of the authority
+     * this is popup client class 
      * @param request 
      */
     acquireToken(request: PopupRequest): Promise<AuthenticationResult> {

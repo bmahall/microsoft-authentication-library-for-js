@@ -1,0 +1,7 @@
+{
+  "type": "minor",
+  "comment": "this is a minor change- multiple new changes",
+  "packageName": "@azure/msal-common",
+  "email": "bmahal@microsoft.com",
+  "dependentChangeType": "patch"
+}
