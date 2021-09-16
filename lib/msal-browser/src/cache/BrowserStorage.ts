@@ -42,7 +42,7 @@ export class BrowserStorage implements IWindowStorage {
         return Object.keys(this.windowStorage);
     }
 
-    containsKey(key: string): boolean {
+    containsKey(key: string): boolean { /* this is test comment*/ 
         return this.windowStorage.hasOwnProperty(key);
     }
 }

@@ -17,7 +17,7 @@
 export type AccountInfo = {
     homeAccountId: string; /* home account id here*/
     environment: string;
-    tenantId: string; /* tenant id here*/
+    tenantId: string; /* tenant id here*/ /* this is test comment*/
     username: string;
     localAccountId: string; /* local acc id here*/
     name?: string; /* name here */
