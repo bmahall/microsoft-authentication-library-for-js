@@ -61,7 +61,7 @@ export class ConfidentialClientApplication extends ClientApplication implements 
         this.logger.info("acquireTokenByClientCredential called", request.correlationId);
         const validRequest: CommonClientCredentialRequest = {
             ...request,
-            ...this.initializeBaseRequest(request)
+            ...this.initializeBaseRequest(request) // this is a test comment
         };
         const azureRegionConfiguration: AzureRegionConfiguration = {
             azureRegion: validRequest.azureRegion,

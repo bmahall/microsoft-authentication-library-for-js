@@ -32,12 +32,16 @@ jobs:
             common: &common
               - 'lib/msal-common/**/**.!(md)'
             browser: &browser
+              - *browser
               - *common
             node:
+              - *node
               - *common
             angular:
+              - *angular
               - *browser
             react:
+              - *react
               - *browser
           list-files: json   
 
@@ -50,5 +54,6 @@ jobs:
               npm install
               npm run build:extensions
               npm ci 
+              npm update
               npm run build
               npm publish --dry-run
