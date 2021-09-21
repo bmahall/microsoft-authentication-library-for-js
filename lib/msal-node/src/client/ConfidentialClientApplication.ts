@@ -25,6 +25,7 @@ import { ClientCredentialRequest } from "../request/ClientCredentialRequest";
 /**
  *  This class is to be used to acquire tokens for confidential client applications (webApp, webAPI). Confidential client applications
  *  will configure application secrets, client certificates/assertions as applicable
+ *  this is a test comment. 
  * @public
  */
 export class ConfidentialClientApplication extends ClientApplication implements IConfidentialClientApplication{
