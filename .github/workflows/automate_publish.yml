@@ -32,7 +32,6 @@ jobs:
             common: &common
               - 'lib/msal-common/**/**.!(md)'
             browser: &browser
-              - *browser
               - *common
             node:
               - *common
