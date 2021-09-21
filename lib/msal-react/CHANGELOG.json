@@ -2,42 +2,30 @@
   "name": "@azure/msal-react",
   "entries": [
     {
-      "date": "Wed, 11 Nov 2020 23:33:20 GMT",
-      "tag": "@azure/msal-react_v1.0.0-alpha.0",
-      "version": "1.0.0-alpha.0",
+      "date": "Wed, 15 Sep 2021 03:34:48 GMT",
+      "tag": "@azure/msal-react_v1.0.16",
+      "version": "1.0.16",
       "comments": {
-        "none": [
+        "patch": [
           {
-            "comment": "Change MsalContext file extension (#2584)",
-            "author": "thomas.norling@microsoft.com",
-            "commit": "f680d65c5b29593242605f815a2a98f126c280a1",
-            "package": "@azure/msal-react"
-          },
-          {
-            "comment": "Add localAccountId to AccountIdentifiers (#2588)",
-            "author": "thomas.norling@microsoft.com",
-            "commit": "b6e1692cc3e3ea8c0d9b5808c4469446c01cfb84",
-            "package": "@azure/msal-react"
-          },
-          {
-            "comment": "Update Docs and Deps (#2581)",
-            "author": "thomas.norling@microsoft.com",
-            "commit": "f27f3ccfbd691b69e0393358eb0c165f1fc1c714",
+            "comment": "Bump @azure/msal-browser to v2.19.8",
+            "author": "bmahal@microsoft.com",
+            "commit": "bb6e3dcedeb76e5a93edf0d08aa12be6c7897906",
             "package": "@azure/msal-react"
           }
         ]
       }
     },
     {
-      "date": "Tue, 10 Nov 2020 01:48:44 GMT",
-      "tag": "@azure/msal-react_v2.0.0-alpha.0",
-      "version": "2.0.0-alpha.0",
+      "date": "Wed, 08 Sep 2021 20:32:45 GMT",
+      "tag": "@azure/msal-react_v1.0.15",
+      "version": "1.0.15",
       "comments": {
-        "none": [
+        "patch": [
           {
-            "comment": "msal-react first alpha release (#2540)",
-            "author": "thomas.norling@microsoft.com",
-            "commit": "612feaeb6e5099cae6d1f606d187f5e38063018f",
+            "comment": "Bump @azure/msal-browser to v2.19.7",
+            "author": "bmahal@microsoft.com",
+            "commit": "48e0044e3b0c22ffb3c596da2be489f2720bcd03",
             "package": "@azure/msal-react"
           }
         ]

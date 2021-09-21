@@ -7,6 +7,7 @@ import {
     Separators,
     CacheAccountType,
     CacheType,
+    Constants,
 } from "../../utils/Constants";
 import { Authority } from "../../authority/Authority";
 import { AuthToken } from "../../account/AuthToken";
@@ -17,6 +18,7 @@ import { AccountInfo } from "../../account/AccountInfo";
 import { ClientAuthError } from "../../error/ClientAuthError";
 import { AuthorityType } from "../../authority/AuthorityType";
 import { Logger } from "../../logger/Logger";
+import { TokenClaims } from "../../account/TokenClaims";
 
 /**
  * Type that defines required and optional parameters for an Account field (based on universal cache schema implemented by all MSALs).
@@ -38,6 +40,7 @@ import { Logger } from "../../logger/Logger";
  *      lastModificationTime: last time this entity was modified in the cache
  *      lastModificationApp:
  *      oboAssertion: access token passed in as part of OBO request
+ *      idTokenClaims: Object containing claims parsed from ID token
  * }
  */
 export class AccountEntity {
@@ -52,6 +55,9 @@ export class AccountEntity {
     lastModificationTime?: string;
     lastModificationApp?: string;
     oboAssertion?: string;
+    cloudGraphHostName?: string;
+    msGraphHost?: string; 
+    idTokenClaims?: TokenClaims;
 
     /**
      * Generate Account Id key component as per the schema: <home_account_id>-<environment>
@@ -104,6 +110,7 @@ export class AccountEntity {
             username: this.username,
             localAccountId: this.localAccountId,
             name: this.name,
+            idTokenClaims: this.idTokenClaims
         };
     }
 
@@ -131,9 +138,12 @@ export class AccountEntity {
     static createAccount(
         clientInfo: string,
         homeAccountId: string,
-        authority: Authority,
         idToken: AuthToken,
-        oboAssertion?: string
+        authority?: Authority,
+        oboAssertion?: string,
+        cloudGraphHostName?: string,
+        msGraphHost?: string,
+        environment?: string
     ): AccountEntity {
         const account: AccountEntity = new AccountEntity();
 
@@ -141,30 +151,33 @@ export class AccountEntity {
         account.clientInfo = clientInfo;
         account.homeAccountId = homeAccountId;
 
-        const env = Authority.generateEnvironmentFromAuthority(authority);
-        if (StringUtils.isEmpty(env)) {
+        const env = environment || (authority && authority.getPreferredCache());
+
+        if (!env) {
             throw ClientAuthError.createInvalidCacheEnvironmentError();
         }
 
         account.environment = env;
         // non AAD scenarios can have empty realm
-        account.realm = idToken.claims.tid || "";
+        account.realm = idToken?.claims?.tid || "";
         account.oboAssertion = oboAssertion;
-
+        
         if (idToken) {
+            account.idTokenClaims = idToken.claims;
+
             // How do you account for MSA CID here?
-            const localAccountId = !StringUtils.isEmpty(idToken.claims.oid)
-                ? idToken.claims.oid
-                : idToken.claims.sub;
-            account.localAccountId = localAccountId;
+            account.localAccountId = idToken?.claims?.oid || idToken?.claims?.sub || "";
 
             /*
              * In B2C scenarios the emails claim is used instead of preferred_username and it is an array. In most cases it will contain a single email.
              * This field should not be relied upon if a custom policy is configured to return more than 1 email.
              */
-            account.username = idToken.claims.preferred_username || (idToken.claims.emails? idToken.claims.emails[0]: "");
-            account.name = idToken.claims.name;
+            account.username = idToken?.claims?.preferred_username || (idToken?.claims?.emails? idToken.claims.emails[0]: "");
+            account.name = idToken?.claims?.name;
         }
+
+        account.cloudGraphHostName = cloudGraphHostName;
+        account.msGraphHost = msGraphHost;
 
         return account;
     }
@@ -175,38 +188,41 @@ export class AccountEntity {
      * @param idToken
      */
     static createGenericAccount(
-        authority: Authority,
         homeAccountId: string,
         idToken: AuthToken,
-        oboAssertion?: string
+        authority?: Authority,
+        oboAssertion?: string,
+        cloudGraphHostName?: string,
+        msGraphHost?: string,
+        environment?: string
     ): AccountEntity {
         const account: AccountEntity = new AccountEntity();
 
-        account.authorityType = (authority.authorityType === AuthorityType.Adfs) ? CacheAccountType.ADFS_ACCOUNT_TYPE : CacheAccountType.GENERIC_ACCOUNT_TYPE;
+        account.authorityType = (authority && authority.authorityType === AuthorityType.Adfs) ? CacheAccountType.ADFS_ACCOUNT_TYPE : CacheAccountType.GENERIC_ACCOUNT_TYPE;
         account.homeAccountId = homeAccountId;
         // non AAD scenarios can have empty realm
         account.realm = "";
         account.oboAssertion = oboAssertion;
 
-        const env = Authority.generateEnvironmentFromAuthority(authority);
+        const env = environment || authority && authority.getPreferredCache();
 
-        if (StringUtils.isEmpty(env)) {
+        if (!env) {
             throw ClientAuthError.createInvalidCacheEnvironmentError();
         }
 
         if (idToken) {
             // How do you account for MSA CID here?
-            const localAccountId = !StringUtils.isEmpty(idToken.claims.oid)
-                ? idToken.claims.oid
-                : idToken.claims.sub;
-            account.localAccountId = localAccountId;
-
+            account.localAccountId = idToken?.claims?.oid || idToken?.claims?.sub || "";
             // upn claim for most ADFS scenarios
-            account.username = idToken.claims.upn;
-            account.name = idToken.claims.name;
+            account.username = idToken?.claims?.upn || "";
+            account.name = idToken?.claims?.name || "";
+            account.idTokenClaims = idToken?.claims;
         }
 
         account.environment = env;
+
+        account.cloudGraphHostName = cloudGraphHostName;
+        account.msGraphHost = msGraphHost;
 
         /*
          * add uniqueName to claims
@@ -223,7 +239,7 @@ export class AccountEntity {
      */
     static generateHomeAccountId(serverClientInfo: string, authType: AuthorityType, logger: Logger, cryptoObj: ICrypto, idToken?: AuthToken): string {
 
-        const accountId = idToken && idToken.claims.sub ? idToken.claims.sub : "";
+        const accountId = idToken?.claims?.sub ? idToken.claims.sub : Constants.EMPTY_STRING;
 
         // since ADFS does not have tid and does not set client_info
         if (authType === AuthorityType.Adfs) {
@@ -232,10 +248,12 @@ export class AccountEntity {
 
         // for cases where there is clientInfo
         if (serverClientInfo) {
-            const clientInfo = buildClientInfo(serverClientInfo, cryptoObj);
-            if (!StringUtils.isEmpty(clientInfo.uid) && !StringUtils.isEmpty(clientInfo.utid)) {
-                return `${clientInfo.uid}${Separators.CLIENT_INFO_SEPARATOR}${clientInfo.utid}`;
-            }
+            try {
+                const clientInfo = buildClientInfo(serverClientInfo, cryptoObj);
+                if (!StringUtils.isEmpty(clientInfo.uid) && !StringUtils.isEmpty(clientInfo.utid)) {
+                    return `${clientInfo.uid}${Separators.CLIENT_INFO_SEPARATOR}${clientInfo.utid}`;
+                }
+            } catch (e) {}
         }
 
         // default to "sub" claim
@@ -261,5 +279,34 @@ export class AccountEntity {
             entity.hasOwnProperty("username") &&
             entity.hasOwnProperty("authorityType")
         );
+    }
+
+    /**
+     * Helper function to determine whether 2 accountInfo objects represent the same account
+     * @param accountA 
+     * @param accountB 
+     * @param compareClaims - If set to true idTokenClaims will also be compared to determine account equality
+     */
+    static accountInfoIsEqual(accountA: AccountInfo | null, accountB: AccountInfo | null, compareClaims?: boolean): boolean {
+        if (!accountA || !accountB) {
+            return false;
+        }
+
+        let claimsMatch = true; // default to true so as to not fail comparison below if compareClaims: false
+        if (compareClaims) {
+            const accountAClaims = (accountA.idTokenClaims || {}) as TokenClaims;
+            const accountBClaims = (accountB.idTokenClaims || {}) as TokenClaims;
+
+            // issued at timestamp and nonce are expected to change each time a new id token is acquired
+            claimsMatch = (accountAClaims.iat === accountBClaims.iat) &&
+            (accountAClaims.nonce === accountBClaims.nonce);
+        }
+
+        return (accountA.homeAccountId === accountB.homeAccountId) && 
+            (accountA.localAccountId === accountB.localAccountId) &&
+            (accountA.username === accountB.username) &&
+            (accountA.tenantId === accountB.tenantId) &&
+            (accountA.environment === accountB.environment) &&
+            claimsMatch;
     }
 }

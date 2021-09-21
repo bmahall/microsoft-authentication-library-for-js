@@ -58,6 +58,8 @@ export class Constants {
     static get inProgress(): string { return "inProgress"; }
 }
 
+export const SESSION_STORAGE = "sessionStorage";
+
 /**
  * Keys in the hashParams
  */
@@ -101,7 +103,7 @@ export enum TemporaryCacheKeys {
     LOGIN_REQUEST = "login.request",
     RENEW_STATUS = "token.renew.status",
     URL_HASH = "urlHash",
-    INTERACTION_STATUS = "interaction_status",
+    INTERACTION_STATUS = "interaction.status",
     REDIRECT_REQUEST = "redirect_request"
 }
 
@@ -129,6 +131,7 @@ export enum SSOTypes {
     SID = "sid",
     LOGIN_HINT = "login_hint",
     ORGANIZATIONS = "organizations",
+    CONSUMERS = "consumers",
     ID_TOKEN ="id_token",
     ACCOUNT_ID = "accountIdentifier",
     HOMEACCOUNT_ID = "homeAccountIdentifier"
@@ -169,10 +172,3 @@ export const FramePrefix = {
     ID_TOKEN_FRAME: "msalIdTokenFrame",
     TOKEN_FRAME: "msalRenewFrame"
 };
-
-/**
- * MSAL JS Library Version
- */
-export function libraryVersion(): string {
-    return "1.4.4";
-}

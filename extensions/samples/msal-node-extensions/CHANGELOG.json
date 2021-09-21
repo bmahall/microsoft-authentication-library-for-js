@@ -2,6 +2,186 @@
   "name": "msal-node-extensions-sample",
   "entries": [
     {
+      "date": "Wed, 15 Sep 2021 03:34:48 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node-extensions to v1.0.11",
+            "author": "bmahal@microsoft.com",
+            "commit": "bb6e3dcedeb76e5a93edf0d08aa12be6c7897906",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 08 Sep 2021 20:32:45 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node-extensions to v1.0.10",
+            "author": "bmahal@microsoft.com",
+            "commit": "48e0044e3b0c22ffb3c596da2be489f2720bcd03",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 08 Sep 2021 19:14:55 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node-extensions to v1.0.9",
+            "author": "bmahal@microsoft.com",
+            "commit": "4fee6d30274c64e2f5b7b1553413e22b808d63fd",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 08 Sep 2021 19:04:05 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node-extensions to v1.0.8",
+            "author": "bmahal@microsoft.com",
+            "commit": "d88f563133e57e65b4a253d932e43fe959039a32",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 08 Sep 2021 18:51:08 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node-extensions to v1.0.7",
+            "author": "bmahal@microsoft.com",
+            "commit": "40401d34a0199d1c4deb8eb1461aa4525a0c7cec",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Tue, 07 Sep 2021 17:28:08 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node to v1.3.7",
+            "author": "bmahal@microsoft.com",
+            "commit": "681cbe3325480f21b7b0f7206a1cd9da13b267ea",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 01 Sep 2021 19:37:25 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node-extensions to v1.0.5",
+            "author": "bmahal@microsoft.com",
+            "commit": "9f03de5167dece516bd64eb2b919810dc88dc6fa",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 01 Sep 2021 18:34:35 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node-extensions to v1.0.4",
+            "author": "bmahal@microsoft.com",
+            "commit": "c18e669537f19b50bda99faeb541a80c21b1d251",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 01 Sep 2021 16:43:47 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node-extensions to v1.0.3",
+            "author": "bmahal@microsoft.com",
+            "commit": "09c33ae3c981d4f8075f72b8404d2149a2ada581",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Tue, 31 Aug 2021 17:16:32 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node-extensions to v1.0.2",
+            "author": "bmahal@microsoft.com",
+            "commit": "710fbe7780bcc5e42c73e4bf6cd0b8505c0e4cfb",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 25 Aug 2021 18:51:38 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node-extensions to v1.0.1",
+            "author": "bmahal@microsoft.com",
+            "commit": "23b5d4a43d832445c4708383df78c70478f99058",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 11 Aug 2021 21:11:46 GMT",
+      "tag": "msal-node-extensions-sample_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-node-extensions to v1.0.0",
+            "author": "bmahal@microsoft.com",
+            "commit": "4ce5241abe89caa54204cbcc737c20d3055c56d4",
+            "package": "msal-node-extensions-sample"
+          }
+        ]
+      }
+    },
+    {
       "date": "Wed, 30 Sep 2020 17:58:33 GMT",
       "tag": "msal-node-extensions-sample_v1.0.0",
       "version": "1.0.0",

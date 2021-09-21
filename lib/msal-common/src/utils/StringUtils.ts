@@ -38,8 +38,22 @@ export class StringUtils {
      *
      * @param str
      */
-    static isEmpty(str: string): boolean {
+    static isEmpty(str?: string): boolean {
         return (typeof str === "undefined" || !str || 0 === str.length);
+    }
+
+    /**
+     * Check if stringified object is empty
+     * @param strObj 
+     */
+    static isEmptyObj(strObj?: string): boolean {
+        if (strObj && !StringUtils.isEmpty(strObj)) {
+            try {
+                const obj = JSON.parse(strObj);
+                return Object.keys(obj).length === 0;
+            } catch (e) {}
+        }
+        return true;
     }
 
     static startsWith(str: string, search: string): boolean {
@@ -56,16 +70,17 @@ export class StringUtils {
      * @param query
      */
     static queryStringToObject<T>(query: string): T {
-        let match: Array<string>; // Regex for replacing addition symbol with a space
-        const pl = /\+/g;
-        const search = /([^&=]+)=([^&]*)/g;
-        const decode = (s: string): string => decodeURIComponent(decodeURIComponent(s.replace(pl, " ")));
         const obj: {} = {};
-        match = search.exec(query);
-        while (match) {
-            obj[decode(match[1])] = decode(match[2]);
-            match = search.exec(query);
-        }
+        const params = query.split("&");
+        const decode = (s: string) => decodeURIComponent(s.replace(/\+/g, " "));
+        params.forEach((pair) => {
+            if (pair.trim()) {
+                const [key, value] = pair.split(/=(.+)/g, 2); // Split on the first occurence of the '=' character
+                if (key && value) {
+                    obj[decode(key)] = decode(value);
+                }
+            }
+        });
         return obj as T;
     }
 
@@ -92,11 +107,26 @@ export class StringUtils {
      * Attempts to parse a string into JSON
      * @param str
      */
-    static jsonParseHelper<T>(str: string): T {
+    static jsonParseHelper<T>(str: string): T | null {
         try {
             return JSON.parse(str) as T;
         } catch (e) {
             return null;
         }
+    }
+
+    /**
+     * Tests if a given string matches a given pattern, with support for wildcards and queries.
+     * @param pattern Wildcard pattern to string match. Supports "*" for wildcards and "?" for queries
+     * @param input String to match against
+     */
+    static matchPattern(pattern: string, input: string): boolean {
+        /**
+         * Wildcard support: https://stackoverflow.com/a/3117248/4888559
+         * Queries: replaces "?" in string with escaped "\?" for regex test
+         */
+        const regex: RegExp = new RegExp(pattern.replace(/\\/g, "\\\\").replace(/\*/g, "[^ ]*").replace(/\?/g, "\\\?")); // eslint-disable-line security/detect-non-literal-regexp
+
+        return regex.test(input);
     }
 }

@@ -12,13 +12,15 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
+    "resolveJsonModule": true,
     "moduleResolution": "node",
     "baseUrl": "./",
-    "paths": {
-      "@": ["./"],
-      "*": ["src/*", "node_modules/*"]
-    },
     "jsx": "react",
     "esModuleInterop": true
-  }
+  },
+  "references": [
+    {
+      "path": "../msal-browser"
+    }
+  ]
 }

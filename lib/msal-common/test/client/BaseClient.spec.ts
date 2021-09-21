@@ -1,11 +1,10 @@
-import { expect } from "chai";
 import { BaseClient } from "../../src/client/BaseClient";
-import { Authority, Constants, ServerTelemetryManager, ServerTelemetryRequest } from "../../src";
-import { AADServerParamKeys, HeaderNames } from "../../src/utils/Constants";
+import { HeaderNames, Constants } from "../../src/utils/Constants";
 import { ClientTestUtils } from "./ClientTestUtils";
 import { ClientConfiguration } from "../../src/config/ClientConfiguration";
+import { DEFAULT_OPENID_CONFIG_RESPONSE } from "../test_kit/StringConstants";
+import { Authority } from "../../src/authority/Authority";
 import sinon from "sinon";
-import { DEFAULT_OPENID_CONFIG_RESPONSE, TEST_CONFIG } from "../utils/StringConstants";
 
 class TestClient extends BaseClient {
 
@@ -33,20 +32,12 @@ class TestClient extends BaseClient {
         return this.authority;
     }
 
-    createDefaultLibraryHeaders(): Record<string, string> {
-        return super.createDefaultLibraryHeaders();
-    }
-
-    createDefaultTokenRequestHeaders(): Record<string, string> {
-        return super.createDefaultTokenRequestHeaders();
+    createTokenRequestHeaders(): Record<string, string> {
+        return super.createTokenRequestHeaders();
     }
 }
 
 describe("BaseClient.ts Class Unit Tests", () => {
-    beforeEach(() => {
-        ClientTestUtils.setCloudDiscoveryMetadataStubs();
-    });
-
     afterEach(() => {
         sinon.restore();
     });
@@ -54,78 +45,40 @@ describe("BaseClient.ts Class Unit Tests", () => {
     describe("Constructor", () => {
 
         it("Creates a valid BaseClient object", async () => {
-
-            sinon.stub(Authority.prototype, <any>"discoverEndpoints").resolves(DEFAULT_OPENID_CONFIG_RESPONSE);
+            sinon.stub(Authority.prototype, <any>"getEndpointMetadataFromNetwork").resolves(DEFAULT_OPENID_CONFIG_RESPONSE.body);
             const config = await ClientTestUtils.createTestClientConfiguration();
             const client = new TestClient(config);
-            expect(client).to.be.not.null;
-            expect(client instanceof BaseClient).to.be.true;
+            expect(client).not.toBeNull();
+            expect(client instanceof BaseClient).toBe(true);
         });
 
         it("Sets fields on BaseClient object", async () => {
-
-            sinon.stub(Authority.prototype, <any>"discoverEndpoints").resolves(DEFAULT_OPENID_CONFIG_RESPONSE);
+            sinon.stub(Authority.prototype, <any>"getEndpointMetadataFromNetwork").resolves(DEFAULT_OPENID_CONFIG_RESPONSE.body);
             const config = await ClientTestUtils.createTestClientConfiguration();
             const client = new TestClient(config);
 
-            expect(client.getConfig()).to.be.not.null;
-            expect(client.getCryptoUtils()).to.be.not.null;
-            expect(client.getDefaultAuthorityInstance()).to.be.not.null;
-            expect(client.getNetworkClient()).to.be.not.null;
+            expect(client.getConfig()).not.toBeNull();
+            expect(client.getCryptoUtils()).not.toBeNull();
+            expect(client.getDefaultAuthorityInstance()).not.toBeNull();
+            expect(client.getNetworkClient()).not.toBeNull();
         });
     });
 
     describe("Header utils", () => {
-
-        sinon.stub(Authority.prototype, <any>"discoverEndpoints").resolves(DEFAULT_OPENID_CONFIG_RESPONSE);
-        it("Creates default library headers", async () => {
-
-            sinon.stub(Authority.prototype, <any>"discoverEndpoints").resolves(DEFAULT_OPENID_CONFIG_RESPONSE);
-            const config = await ClientTestUtils.createTestClientConfiguration();
-            const client = new TestClient(config);
-            const headers = client.createDefaultLibraryHeaders();
-
-            expect(headers[AADServerParamKeys.X_CLIENT_SKU]).to.eq(Constants.SKU);
-            expect(headers[AADServerParamKeys.X_CLIENT_VER]).to.eq(TEST_CONFIG.TEST_VERSION);
-            expect(headers[AADServerParamKeys.X_CLIENT_OS]).to.eq(TEST_CONFIG.TEST_OS);
-            expect(headers[AADServerParamKeys.X_CLIENT_CPU]).to.eq(TEST_CONFIG.TEST_CPU);
+        beforeEach(() => {
+            sinon.stub(Authority.prototype, <any>"getEndpointMetadataFromNetwork").resolves(DEFAULT_OPENID_CONFIG_RESPONSE.body);
         });
 
-        it("Creates telemetry headers if serverTelemetryManager is available on BaseClient", async () => {
-            sinon.stub(Authority.prototype, <any>"discoverEndpoints").resolves(DEFAULT_OPENID_CONFIG_RESPONSE);
-            const config = await ClientTestUtils.createTestClientConfiguration();
-            const telemetryPayload: ServerTelemetryRequest = {
-                clientId: config.authOptions.clientId,
-                apiId: 9999,
-                correlationId: "test-correlationId"
-            };
-            config.serverTelemetryManager = new ServerTelemetryManager(telemetryPayload, config.storageInterface);
-            const client = new TestClient(config);
-            const headers = client.createDefaultTokenRequestHeaders();
-
-            expect(headers[AADServerParamKeys.X_CLIENT_SKU]).to.eq(Constants.SKU);
-            expect(headers[AADServerParamKeys.X_CLIENT_VER]).to.eq(TEST_CONFIG.TEST_VERSION);
-            expect(headers[AADServerParamKeys.X_CLIENT_OS]).to.eq(TEST_CONFIG.TEST_OS);
-            expect(headers[AADServerParamKeys.X_CLIENT_CPU]).to.eq(TEST_CONFIG.TEST_CPU);
-            expect(headers[HeaderNames.CONTENT_TYPE]).to.eq(Constants.URL_FORM_CONTENT_TYPE);
-
-            // Care more here that headers are set at all. Value generation is tested in ServerTelemetryManager.spec.ts
-            expect(headers[HeaderNames.X_CLIENT_CURR_TELEM]).to.be.eq(config.serverTelemetryManager.generateCurrentRequestHeaderValue());
-            expect(headers[HeaderNames.X_CLIENT_LAST_TELEM]).to.be.eq(config.serverTelemetryManager.generateLastRequestHeaderValue());
+        afterEach(() => {
+            sinon.restore();
         });
 
         it("Creates default token request headers", async () => {
-
-            sinon.stub(Authority.prototype, <any>"discoverEndpoints").resolves(DEFAULT_OPENID_CONFIG_RESPONSE);
             const config = await ClientTestUtils.createTestClientConfiguration();
             const client = new TestClient(config);
-            const headers = client.createDefaultTokenRequestHeaders();
+            const headers = client.createTokenRequestHeaders();
 
-            expect(headers[AADServerParamKeys.X_CLIENT_SKU]).to.eq(Constants.SKU);
-            expect(headers[AADServerParamKeys.X_CLIENT_VER]).to.eq(TEST_CONFIG.TEST_VERSION);
-            expect(headers[AADServerParamKeys.X_CLIENT_OS]).to.eq(TEST_CONFIG.TEST_OS);
-            expect(headers[AADServerParamKeys.X_CLIENT_CPU]).to.eq(TEST_CONFIG.TEST_CPU);
-            expect(headers[HeaderNames.CONTENT_TYPE]).to.eq(Constants.URL_FORM_CONTENT_TYPE);
+            expect(headers[HeaderNames.CONTENT_TYPE]).toBe(Constants.URL_FORM_CONTENT_TYPE);
         });
     });
 });

@@ -15,14 +15,17 @@
         "esModuleInterop": true,
         "resolveJsonModule": true
     },
-    "include": [
-        "src/**/*"
+    "references": [
+        {
+            "path": "../msal-common"
+        }
     ],
+    "include": ["src", "test"],
     "exclude": [
         "node_modules"
     ],
     "types": [
         "node",
-        "mocha"
+        "jest"
     ]
 }

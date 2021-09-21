@@ -3,10 +3,10 @@
  * Licensed under the MIT License.
  */
 
-import { AuthenticationResult, AuthError, EndSessionRequest } from "@azure/msal-common";
+import { AuthenticationResult, AuthError } from "@azure/msal-common";
 import { EventType } from "./EventType";
-import { InteractionType } from "../utils/BrowserConstants";
-import { PopupRequest, RedirectRequest, SilentRequest, SsoSilentRequest } from "..";
+import { InteractionStatus, InteractionType } from "../utils/BrowserConstants";
+import { PopupRequest, RedirectRequest, SilentRequest, SsoSilentRequest, EndSessionRequest } from "..";
 
 export type EventMessage = {
     eventType: EventType;
@@ -16,8 +16,72 @@ export type EventMessage = {
     timestamp: number;
 };
 
-export type EventPayload = PopupRequest | RedirectRequest | SilentRequest | SsoSilentRequest | EndSessionRequest | AuthenticationResult | null;
+export type PopupEvent = {
+    popupWindow: Window;
+};
+
+export type EventPayload = PopupRequest | RedirectRequest | SilentRequest | SsoSilentRequest | EndSessionRequest | AuthenticationResult | PopupEvent | null;
 
 export type EventError = AuthError | Error | null;
 
 export type EventCallbackFunction = (message: EventMessage) => void;
+
+export class EventMessageUtils {
+
+    /**
+     * Gets interaction status from event message
+     * @param message
+     * @param currentStatus
+     */
+    static getInteractionStatusFromEvent(message: EventMessage, currentStatus?: InteractionStatus): InteractionStatus|null {
+        switch (message.eventType) {
+            case EventType.LOGIN_START:
+                return InteractionStatus.Login;
+            case EventType.SSO_SILENT_START:
+                return InteractionStatus.SsoSilent;
+            case EventType.ACQUIRE_TOKEN_START:
+                if (message.interactionType === InteractionType.Redirect || message.interactionType === InteractionType.Popup) {
+                    return InteractionStatus.AcquireToken;
+                }
+                break;
+            case EventType.HANDLE_REDIRECT_START:
+                return InteractionStatus.HandleRedirect;
+            case EventType.LOGOUT_START:
+                return InteractionStatus.Logout;
+            case EventType.SSO_SILENT_SUCCESS:
+            case EventType.SSO_SILENT_FAILURE:
+                if (currentStatus && currentStatus !== InteractionStatus.SsoSilent) {
+                    // Prevent this event from clearing any status other than ssoSilent
+                    break;
+                }
+                return InteractionStatus.None;
+            case EventType.LOGOUT_END:
+                if (currentStatus && currentStatus !== InteractionStatus.Logout) {
+                    // Prevent this event from clearing any status other than logout
+                    break;
+                }
+                return InteractionStatus.None;
+            case EventType.HANDLE_REDIRECT_END:
+                if (currentStatus && currentStatus !== InteractionStatus.HandleRedirect) {
+                    // Prevent this event from clearing any status other than handleRedirect
+                    break;
+                }
+                return InteractionStatus.None;
+            case EventType.LOGIN_SUCCESS:
+            case EventType.LOGIN_FAILURE:
+            case EventType.ACQUIRE_TOKEN_SUCCESS:
+            case EventType.ACQUIRE_TOKEN_FAILURE:
+                if (message.interactionType === InteractionType.Redirect || message.interactionType === InteractionType.Popup) {
+                    if (currentStatus && currentStatus !== InteractionStatus.Login && currentStatus !== InteractionStatus.AcquireToken) {
+                        // Prevent this event from clearing any status other than login or acquireToken
+                        break;
+                    }
+                    return InteractionStatus.None;
+                }
+                break;
+            default:
+                break;
+        }
+        return null;
+    }
+}

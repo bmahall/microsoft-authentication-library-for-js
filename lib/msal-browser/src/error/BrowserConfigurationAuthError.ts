@@ -33,7 +33,7 @@ export const BrowserConfigurationAuthErrorMessage = {
     },
     stubPcaInstanceCalled: {
         code: "stubbed_public_client_application_called",
-        desc: "Stub instance of Public Client Application was called. If using msal-react, please ensure context is not used without a provider."
+        desc: "Stub instance of Public Client Application was called. If using msal-react, please ensure context is not used without a provider. For more visit: aka.ms/msaljs/browser-errors"
     },
     inMemRedirectUnavailable: {
         code: "in_mem_redirect_unavailable",
@@ -75,15 +75,6 @@ export class BrowserConfigurationAuthError extends AuthError {
      */
     static createStorageNotSupportedError(givenStorageLocation: string): BrowserConfigurationAuthError {
         return new BrowserConfigurationAuthError(BrowserConfigurationAuthErrorMessage.storageNotSupportedError.code, `${BrowserConfigurationAuthErrorMessage.storageNotSupportedError.desc} Given Location: ${givenStorageLocation}`);
-    }
-
-    /**
-     * Creates error thrown when callback object is invalid.
-     * @param callbackObject 
-     */
-    static createInvalidCallbackObjectError(callbackObject: object): BrowserConfigurationAuthError {
-        return new BrowserConfigurationAuthError(BrowserConfigurationAuthErrorMessage.invalidCallbackObject.code,
-            `${BrowserConfigurationAuthErrorMessage.invalidCallbackObject.desc} Given value for callback function: ${callbackObject}`);
     }
 
     /**

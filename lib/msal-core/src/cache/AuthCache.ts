@@ -3,13 +3,14 @@
  * Licensed under the MIT License.
  */
 
-import { Constants, PersistentCacheKeys, TemporaryCacheKeys, ErrorCacheKeys, ServerHashParamKeys} from "../utils/Constants";
+import { Constants, PersistentCacheKeys, TemporaryCacheKeys, ErrorCacheKeys, ServerHashParamKeys, SESSION_STORAGE} from "../utils/Constants";
 import { AccessTokenCacheItem } from "./AccessTokenCacheItem";
 import { CacheLocation } from "../Configuration";
 import { BrowserStorage } from "./BrowserStorage";
 import { RequestUtils } from "../utils/RequestUtils";
 import { AccessTokenKey } from "./AccessTokenKey";
 import { StringUtils } from "../utils/StringUtils";
+import { IdToken } from "../IdToken";
 
 /**
  * @hidden
@@ -18,9 +19,11 @@ export class AuthCache extends BrowserStorage {// Singleton
 
     private clientId: string;
     private rollbackEnabled: boolean;
+    private temporaryCache: BrowserStorage;
 
     constructor(clientId: string, cacheLocation: CacheLocation, storeAuthStateInCookie: boolean) {
         super(cacheLocation);
+        this.temporaryCache = new BrowserStorage(SESSION_STORAGE);
         this.clientId = clientId;
         // This is hardcoded to true for now. We may make this configurable in the future
         this.rollbackEnabled = true;
@@ -39,14 +42,27 @@ export class AuthCache extends BrowserStorage {// Singleton
         const errorDescKey = `${Constants.cachePrefix}.${ErrorCacheKeys.ERROR_DESC}`;
 
         const idTokenValue = super.getItem(idTokenKey);
-        const clientInfoValue = super.getItem(clientInfoKey);
-        const errorValue = super.getItem(errorKey);
-        const errorDescValue = super.getItem(errorDescKey);
 
-        const values = [idTokenValue, clientInfoValue, errorValue, errorDescValue];
-        const keysToMigrate = [PersistentCacheKeys.IDTOKEN, PersistentCacheKeys.CLIENT_INFO, ErrorCacheKeys.ERROR, ErrorCacheKeys.ERROR_DESC];
+        let idToken;
 
-        keysToMigrate.forEach((cacheKey, index) => this.duplicateCacheEntry(cacheKey, values[index], storeAuthStateInCookie));
+        if (idTokenValue) {
+            try {
+                idToken = new IdToken(idTokenValue);
+            } catch (e) {
+                return;
+            }
+        }
+
+        if (idToken && idToken.claims && idToken.claims.aud === this.clientId) {
+            const clientInfoValue = super.getItem(clientInfoKey);
+            const errorValue = super.getItem(errorKey);
+            const errorDescValue = super.getItem(errorDescKey);
+
+            const values = [idTokenValue, clientInfoValue, errorValue, errorDescValue];
+            const keysToMigrate = [PersistentCacheKeys.IDTOKEN, PersistentCacheKeys.CLIENT_INFO,ErrorCacheKeys.ERROR, ErrorCacheKeys.ERROR_DESC];
+
+            keysToMigrate.forEach((cacheKey, index) => this.duplicateCacheEntry(cacheKey, values[index], storeAuthStateInCookie));
+        }
     }
 
     /**
@@ -144,10 +160,30 @@ export class AuthCache extends BrowserStorage {// Singleton
      * @param key
      */
     removeItem(key: string): void {
+        this.temporaryCache.removeItem(this.generateCacheKey(key, true));
         super.removeItem(this.generateCacheKey(key, true));
         if (this.rollbackEnabled) {
             super.removeItem(this.generateCacheKey(key, false));
         }
+    }
+
+    /**
+     * Sets temporary cache value
+     * @param key 
+     * @param value 
+     * @param enableCookieStorage 
+     */
+    setTemporaryItem(key: string, value: string, enableCookieStorage?: boolean): void {
+        this.temporaryCache.setItem(this.generateCacheKey(key, true), value, enableCookieStorage);
+    }
+
+    /**
+     * Gets temporary cache value
+     * @param key 
+     * @param enableCookieStorage 
+     */
+    getTemporaryItem(key: string, enableCookieStorage?: boolean): string {
+        return this.temporaryCache.getItem(this.generateCacheKey(key, true), enableCookieStorage);
     }
 
     /**
@@ -183,7 +219,7 @@ export class AuthCache extends BrowserStorage {// Singleton
             });
         }
         // delete the interaction status cache
-        this.removeItem(TemporaryCacheKeys.INTERACTION_STATUS);
+        this.setInteractionInProgress(false);
         this.removeItem(TemporaryCacheKeys.REDIRECT_REQUEST);
     }
 
@@ -271,6 +307,40 @@ export class AuthCache extends BrowserStorage {// Singleton
     }
 
     /**
+     * Returns whether or not interaction is currently in progress. Optionally scope it to just this clientId
+     * @param forThisClient 
+     */
+    isInteractionInProgress(matchClientId: boolean): boolean {
+        const clientId = this.getInteractionInProgress();
+        if (matchClientId) {
+            return clientId === this.clientId;
+        } else {
+            return !!clientId;
+        }
+    }
+
+    /**
+     * Returns the clientId of the interaction currently in progress
+     */
+    getInteractionInProgress(): string {
+        return this.getTemporaryItem(this.generateCacheKey(TemporaryCacheKeys.INTERACTION_STATUS, false));
+    }
+
+    /**
+     * Sets interaction in progress state
+     * @param isInProgress 
+     */
+    setInteractionInProgress(newInProgressValue: boolean): void {
+        if (newInProgressValue && !this.isInteractionInProgress(false)) {
+            // Ensure we don't overwrite interaction in progress for a different clientId
+            this.setTemporaryItem(this.generateCacheKey(TemporaryCacheKeys.INTERACTION_STATUS, false), this.clientId);
+        } else if (!newInProgressValue && this.isInteractionInProgress(true)) {
+            // Only remove if the current in progress interaction is for this clientId
+            this.removeItem(this.generateCacheKey(TemporaryCacheKeys.INTERACTION_STATUS, false));
+        }
+    }
+
+    /**
      * Return if the token renewal is still in progress
      * 
      * @param stateValue
@@ -312,7 +382,7 @@ export class AuthCache extends BrowserStorage {// Singleton
      * @param accountId
      * @param state
      */
-    public static generateAcquireTokenAccountKey(accountId: any, state: string): string {
+    public static generateAcquireTokenAccountKey(accountId: string, state: string): string {
         const stateId = RequestUtils.parseLibraryState(state).id;
         return `${TemporaryCacheKeys.ACQUIRE_TOKEN_ACCOUNT}${Constants.resourceDelimiter}${accountId}${Constants.resourceDelimiter}${stateId}`;
     }

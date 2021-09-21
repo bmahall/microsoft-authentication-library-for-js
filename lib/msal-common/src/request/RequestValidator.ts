@@ -28,14 +28,13 @@ export class RequestValidator {
      * @param prompt
      */
     static validatePrompt(prompt: string) : void {
-        if (
-            [
-                PromptValue.LOGIN,
-                PromptValue.SELECT_ACCOUNT,
-                PromptValue.CONSENT,
-                PromptValue.NONE
-            ].indexOf(prompt) < 0
-        ) {
+        const promptValues = [];
+
+        for (const value in PromptValue) {
+            promptValues.push(PromptValue[value]);
+        }
+
+        if (promptValues.indexOf(prompt) < 0) {
             throw ClientConfigurationError.createInvalidPromptError(prompt);
         }
     }
@@ -82,7 +81,7 @@ export class RequestValidator {
      */
     static sanitizeEQParams(eQParams: StringDict, queryParams: Map<string, string>) : StringDict {
         if (!eQParams) {
-            return null;
+            return {};
         }
 
         // Remove any query parameters already included in SSO params

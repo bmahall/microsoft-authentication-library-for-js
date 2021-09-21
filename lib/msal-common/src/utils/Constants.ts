@@ -27,6 +27,7 @@ export const Constants = {
     OPENID_SCOPE: "openid",
     PROFILE_SCOPE: "profile",
     OFFLINE_ACCESS_SCOPE: "offline_access",
+    EMAIL_SCOPE: "email",
     // Default response type for authorization code flow
     CODE_RESPONSE_TYPE: "code",
     CODE_GRANT_TYPE: "authorization_code",
@@ -37,19 +38,33 @@ export const Constants = {
     AUTHORIZATION_PENDING: "authorization_pending",
     NOT_DEFINED: "not_defined",
     EMPTY_STRING: "",
-    FORWARD_SLASH: "/" 
+    FORWARD_SLASH: "/",
+    IMDS_ENDPOINT: "http://169.254.169.254/metadata/instance/compute/location",
+    IMDS_VERSION: "2020-06-01",
+    IMDS_TIMEOUT: 2000,
+    AZURE_REGION_AUTO_DISCOVER_FLAG: "TryAutoDetect",
+    REGIONAL_AUTH_PUBLIC_CLOUD_SUFFIX: "login.microsoft.com",
+    KNOWN_PUBLIC_CLOUDS: ["login.microsoftonline.com", "login.windows.net", "login.microsoft.com", "sts.windows.net"]
 };
+
+export const OIDC_DEFAULT_SCOPES = [
+    Constants.OPENID_SCOPE,
+    Constants.PROFILE_SCOPE,
+    Constants.OFFLINE_ACCESS_SCOPE
+];
+
+export const OIDC_SCOPES = [
+    ...OIDC_DEFAULT_SCOPES,
+    Constants.EMAIL_SCOPE
+];
 
 /**
  * Request header names
  */
 export enum HeaderNames {
     CONTENT_TYPE = "Content-Type",
-    X_CLIENT_CURR_TELEM = "x-client-current-telemetry",
-    X_CLIENT_LAST_TELEM = "x-client-last-telemetry",
     RETRY_AFTER = "Retry-After",
-    X_MS_LIB_CAPABILITY = "x-ms-lib-capability",
-    X_MS_LIB_CAPABILITY_VALUE = "retry-after, h429"
+    CCS_HEADER = "X-AnchorMailbox"
 }
 
 /**
@@ -60,7 +75,8 @@ export enum PersistentCacheKeys {
     CLIENT_INFO = "client.info",
     ADAL_ID_TOKEN = "adal.idtoken",
     ERROR = "error",
-    ERROR_DESC = "error.description"
+    ERROR_DESC = "error.description",
+    ACTIVE_ACCOUNT = "active-account"
 }
 
 /**
@@ -103,6 +119,9 @@ export enum AADServerParamKeys {
     X_CLIENT_VER = "x-client-VER",
     X_CLIENT_OS = "x-client-OS",
     X_CLIENT_CPU = "x-client-CPU",
+    X_CLIENT_CURR_TELEM = "x-client-current-telemetry",
+    X_CLIENT_LAST_TELEM = "x-client-last-telemetry",
+    X_MS_LIB_CAPABILITY = "x-ms-lib-capability",
     POST_LOGOUT_URI = "post_logout_redirect_uri",
     ID_TOKEN_HINT= "id_token_hint",
     DEVICE_CODE = "device_code",
@@ -114,7 +133,8 @@ export enum AADServerParamKeys {
     OBO_ASSERTION = "assertion",
     REQUESTED_TOKEN_USE = "requested_token_use",
     ON_BEHALF_OF = "on_behalf_of",
-    FOCI = "foci"
+    FOCI = "foci",
+    CCS_HEADER = "X-AnchorMailbox"
 }
 
 /**
@@ -135,6 +155,7 @@ export const PromptValue = {
     SELECT_ACCOUNT: "select_account",
     CONSENT: "consent",
     NONE: "none",
+    CREATE: "create"
 };
 
 /**
@@ -224,6 +245,7 @@ export enum Separators {
 export enum CredentialType {
     ID_TOKEN = "IdToken",
     ACCESS_TOKEN = "AccessToken",
+    ACCESS_TOKEN_WITH_AUTH_SCHEME = "AccessToken_With_AuthScheme",
     REFRESH_TOKEN = "RefreshToken",
 }
 
@@ -262,12 +284,25 @@ export enum CacheType {
  * More Cache related constants
  */
 export const APP_METADATA = "appmetadata";
-export const ClientInfo = "client_info";
+export const CLIENT_INFO = "client_info";
 export const THE_FAMILY_ID = "1";
 
+export const AUTHORITY_METADATA_CONSTANTS = {
+    CACHE_KEY: "authority-metadata",
+    REFRESH_TIME_SECONDS: 3600 * 24 // 24 Hours
+};
+
+export enum AuthorityMetadataSource {
+    CONFIG = "config",
+    CACHE = "cache",
+    NETWORK = "network"
+}
+
 export const SERVER_TELEM_CONSTANTS = {
-    SCHEMA_VERSION: 2,
-    MAX_HEADER_BYTES: 4000, // Max is 4KB, 4000 Bytes provides 96 Byte buffer for separators, schema version, etc. 
+    SCHEMA_VERSION: 5,
+    MAX_CUR_HEADER_BYTES: 80, // ESTS limit is 100B, set to 80 to provide a 20B buffer
+    MAX_LAST_HEADER_BYTES: 330, // ESTS limit is 350B, set to 330 to provide a 20B buffer,
+    MAX_CACHED_ERRORS: 50, // Limit the number of errors that can be stored to prevent uncontrolled size gains
     CACHE_KEY: "server-telemetry",
     CATEGORY_SEPARATOR: "|",
     VALUE_SEPARATOR: ",",
@@ -293,7 +328,9 @@ export const ThrottlingConstants = {
     // Default maximum time to throttle in seconds, overrides what the server sends back
     DEFAULT_MAX_THROTTLE_TIME_SECONDS: 3600,
     // Prefix for storing throttling entries
-    THROTTLING_PREFIX: "throttling"
+    THROTTLING_PREFIX: "throttling",
+    // Value assigned to the x-ms-lib-capability header to indicate to the server the library supports throttling
+    X_MS_LIB_CAPABILITY_VALUE: "retry-after, h429"
 };
 
 export const Errors = {
@@ -307,4 +344,41 @@ export const Errors = {
 export enum PasswordGrantConstants {
     username = "username",
     password = "password"
+}
+
+/**
+ * Response codes
+ */
+export enum  ResponseCodes {
+    httpSuccess = 200,
+    httpBadRequest = 400
+}
+
+/**
+ * Region Discovery Sources
+ */
+export enum RegionDiscoverySources {
+    FAILED_AUTO_DETECTION = "1",
+    INTERNAL_CACHE = "2",
+    ENVIRONMENT_VARIABLE = "3",
+    IMDS = "4",
+}
+
+/**
+ * Region Discovery Outcomes
+ */
+export enum RegionDiscoveryOutcomes {
+    CONFIGURED_MATCHES_DETECTED = "1",
+    CONFIGURED_NO_AUTO_DETECTION = "2",
+    CONFIGURED_NOT_DETECTED = "3",
+    AUTO_DETECTION_REQUESTED_SUCCESSFUL = "4",
+    AUTO_DETECTION_REQUESTED_FAILED = "5"
+}
+
+export enum CacheOutcome {
+    NO_CACHE_HIT = "0",
+    FORCE_REFRESH = "1",
+    NO_CACHED_ACCESS_TOKEN = "2",
+    CACHED_ACCESS_TOKEN_EXPIRED = "3",
+    REFRESH_CACHED_ACCESS_TOKEN = "4"
 }

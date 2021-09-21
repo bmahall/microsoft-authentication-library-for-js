@@ -6,7 +6,7 @@
 import { ClientConfigurationError } from "../error/ClientConfigurationError";
 import { StringUtils } from "../utils/StringUtils";
 import { ClientAuthError } from "../error/ClientAuthError";
-import { Constants } from "../utils/Constants";
+import { OIDC_SCOPES } from "../utils/Constants";
 
 /**
  * The ScopeSet class creates a set of scopes. Scopes are case-insensitive, unique values, so the Set object in JS makes
@@ -36,8 +36,8 @@ export class ScopeSet {
      * @param scopesRequired
      */
     static fromString(inputScopeString: string): ScopeSet {
-        inputScopeString = inputScopeString || "";
-        const inputScopes: Array<string> = inputScopeString.split(" ");
+        const scopeString = inputScopeString || "";
+        const inputScopes: Array<string> = scopeString.split(" ");
         return new ScopeSet(inputScopes);
     }
 
@@ -49,7 +49,7 @@ export class ScopeSet {
     private validateInputScopes(inputScopes: Array<string>): void {
         // Check if scopes are required but not given or is an empty array
         if (!inputScopes || inputScopes.length < 1) {
-            throw ClientConfigurationError.createEmptyScopesArrayError(inputScopes);
+            throw ClientConfigurationError.createEmptyScopesArrayError();
         }
     }
 
@@ -79,17 +79,13 @@ export class ScopeSet {
     /**
      * Check if set of scopes contains only the defaults
      */
-    containsOnlyDefaultScopes(): boolean {
+    containsOnlyOIDCScopes(): boolean {
         let defaultScopeCount = 0;
-        if (this.containsScope(Constants.OPENID_SCOPE)) {
-            defaultScopeCount += 1;
-        }
-        if (this.containsScope(Constants.PROFILE_SCOPE)) {
-            defaultScopeCount += 1;
-        }
-        if (this.containsScope(Constants.OFFLINE_ACCESS_SCOPE)) {
-            defaultScopeCount += 1;
-        }
+        OIDC_SCOPES.forEach((defaultScope: string) => {
+            if (this.containsScope(defaultScope)) {
+                defaultScopeCount += 1;
+            }
+        });
 
         return this.scopes.size === defaultScopeCount;
     }
@@ -131,10 +127,10 @@ export class ScopeSet {
      * Removes default scopes from set of scopes
      * Primarily used to prevent cache misses if the default scopes are not returned from the server
      */
-    removeDefaultScopes(): void {
-        this.scopes.delete(Constants.OFFLINE_ACCESS_SCOPE);
-        this.scopes.delete(Constants.OPENID_SCOPE);
-        this.scopes.delete(Constants.PROFILE_SCOPE);
+    removeOIDCScopes(): void {
+        OIDC_SCOPES.forEach((defaultScope: string) => {
+            this.scopes.delete(defaultScope);
+        });
     }
 
     /**
@@ -143,7 +139,7 @@ export class ScopeSet {
      */
     unionScopeSets(otherScopes: ScopeSet): Set<string> {
         if (!otherScopes) {
-            throw ClientAuthError.createEmptyInputScopeSetError(otherScopes);
+            throw ClientAuthError.createEmptyInputScopeSetError();
         }
         const unionScopes = new Set<string>(); // Iterator in constructor not supported in IE11
         otherScopes.scopes.forEach(scope => unionScopes.add(scope.toLowerCase()));
@@ -157,15 +153,14 @@ export class ScopeSet {
      */
     intersectingScopeSets(otherScopes: ScopeSet): boolean {
         if (!otherScopes) {
-            throw ClientAuthError.createEmptyInputScopeSetError(otherScopes);
+            throw ClientAuthError.createEmptyInputScopeSetError();
         }
-
+        
+        // Do not allow OIDC scopes to be the only intersecting scopes
+        if (!otherScopes.containsOnlyOIDCScopes()) {
+            otherScopes.removeOIDCScopes();
+        }
         const unionScopes = this.unionScopeSets(otherScopes);
-
-        // Do not allow default scopes to be the only intersecting scopes
-        if (!otherScopes.containsOnlyDefaultScopes()) {
-            otherScopes.removeDefaultScopes();
-        }
         const sizeOtherScopes = otherScopes.getScopeCount();
         const sizeThisScopes = this.getScopeCount();
         const sizeUnionScopes = unionScopes.size;

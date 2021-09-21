@@ -4,7 +4,7 @@
  */
 
 /**
- * Authority types supported by MSAL.
+ * Authority types supported by MSAL. this is a test comment
  */
 export enum AuthorityType {
     Default,

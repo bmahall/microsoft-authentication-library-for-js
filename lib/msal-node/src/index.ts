@@ -3,33 +3,51 @@
  * Licensed under the MIT License.
  */
 
+/**
+ * @packageDocumentation
+ * @module @azure/msal-node
+ */
+
+// Interfaces
+export { IPublicClientApplication } from "./client/IPublicClientApplication";
+export { IConfidentialClientApplication } from "./client/IConfidentialClientApplication";
+export { ITokenCache } from "./cache/ITokenCache";
+
+// Clients and Configuration
 export { PublicClientApplication } from "./client/PublicClientApplication";
 export { ConfidentialClientApplication } from "./client/ConfidentialClientApplication";
-export { Configuration, buildAppConfiguration } from "./config/Configuration";
-export { Storage } from "./cache/Storage";
-export { Serializer } from "./cache/serializer/Serializer";
-export { Deserializer } from "./cache/serializer/Deserializer";
-export { TokenCache } from "./cache/TokenCache";
+export { ClientApplication } from "./client/ClientApplication";
+export { Configuration, buildAppConfiguration, NodeAuthOptions, NodeSystemOptions, CacheOptions } from "./config/Configuration";
+export { ClientAssertion } from "./client/ClientAssertion";
 
-// crypto
+// Cache and Storage
+export { TokenCache } from "./cache/TokenCache";
+export { NodeStorage } from "./cache/NodeStorage";
+export { CacheKVStore, JsonCache, InMemoryCache, SerializedAccountEntity, SerializedIdTokenEntity, SerializedAccessTokenEntity, SerializedAppMetadataEntity, SerializedRefreshTokenEntity } from "./cache/serializer/SerializerTypes";
+
+// Crypto
 export { CryptoProvider } from "./crypto/CryptoProvider";
+
+// Request objects
+export type { AuthorizationCodeRequest } from "./request/AuthorizationCodeRequest";
+export type { AuthorizationUrlRequest } from "./request/AuthorizationUrlRequest";
+export type { ClientCredentialRequest } from "./request/ClientCredentialRequest";
+export type { DeviceCodeRequest } from "./request/DeviceCodeRequest";
+export type { OnBehalfOfRequest } from "./request/OnBehalfOfRequest";
+export type { UsernamePasswordRequest } from "./request/UsernamePasswordRequest";
+export type { RefreshTokenRequest } from "./request/RefreshTokenRequest";
+export type { SilentFlowRequest } from "./request/SilentFlowRequest";
 
 // Common Object Formats
 export {
     // Request
-    AuthorizationCodeRequest,
-    AuthorizationUrlRequest,
-    SilentFlowRequest,
-    DeviceCodeRequest,
-    RefreshTokenRequest,
-    ClientCredentialRequest,
-    OnBehalfOfRequest,
     PromptValue,
     ResponseMode,
     // Response
     AuthenticationResult,
     // Cache
     AccountInfo,
+    ValidCacheType,
     // Error
     AuthError,
     AuthErrorMessage,

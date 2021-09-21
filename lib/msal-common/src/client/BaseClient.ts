@@ -3,18 +3,21 @@
  * Licensed under the MIT License.
  */
 
-import { ClientConfiguration, buildClientConfiguration } from "../config/ClientConfiguration";
+import { ClientConfiguration, buildClientConfiguration, CommonClientConfiguration } from "../config/ClientConfiguration";
 import { INetworkModule } from "../network/INetworkModule";
 import { NetworkManager, NetworkResponse } from "../network/NetworkManager";
 import { ICrypto } from "../crypto/ICrypto";
 import { Authority } from "../authority/Authority";
 import { Logger } from "../logger/Logger";
-import { AADServerParamKeys, Constants, HeaderNames } from "../utils/Constants";
+import { Constants, HeaderNames } from "../utils/Constants";
 import { ServerAuthorizationTokenResponse } from "../response/ServerAuthorizationTokenResponse";
-import { TrustedAuthority } from "../authority/TrustedAuthority";
 import { CacheManager } from "../cache/CacheManager";
 import { ServerTelemetryManager } from "../telemetry/server/ServerTelemetryManager";
 import { RequestThumbprint } from "../network/RequestThumbprint";
+import { version, name } from "../packageMetadata";
+import { ClientAuthError } from "../error/ClientAuthError";
+import { CcsCredential, CcsCredentialType } from "../account/CcsCredential";
+import { buildClientInfoFromHomeAccountId } from "../account/ClientInfo";
 
 /**
  * Base application class which will construct requests to send to and handle responses from the Microsoft STS using the authorization code flow.
@@ -24,7 +27,7 @@ export abstract class BaseClient {
     public logger: Logger;
 
     // Application config
-    protected config: ClientConfiguration;
+    protected config: CommonClientConfiguration;
 
     // Crypto Interface
     protected cryptoUtils: ICrypto;
@@ -33,23 +36,23 @@ export abstract class BaseClient {
     protected cacheManager: CacheManager;
 
     // Network Interface
-    protected networkClient: INetworkModule;
+    protected networkClient: INetworkModule; /* this is network interface */
 
     // Server Telemetry Manager
-    protected serverTelemetryManager: ServerTelemetryManager;
+    protected serverTelemetryManager: ServerTelemetryManager | null;
 
     // Network Manager
     protected networkManager: NetworkManager;
 
     // Default authority object
-    protected authority: Authority;
+    public authority: Authority;
 
     protected constructor(configuration: ClientConfiguration) {
         // Set the configuration
         this.config = buildClientConfiguration(configuration);
 
         // Initialize the logger
-        this.logger = new Logger(this.config.loggerOptions);
+        this.logger = new Logger(this.config.loggerOptions, name, version);
 
         // Initialize crypto
         this.cryptoUtils = this.config.cryptoInterface;
@@ -60,45 +63,38 @@ export abstract class BaseClient {
         // Set the network interface
         this.networkClient = this.config.networkInterface;
 
-        // Set the NetworkManager
+        // Set the NetworkManager here
         this.networkManager = new NetworkManager(this.networkClient, this.cacheManager);
 
-        // Set TelemetryManager
+        // Set TelemetryManager here
         this.serverTelemetryManager = this.config.serverTelemetryManager;
 
-        TrustedAuthority.setTrustedAuthoritiesFromConfig(this.config.authOptions.knownAuthorities, this.config.authOptions.cloudDiscoveryMetadata);
-
+        // set Authority here
         this.authority = this.config.authOptions.authority;
     }
 
     /**
      * Creates default headers for requests to token endpoint
      */
-    protected createDefaultTokenRequestHeaders(): Record<string, string> {
-        const headers = this.createDefaultLibraryHeaders();
-        headers[HeaderNames.CONTENT_TYPE] = Constants.URL_FORM_CONTENT_TYPE;
-        headers[HeaderNames.X_MS_LIB_CAPABILITY] = HeaderNames.X_MS_LIB_CAPABILITY_VALUE;
-
-        if (this.serverTelemetryManager) {
-            headers[HeaderNames.X_CLIENT_CURR_TELEM] = this.serverTelemetryManager.generateCurrentRequestHeaderValue();
-            headers[HeaderNames.X_CLIENT_LAST_TELEM] = this.serverTelemetryManager.generateLastRequestHeaderValue();
-        }
-
-        return headers;
-    }
-
-    /**
-     * addLibraryData
-     */
-    protected createDefaultLibraryHeaders(): Record<string, string> {
+    protected createTokenRequestHeaders(ccsCred?: CcsCredential): Record<string, string> {
         const headers: Record<string, string> = {};
+        headers[HeaderNames.CONTENT_TYPE] = Constants.URL_FORM_CONTENT_TYPE;
 
-        // client info headers
-        headers[AADServerParamKeys.X_CLIENT_SKU] = this.config.libraryInfo.sku;
-        headers[AADServerParamKeys.X_CLIENT_VER] = this.config.libraryInfo.version;
-        headers[AADServerParamKeys.X_CLIENT_OS] = this.config.libraryInfo.os;
-        headers[AADServerParamKeys.X_CLIENT_CPU] = this.config.libraryInfo.cpu;
-
+        if (!this.config.systemOptions.preventCorsPreflight && ccsCred) {
+            switch (ccsCred.type) {
+                case CcsCredentialType.HOME_ACCOUNT_ID:
+                    try {
+                        const clientInfo = buildClientInfoFromHomeAccountId(ccsCred.credential);
+                        headers[HeaderNames.CCS_HEADER] = `Oid:${clientInfo.uid}@${clientInfo.utid}`;
+                    } catch (e) {
+                        this.logger.verbose("Could not parse home account ID for CCS Header: " + e);
+                    }
+                    break;
+                case CcsCredentialType.UPN:
+                    headers[HeaderNames.CCS_HEADER] = `UPN: ${ccsCred.credential}`;
+                    break;
+            }
+        }
         return headers;
     }
 
@@ -112,7 +108,7 @@ export abstract class BaseClient {
     protected async executePostToTokenEndpoint(tokenEndpoint: string, queryString: string, headers: Record<string, string>, thumbprint: RequestThumbprint): Promise<NetworkResponse<ServerAuthorizationTokenResponse>> {
         const response = await this.networkManager.sendPostRequest<ServerAuthorizationTokenResponse>(
             thumbprint,
-            tokenEndpoint, 
+            tokenEndpoint,
             { body: queryString, headers: headers }
         );
 
@@ -122,5 +118,16 @@ export abstract class BaseClient {
         }
 
         return response;
+    }
+
+    /**
+     * Updates the authority object of the client. Endpoint discovery must be completed.
+     * @param updatedAuthority 
+     */
+    updateAuthority(updatedAuthority: Authority): void {
+        if (!updatedAuthority.discoveryComplete()) {
+            throw ClientAuthError.createEndpointDiscoveryIncompleteError("Updated authority has not completed endpoint discovery.");
+        }
+        this.authority = updatedAuthority;
     }
 }

@@ -9,23 +9,14 @@ import { IWindowStorage } from "./IWindowStorage";
 
 export class BrowserStorage implements IWindowStorage {
 
-    private _windowStorage: Storage;
-    private cacheLocation: string;
-
-    public get windowStorage(): Storage {
-        if (!this._windowStorage) {
-            this._windowStorage = window[this.cacheLocation];
-        }
-
-        return this._windowStorage;
-    }
+    private windowStorage: Storage;
 
     constructor(cacheLocation: string) {
         this.validateWindowStorage(cacheLocation);
-        this.cacheLocation = cacheLocation;
+        this.windowStorage = window[cacheLocation];
     }
 
-    private validateWindowStorage(cacheLocation: string) {
+    private validateWindowStorage(cacheLocation: string): void {
         if (cacheLocation !== BrowserCacheLocation.LocalStorage && cacheLocation !== BrowserCacheLocation.SessionStorage) {
             throw BrowserConfigurationAuthError.createStorageNotSupportedError(cacheLocation);
         }
@@ -35,7 +26,7 @@ export class BrowserStorage implements IWindowStorage {
         }
     }
 
-    getItem(key: string): string {
+    getItem(key: string): string | null {
         return this.windowStorage.getItem(key);
     }
 
@@ -44,14 +35,14 @@ export class BrowserStorage implements IWindowStorage {
     }
 
     removeItem(key: string): void {
-        this.windowStorage.removeItem(key);
+        this.windowStorage.removeItem(key); /* remove items*/
     }
 
     getKeys(): string[] {
         return Object.keys(this.windowStorage);
     }
 
-    containsKey(key: string): boolean {
+    containsKey(key: string): boolean { /* this is test comment*/ 
         return this.windowStorage.hasOwnProperty(key);
     }
 }

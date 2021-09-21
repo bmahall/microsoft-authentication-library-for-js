@@ -3,12 +3,17 @@
  * Licensed under the MIT License.
  */
 
-import { AuthenticationResult, AccountInfo, EndSessionRequest, Logger } from "@azure/msal-common";
+import { AuthenticationResult, AccountInfo, Logger } from "@azure/msal-common";
 import { RedirectRequest } from "../request/RedirectRequest";
 import { PopupRequest } from "../request/PopupRequest";
 import { SilentRequest } from "../request/SilentRequest";
 import { SsoSilentRequest } from "../request/SsoSilentRequest";
+import { EndSessionRequest } from "../request/EndSessionRequest";
 import { BrowserConfigurationAuthError } from "../error/BrowserConfigurationAuthError";
+import { WrapperSKU } from "../utils/BrowserConstants";
+import { INavigationClient } from "../navigation/INavigationClient";
+import { EndSessionPopupRequest } from "../request/EndSessionPopupRequest";
+import { ITokenCache } from "../cache/ITokenCache";
 
 export interface IPublicClientApplication {
     acquireTokenPopup(request: PopupRequest): Promise<AuthenticationResult>;
@@ -16,28 +21,36 @@ export interface IPublicClientApplication {
     acquireTokenSilent(silentRequest: SilentRequest): Promise<AuthenticationResult>;
     addEventCallback(callback: Function): string | null;
     removeEventCallback(callbackId: string): void;
-    getAccountByHomeId(homeAccountId: string): AccountInfo | null;
+    getAccountByHomeId(homeAccountId: string): AccountInfo | null; /* default null home acc id*/
     getAccountByLocalId(localId: string): AccountInfo | null;
     getAccountByUsername(userName: string): AccountInfo | null;
     getAllAccounts(): AccountInfo[];
-    handleRedirectPromise(hash?: string): Promise<AuthenticationResult | null>;
+    handleRedirectPromise(hash?: string): Promise<AuthenticationResult | null>; /* handle redirect promise*/
     loginPopup(request?: PopupRequest): Promise<AuthenticationResult>;
     loginRedirect(request?: RedirectRequest): Promise<void>;
     logout(logoutRequest?: EndSessionRequest): Promise<void>;
+    logoutRedirect(logoutRequest?: EndSessionRequest): Promise<void>;
+    logoutPopup(logoutRequest?: EndSessionPopupRequest): Promise<void>;
     ssoSilent(request: SsoSilentRequest): Promise<AuthenticationResult>;
+    getTokenCache(): ITokenCache;
     getLogger(): Logger;
     setLogger(logger: Logger): void;
+    setActiveAccount(account: AccountInfo | null): void;
+    getActiveAccount(): AccountInfo | null;
+    initializeWrapperLibrary(sku: WrapperSKU, version: string): void;
+    setNavigationClient(navigationClient: INavigationClient): void;
 }
 
 export const stubbedPublicClientApplication: IPublicClientApplication = {
+    /* acquire token popup here here  */
     acquireTokenPopup: () => {
-        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError);
+        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError());
     },
     acquireTokenRedirect: () => {	
-        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError);	
+        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError());	
     },	
     acquireTokenSilent: () => {	
-        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError);	
+        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError());	
     },	
     getAllAccounts: () => {
         return [];	
@@ -52,19 +65,25 @@ export const stubbedPublicClientApplication: IPublicClientApplication = {
         return null;
     },
     handleRedirectPromise: () => {	
-        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError);	
+        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError());	
     },	
     loginPopup: () => {	
-        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError);	
+        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError());	
     },	
     loginRedirect: () => {	
-        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError);	
+        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError());	
     },	
     logout: () => {	
-        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError);	
+        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError());	
     },	
+    logoutRedirect: () => {	
+        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError());	
+    },
+    logoutPopup: () => {	
+        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError());	
+    },
     ssoSilent: () => {	
-        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError);	
+        return Promise.reject(BrowserConfigurationAuthError.createStubPcaInstanceCalledError());	
     },
     addEventCallback: () => {
         return null;
@@ -72,10 +91,25 @@ export const stubbedPublicClientApplication: IPublicClientApplication = {
     removeEventCallback: () => {
         return;
     },
+    getTokenCache: () => {
+        throw BrowserConfigurationAuthError.createStubPcaInstanceCalledError();
+    },
     getLogger: () => {
         throw BrowserConfigurationAuthError.createStubPcaInstanceCalledError();
     },
     setLogger: () => {
+        return;
+    },
+    setActiveAccount: () => {
+        return;
+    },
+    getActiveAccount: () => {
+        return null;
+    },
+    initializeWrapperLibrary: () => {
+        return;
+    },
+    setNavigationClient: () => {
         return;
     }
 };

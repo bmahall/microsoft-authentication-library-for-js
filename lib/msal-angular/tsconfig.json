@@ -1,38 +1,24 @@
 {
-    "compilerOptions": {
-      "target": "es5",
-      "lib": ["es5", "es2017", "dom"],
-      "module": "commonjs",
-      "moduleResolution": "node",
-      "suppressImplicitAnyIndexErrors" : true,
-      "sourceMap": true,
-      "declaration": true,
-      "removeComments": false,
-      "noImplicitAny": true,
-      "experimentalDecorators": true,
-      "emitDecoratorMetadata": true,
-      "allowUnreachableCode": false,
-      "allowUnusedLabels": false,
-      "pretty": true,
-      "stripInternal": true,
-      "skipLibCheck": true,
-      "outDir": "dist",
-      "rootDir": "src",
-      "paths": {
-        "@angular/*": [
-          "./node_modules/@angular/*"
-        ]
-      }
-    },
-    "files": [
-      "./public_api.ts"
+  "compileOnSave": false,
+  "compilerOptions": {
+    "baseUrl": "./",
+    "outDir": "./dist/out-tsc",
+    "sourceMap": true,
+    "declaration": false,
+    "downlevelIteration": true,
+    "experimentalDecorators": true,
+    "moduleResolution": "node",
+    "importHelpers": true,
+    "target": "es2015",
+    "module": "es2020",
+    "lib": [
+      "es2018",
+      "dom"
     ],
-    "angularCompilerOptions": {
-      "genDir": "dist",
-      "debug": false,
-      "skipTemplateCodegen": true,
-      "skipMetadataEmit": false,
-      "strictMetadataEmit": true,
-      "enableIvy": false
+    "paths": {
+      "msal-angular": [
+        "dist/msal-angular"
+      ]
     }
   }
+}

@@ -11,12 +11,15 @@
  * - username               - preferred_username claim of the id_token that represents this account
  * - localAccountId         - Local, tenant-specific account identifer for this account object, usually used in legacy cases
  * - name                   - Full name for the account, including given name and family name
+ * - idTokenClaims          - Object contains claims from ID token
+ * - localAccountId         - The user's local account ID 
  */
 export type AccountInfo = {
-    homeAccountId: string;
+    homeAccountId: string; /* home account id here*/
     environment: string;
-    tenantId: string;
+    tenantId: string; /* tenant id here*/ /* this is test comment*/
     username: string;
-    localAccountId: string;
-    name?: string;
+    localAccountId: string; /* local acc id here*/
+    name?: string; /* name here */
+    idTokenClaims?: object;
 };

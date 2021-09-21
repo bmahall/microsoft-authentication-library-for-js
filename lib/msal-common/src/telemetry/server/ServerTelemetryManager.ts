@@ -3,25 +3,32 @@
  * Licensed under the MIT License.
  */
 
-import { SERVER_TELEM_CONSTANTS, Separators, Constants } from "../../utils/Constants";
+import { SERVER_TELEM_CONSTANTS, Separators, CacheOutcome, Constants, RegionDiscoverySources, RegionDiscoveryOutcomes } from "../../utils/Constants";
 import { CacheManager } from "../../cache/CacheManager";
 import { AuthError } from "../../error/AuthError";
 import { ServerTelemetryRequest } from "./ServerTelemetryRequest";
 import { ServerTelemetryEntity } from "../../cache/entities/ServerTelemetryEntity";
 import { StringUtils } from "../../utils/StringUtils";
+import { RegionDiscoveryMetadata } from "../../authority/RegionDiscoveryMetadata";
 
 export class ServerTelemetryManager {
     private cacheManager: CacheManager;
     private apiId: number;
     private correlationId: string;
-    private forceRefresh: boolean;
     private telemetryCacheKey: string;
+    private wrapperSKU: String;
+    private wrapperVer: String;
+    private regionUsed: string | undefined;
+    private regionSource: RegionDiscoverySources | undefined;
+    private regionOutcome: RegionDiscoveryOutcomes | undefined;
+    private cacheOutcome: CacheOutcome = CacheOutcome.NO_CACHE_HIT;
 
     constructor(telemetryRequest: ServerTelemetryRequest, cacheManager: CacheManager) {
         this.cacheManager = cacheManager;
         this.apiId = telemetryRequest.apiId;
         this.correlationId = telemetryRequest.correlationId;
-        this.forceRefresh = telemetryRequest.forceRefresh || false;
+        this.wrapperSKU = telemetryRequest.wrapperSKU || Constants.EMPTY_STRING;
+        this.wrapperVer = telemetryRequest.wrapperVer || Constants.EMPTY_STRING;
 
         this.telemetryCacheKey = SERVER_TELEM_CONSTANTS.CACHE_KEY + Separators.CACHE_KEY_SEPARATOR + telemetryRequest.clientId;
     }
@@ -30,11 +37,12 @@ export class ServerTelemetryManager {
      * API to add MSER Telemetry to request
      */
     generateCurrentRequestHeaderValue(): string {
-        const forceRefreshInt = this.forceRefresh ? 1 : 0;
-        const request = `${this.apiId}${SERVER_TELEM_CONSTANTS.VALUE_SEPARATOR}${forceRefreshInt}`;
-        const platformFields = ""; // TODO: Determine what we want to include
+        const request = `${this.apiId}${SERVER_TELEM_CONSTANTS.VALUE_SEPARATOR}${this.cacheOutcome}`;
+        const platformFields = [this.wrapperSKU, this.wrapperVer].join(SERVER_TELEM_CONSTANTS.VALUE_SEPARATOR);
+        const regionDiscoveryFields = this.getRegionDiscoveryFields();
+        const requestWithRegionDiscoveryFields = [request, regionDiscoveryFields].join(SERVER_TELEM_CONSTANTS.VALUE_SEPARATOR);
 
-        return [SERVER_TELEM_CONSTANTS.SCHEMA_VERSION, request, platformFields].join(SERVER_TELEM_CONSTANTS.CATEGORY_SEPARATOR);
+        return [SERVER_TELEM_CONSTANTS.SCHEMA_VERSION, requestWithRegionDiscoveryFields, platformFields].join(SERVER_TELEM_CONSTANTS.CATEGORY_SEPARATOR);
     }
 
     /**
@@ -61,10 +69,17 @@ export class ServerTelemetryManager {
      */
     cacheFailedRequest(error: AuthError): void {
         const lastRequests = this.getLastRequests();
+        if (lastRequests.errors.length >= SERVER_TELEM_CONSTANTS.MAX_CACHED_ERRORS) {
+            // Remove a cached error to make room, first in first out
+            lastRequests.failedRequests.shift(); // apiId
+            lastRequests.failedRequests.shift(); // correlationId
+            lastRequests.errors.shift();
+        }
+        
         lastRequests.failedRequests.push(this.apiId, this.correlationId);
 
-        if (!StringUtils.isEmpty(error.suberror)) {
-            lastRequests.errors.push(error.suberror);
+        if (!StringUtils.isEmpty(error.subError)) {
+            lastRequests.errors.push(error.subError);
         } else if (!StringUtils.isEmpty(error.errorCode)) {
             lastRequests.errors.push(error.errorCode);
         } else if (!!error && error.toString()) {
@@ -137,7 +152,7 @@ export class ServerTelemetryManager {
             // Count number of characters that would be added to header, each character is 1 byte. Add 3 at the end to account for separators
             dataSize += apiId.toString().length + correlationId.toString().length + errorCode.length + 3;
 
-            if (dataSize < SERVER_TELEM_CONSTANTS.MAX_HEADER_BYTES) {
+            if (dataSize < SERVER_TELEM_CONSTANTS.MAX_LAST_HEADER_BYTES) {
                 // Adding this entry to the header would still keep header size below the limit
                 maxErrors += 1;
             } else {
@@ -146,5 +161,39 @@ export class ServerTelemetryManager {
         }
 
         return maxErrors;
+    }
+
+    /**
+     * Get the region discovery fields
+     * 
+     * @returns string
+     */
+    getRegionDiscoveryFields(): string {
+        const regionDiscoveryFields: string[] = [];
+
+        regionDiscoveryFields.push(this.regionUsed || "");
+        regionDiscoveryFields.push(this.regionSource || "");
+        regionDiscoveryFields.push(this.regionOutcome || "");
+
+        return regionDiscoveryFields.join(",");
+    }
+
+    /**
+     * Update the region discovery metadata
+     * 
+     * @param regionDiscoveryMetadata
+     * @returns void
+     */
+    updateRegionDiscoveryMetadata(regionDiscoveryMetadata: RegionDiscoveryMetadata): void {
+        this.regionUsed = regionDiscoveryMetadata.region_used;
+        this.regionSource = regionDiscoveryMetadata.region_source;
+        this.regionOutcome = regionDiscoveryMetadata.region_outcome;
+    }
+
+    /**
+     * Set cache outcome 
+     */
+    setCacheOutcome(cacheOutcome: CacheOutcome): void {
+        this.cacheOutcome = cacheOutcome;
     }
 }

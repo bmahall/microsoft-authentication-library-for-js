@@ -1,307 +1,110 @@
 # Microsoft Authentication Library for Angular
 
-| [Getting Started](https://docs.microsoft.com/azure/active-directory/develop/tutorial-v2-angular)| [AAD Docs](https://aka.ms/aaddevv2) | [Library Reference](https://azuread.github.io/microsoft-authentication-library-for-js/ref/msal-angular/) | [Support](README.md#community-help-and-support) | [Samples](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/samples)
+![npm (scoped)](https://img.shields.io/npm/v/@azure/msal-angular)
+![npm](https://img.shields.io/npm/dw/@azure/msal-angular)
+[![codecov](https://codecov.io/gh/AzureAD/microsoft-authentication-library-for-js/branch/dev/graph/badge.svg?flag=msal-angular)](https://codecov.io/gh/AzureAD/microsoft-authentication-library-for-js)
+
+| <a href="https://docs.microsoft.com/azure/active-directory/develop/tutorial-v2-angular-auth-code" target="blank">Getting Started</a>| <a href="https://aka.ms/aaddevv2" target="_blank">AAD Docs</a> | <a href="https://azuread.github.io/microsoft-authentication-library-for-js/ref/modules/_azure_msal_angular.html" target="_blank">Library Reference</a> | [Support](README.md#community-help-and-support) | <a href="https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/samples/msal-angular-v2-samples" target="blank">Samples</a>
 | --- | --- | --- | --- | --- |
 
-MSAL for Angular enables client-side Angular web applications, running in a web browser, to authenticate users using [Azure AD](https://docs.microsoft.com/azure/active-directory/develop/v2-overview) work and school accounts (AAD), Microsoft personal accounts (MSA) and social identity providers like Facebook, Google, LinkedIn, Microsoft accounts, etc. through [Azure AD B2C](https://docs.microsoft.com/azure/active-directory-b2c/active-directory-b2c-overview#identity-providers) service. It also enables your app to get tokens to access [Microsoft Cloud](https://www.microsoft.com/enterprise) services such as [Microsoft Graph](https://graph.microsoft.io).
+1. [About](#about)
+1. [Guides](#guides)
+1. [FAQ](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-angular/docs/FAQ.md)
+1. [Version Support](#version-support)
+1. [Prerequisites](#prerequisites)
+1. [Installation](#installation)
+1. [Usage](#usage)
+1. [Samples](#samples)
+1. [Build and running tests](#build-and-running-tests)
+1. [Versioning](#versioning)
+1. [Community Help and Support](#community-help-and-support)
+1. [Contribute](#contribute)
+1. [Security Reporting](#security-reporting)
+1. [License](#license)
+1. [Code of Conduct](#we-value-and-adhere-to-the-microsoft-open-source-code-of-conduct)
 
-![npm (scoped)](https://img.shields.io/npm/v/@azure/msal-angular)![npm](https://img.shields.io/npm/dw/@azure/msal-angular)
+## About
 
-## Installation
+MSAL for Angular enables Angular web applications to authenticate users using [Azure AD](https://docs.microsoft.com/azure/active-directory/develop/v2-overview) work and school accounts (AAD), Microsoft personal accounts (MSA) and social identity providers like Facebook, Google, LinkedIn, Microsoft accounts, etc. through [Azure AD B2C](https://docs.microsoft.com/azure/active-directory-b2c/active-directory-b2c-overview#identity-providers) service. It also enables your app to get tokens to access [Microsoft Cloud](https://www.microsoft.com/enterprise) services such as [Microsoft Graph](https://graph.microsoft.io).
 
-The MSAL Angular package is available on NPM:
+The `@azure/msal-angular` package described by the code in this folder wraps the [`@azure/msal-browser` package](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-browser) and uses it as a peer dependency to enable authentication in Angular Web Applications without backend servers. This version of the library uses the OAuth 2.0 Authorization Code Flow with PKCE. To read more about this protocol, as well as the differences between implicit flow and authorization code flow, see the description provided by [@azure/msal-browser](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-browser#implicit-flow-vs-authorization-code-flow-with-pkce). If you are looking for the version of the library that uses the implicit flow, please see the [MSAL Angular v1 library](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/msal-angular-v1/lib/msal-angular).
 
-`npm install msal @azure/msal-angular --save`
+The current `@azure/msal-angular` library improves upon the previous version and utilizes the authorization code flow. Most features available in the old library will be available in this one, but there are nuances to the authentication flow in both. The latest `@azure/msal-angular` package does NOT support the implicit flow.
 
 ## Guides
 
-- [Quickstart](https://docs.microsoft.com/azure/active-directory/develop/quickstart-v2-angular)
-- [Upgrade Guide (0.x-1.x)](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-angular/docs/0.x-1.x-upgrade-guide.md)
-- [Configuration](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-angular/docs/configuration.md)
+- [Upgrade Guide (v1-v2)](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v2-docs/v1-v2-upgrade-guide.md)
+- [Upgrade Guide (v0-v1)](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v1-docs/v0-v1-upgrade-guide.md)
+- [Configuration](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v2-docs/configuration.md)
 
 ## Version Support
 
-At a minimum, MSAL Angular will follow the [support schedule of the main Angular project](https://angular.io/guide/releases#support-policy-and-schedule). We may continue to support certain versions of Angular that are no under Active or LTS support from the main Angular project on a version-by-version basis, as defined below.
+At a minimum, `@azure/msal-angular` will follow the [support schedule of the main Angular project](https://angular.io/guide/releases#support-policy-and-schedule). We may continue to support certain versions of Angular that are not under Active or LTS support from the main Angular project on a version-by-version basis, as defined below.
 
 | MSAL Angular version | MSAL support status     | Supported Angular versions |
 |----------------------|-------------------------|----------------------------|
-| 1.x.x                | Active development      | 6, 7, 8, 9                 |
-| 0.x.x                | In maintenance          | 4, 5                       |
+| MSAL Angular v2      | Active development      | 9, 10, 11, 12              |
+| MSAL Angular v1      | Active development      | 6, 7, 8, 9                 |
+| MSAL Angular v0      | In maintenance          | 4, 5                       |
 
-## Samples
+## Prerequisites
 
-* [Angular Quickstart](https://github.com/Azure-Samples/active-directory-javascript-singlepageapp-angular)
-* [B2C Angular SPA](https://github.com/Azure-Samples/active-directory-b2c-javascript-angular-spa)
-* [Angular v6](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/samples/msal-angular-samples/angular6-sample-app)
-* [Angular v7](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/samples/msal-angular-samples/angular7-sample-app)
-* [Angular v8](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/samples/msal-angular-samples/angular8-sample-app)
-* [Angular v9](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/samples/msal-angular-samples/angular9-sample-app)
+Before using `@azure/msal-angular`, [register an application in Azure AD](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app) to get your `clientId`.
+
+## Installation
+
+The `@azure/msal-angular` package is available on NPM:
+```
+npm install @azure/msal-browser @azure/msal-angular@latest
+```
 
 ## Usage
 
-### Prerequisites
+MSAL Angular Basics
+1. [Initialization](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v2-docs/initialization.md)
+1. [Public APIs](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v2-docs/public-apis.md)
+1. [Using redirects](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v2-docs/redirects.md)
+1. [Using the MsalGuard](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-angular/docs/v2-docs/msal-guard.md)
+1. [Using the MsalInterceptor](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-angular/docs/v2-docs/msal-interceptor.md)
+1. [Known issues](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v2-docs/known-issues.md)
 
-Before using MSAL.js, [register an application in Azure AD](https://docs.microsoft.com/azure/active-directory/develop/quickstart-register-app) to get your `clientId`.
+Advanced Topics
+1. [Logging](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v2-docs/logging.md)
+1. [Multi-Tenant](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/multi-tenant.md)
+1. [Security](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/security.md)
+1. [Internet Explorer Support](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v2-docs/ie-support.md)
+1. [Events](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v2-docs/events.md)
+1. [Angular Universal and SSR](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v2-docs/angular-universal.md)
+1. [Performance](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v2-docs/performance.md)
 
-### 1. Include and initialize the MSAL module in your app module.
+All documentation for MSAL Angular v1 can be found [here](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/lib/msal-angular/docs/v1-docs/).
 
-Import MsalModule into app.module.ts. To initialize MSAL module you are required to pass the clientId of your application which you can get from the application registration.
+## Samples
 
-```js
-@NgModule({
-    imports: [
-        MsalModule.forRoot({
-            auth: {
-                clientId: "Your client ID"
-            }
-        })
-    ]
-})
-export class AppModule {}
-```
+### MSAL Angular v1 Samples
+* [Angular Quickstart](https://github.com/Azure-Samples/active-directory-javascript-singlepageapp-angular)
+* [B2C Angular SPA](https://github.com/Azure-Samples/active-directory-b2c-javascript-angular-spa)
+* [Angular v6](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/msal-angular-v1/samples/msal-angular-samples/angular6-sample-app)
+* [Angular v7](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/msal-angular-v1/samples/msal-angular-samples/angular7-sample-app)
+* [Angular v8](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/msal-angular-v1/samples/msal-angular-samples/angular8-sample-app)
+* [Angular v9](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/msal-angular-v1/samples/msal-angular-samples/angular9-sample-app)
 
-#### 2. Secure the routes in your application
+### MSAL Angular v2 Samples
+* [Angular v9](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/samples/msal-angular-v2-samples/angular9-v2-sample-app)
+* [Angular v10](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/samples/msal-angular-v2-samples/angular10-sample-app)
+* [Angular v11](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/samples/msal-angular-v2-samples/angular11-sample-app)
+* [Angular v11 B2C Sample](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/samples/msal-angular-v2-samples/angular11-b2c-sample)
+* [Angular v12](https://github.com/AzureAD/microsoft-authentication-library-for-js/tree/dev/samples/msal-angular-v2-samples/angular12-sample-app)
 
-You can add authentication to secure specific routes in your application by just adding `canActivate : [MsalGuard]` to your route definition. It can be added at the parent or child routes.
+See [here](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/samples/msal-angular-v2-samples/README.md) for specific features demonstrated by our MSAL Angular v2 samples.
 
-```js
-{
-    path: 'product',
-    component: ProductComponent,
-    canActivate: [MsalGuard],
-    children: [
-        {
-            path: 'detail/:id',
-            component: ProductDetailComponent
-        }
-    ]
-}, {
-    path: 'myProfile',
-    component: MsGraphComponent,
-    canActivate: [MsalGuard]
-},
-```
-
-When a user visits these routes, the library will prompt the user to authenticate.
-
-### 3. Get tokens for Web API calls
-
-MSAL Angular allows you to add an Http interceptor (`MsalInterceptor`) in your `app.module.ts` as follows. MsalInterceptor will obtain tokens and add them to all your Http requests in API calls based on the `protectedResourceMap`.
-
-```js
-@NgModule({
-    imports: [
-        MsalModule.forRoot({
-            auth: {
-                clientId: "Your client ID"
-            }
-        }, {
-            protectedResourceMap: [
-                ['https://graph.microsoft.com/v1.0/me', ['user.read']],
-                ['https://api.myapplication.com/users/*', ['customscope.read']]
-            ]
-        })
-    ],
-    providers: [
-        ProductService, 
-        {
-            provide: HTTP_INTERCEPTORS,
-            useClass: MsalInterceptor,
-            multi: true
-        }
-    ]
-})
-export class AppModule {}
-```
-
-Using MsalInterceptor is optional and you can write your own interceptor if you choose to. Alternatively, you can also explicitly acquire tokens using the acquireToken APIs.
-
-As of `@azure/msal-angular@1.1.0`, `protectedResourceMap` supports wildcard patterns that are supported by [minimatch](https://github.com/isaacs/minimatch), and `unprotectedResources` is deprecated and ignored. 
-
-**Note:** When using wildcards, if multiple matching entries are found in the `protectedResourceMap`, the first match found will be used (based on the order of the `protectedResourceMap`).
-
-### 4. Subscribe to event callbacks
-
-MSAL wrapper provides below callbacks for various operations. For all callbacks, you need to inject BroadcastService as a dependency in your component/service and also implement a `handleRedirectCallback`:
-
-```js
-this.authService.handleRedirectCallback((authError, response) => {
-    // do something here
-});
-```
-
-1. Login-related events (`loginPopup`/`loginRedirect`)
-
-```js
-this.broadcastService.subscribe("msal:loginFailure", payload => {
-    // do something here
-});
-
-this.broadcastService.subscribe("msal:loginSuccess", payload => {
-    // do something here
-});
-```
-
-2. Token-related events (`acquireTokenSilent()`/`acquireTokenPopup()`/`acquireTokenRedirect()`)
-
-```js
-this.broadcastService.subscribe("msal:acquireTokenSuccess", payload => {
-    // do something here
-});
-
-this.broadcastService.subscribe("msal:acquireTokenFailure", payload => {
-    // do something here
-});
-```
-
-3. SSO-related events (`ssoSilent()`)
-
-```js
-this.broadcastService.subscribe("msal:ssoSuccess", payload => {
-    // do something here
-});
-
-this.broadcastService.subscribe("msal:ssoFailure", payload => {
-    // do something here
-});
-```
-
-4. It is extremely important to unsubscribe. Implement `ngOnDestroy()` in your component and unsubscribe.
-
-```js
- private subscription: Subscription;
-
- this.subscription = this.broadcastService.subscribe("msal:acquireTokenFailure", (payload) => {});
-
- ngOnDestroy() {
-    this.broadcastService.getMSALSubject().next(1);
-    if (this.subscription) {
-      this.subscription.unsubscribe();
-    }
-  }
-```
-
-## MSAL Angular Public API
-
-### Login and AcquireToken APIs
-
-The wrapper exposes APIs for login, logout, acquiring access token and more.
-
-1. `loginRedirect()`
-2. `loginPopup()`
-3. `logOut()`
-4. `acquireTokenSilent()`
-5. `acquireTokenPopup()`
-6. `acquireTokenRedirect()`
-7. `getAccount()`
-8. `ssoSilent()`
-
-## Advanced Topics
-
-### Logging
-
-The logger definition has the following properties. Please see the config section for more details on their use:
-
-1. correlationId
-2. level
-3. piiLoggingEnabled
-
-You can enable logging in your app as shown below:
-
-```js
-export function loggerCallback(logLevel, message, piiEnabled) {
-    console.log(message);
-}
-
-@NgModule({
-    imports: [ MsalModule.forRoot({
-        auth: {
-            clientId: 'Your client ID',
-        },
-        system: {
-            logger: new Logger(loggerCallback, {
-                correlationId: '1234',
-                level: LogLevel.Verbose,
-                piiLoggingEnabled: true,
-            }),
-        }
-    })]
-})
-```
-
-### Multi-Tenant
-
-By default, you have multi-tenant support since MSAL sets the tenant in the authority to 'common' if it is not specified in the config. This allows any Microsoft account to authenticate to your application. If you are not interested in multi-tenant behavior, you will need to set the `authority` config property as shown above.
-
-If you allow multi-tenant authentication, and you do not wish to allow all Microsoft account users to use your application, you must provide your own method of filtering the token issuers to only those tenants who are allowed to login.
-
-### Security
-
-Tokens are accessible from Javascript since MSAL is using HTML5 storage. Default storage option is sessionStorage, which keeps the tokens per session. You should ask user to login again for important operations on your app.
-You should protect your site for XSS. Please check the article here: [https://www.owasp.org/index.php/XSS\_(Cross_Site_Scripting)\_Prevention_Cheat_Sheet](<https://www.owasp.org/index.php/XSS_(Cross_Site_Scripting)_Prevention_Cheat_Sheet>)
-
-### CORS API usage
-
-MSAL will get access tokens using a hidden Iframe for given CORS API endpoints in the config. To make CORS API call, you need to specify your CORS API endpoints as a map in the Angular config.
-
-```js
-export const protectedResourceMap:[string, string[]][]= [
-    ['https://buildtodoservice.azurewebsites.net/api/todolist', [ 'api://a88bb933-319c-41b5-9f04-eff36d985612/access_as_user' ]],
-    ['https://graph.microsoft.com/v1.0/me', ['user.read']]
-];
-
-@NgModule({
-    imports: [
-        MsalModule.forRoot({
-            auth: {
-                clientId: 'Your client ID',
-            }
-        }, {
-            protectedResourceMap : protectedResourceMap
-        })
-    ]
-})
-```
-
-In your API project, you need to enable CORS API requests to receive flight requests.
-
-### Internet Explorer support
-
-This library supports Internet Explorer 11 with the following configuration:
-
--   For CORS API calls, the Iframe needs to access the cookies for the same domain that you did the initial sign in on. IE does not allow to access cookies in Iframe for localhost. Your URL needs to be fully qualified domain i.e http://yoursite.azurewebsites.com. Chrome does not have this restriction.
--   If you put your site in the trusted site list, cookies are not accessible for Iframe requests. You need to remove protected mode for Internet zone or add the authority URL for the login to the trusted sites as well.
--   IE may clear local storage when navigating between websites in different zones (e.g. your app and the login authority), which results in a broken experience when returning from the login page. To fix, set `storeAuthStateInCookie` to `true`.
--   There are known issues with popups in IE. We recommend using redirect flows by setting `popUp` to `false`.
-
-It is recommended that these properties are set dynamically based on the user's browser.
-
-```js
-const isIE =
-    window.navigator.userAgent.indexOf("MSIE ") > -1 ||
-    window.navigator.userAgent.indexOf("Trident/") > -1;
-
-MsalModule.forRoot({
-    // ...
-    cache: {
-        storeAuthStateInCookie: ieIE
-    }
-}, {
-    popUp: !isIE
-});
-```
-
-## Community Help and Support
-
--   [FAQs](https://github.com/AzureAD/microsoft-authentication-library-for-js/wiki/FAQs) for access to our frequently asked questions
--   [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) using tag "msal".
-    We highly recommend you ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
--   [GitHub Issues](../../issues) for reporting a bug or feature requests
--   [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory) to provide recommendations and/or feedback
-
-## Contribute
-
-We enthusiastically welcome contributions and feedback. Please read the [contributing guide](contributing.md) before you begin.
+### Advanced MSAL Angular v2 Samples
+* [Angular SPA with ASP.NET Core web API](https://github.com/Azure-Samples/ms-identity-javascript-angular-tutorial/tree/main/3-Authorization-II/1-call-api)
+* [Angular SPA with APS.NET Core web API using App Roles and RBAC](https://github.com/Azure-Samples/ms-identity-javascript-angular-tutorial/tree/main/5-AccessControl/1-call-api-roles)
+* [Angular SPA calling Microsoft Graph via ASP.NET Core web API using on-behalf-of flow](https://github.com/Azure-Samples/ms-identity-javascript-angular-tutorial/tree/main/7-AdvancedScenarios/1-call-api-obo)
+* [Angular SPA calling ASP.NET Core Web API using Proof of Possession tokens](https://github.com/Azure-Samples/ms-identity-javascript-angular-tutorial/tree/main/7-AdvancedScenarios/2-call-api-pop)
+* [Multi-tenant tutorial using MSAL Angular v2](https://github.com/Azure-Samples/ms-identity-javascript-angular-tutorial/tree/main/6-Multitenancy/1-call-api-mt)
+* [Deployment tutorial using Azure App Service and Azure Storage](https://github.com/Azure-Samples/ms-identity-javascript-angular-tutorial/tree/main/4-Deployment)
 
 ## Build and running tests
 
@@ -321,13 +124,25 @@ Then use the following command to build the library and run all the unit tests:
 
 This library controls how users sign-in and access services. We recommend you always take the latest version of our library in your app when possible. We use [semantic versioning](http://semver.org) so you can control the risk associated with updating your app. As an example, always downloading the latest minor version number (e.g. x._y_.x) ensures you get the latest security and feature enhanements but our API surface remains the same. You can always see the latest version and release notes under the Releases tab of GitHub.
 
+## Community Help and Support
+
+-   [Msal Browser FAQ](https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/FAQ.md) for access to our frequently asked questions
+-   [Stack Overflow](http://stackoverflow.com/questions/tagged/msal) using tag "msal".
+    We highly recommend you ask your questions on Stack Overflow first and browse existing issues to see if someone has asked your question before.
+-   [GitHub Issues](https://github.com/AzureAD/microsoft-authentication-library-for-js/issues/templates/edit) for reporting a bug or feature requests
+-   [User Voice page](https://feedback.azure.com/forums/169401-azure-active-directory) to provide recommendations and/or feedback
+
+## Contribute
+
+We enthusiastically welcome contributions and feedback. Please read the [contributing guide](contributing.md) before you begin.
+
 ## Security Reporting
 
 If you find a security issue with our libraries or services please report it to [secure@microsoft.com](mailto:secure@microsoft.com) with as much detail as possible. Your submission may be eligible for a bounty through the [Microsoft Bounty](http://aka.ms/bugbounty) program. Please do not post security issues to GitHub Issues or any other public site. We will contact you shortly upon receiving the information. We encourage you to get notifications of when security incidents occur by visiting [this page](https://technet.microsoft.com/security/dd252948) and subscribing to Security Advisory Alerts.
 
 ## License
 
-Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License (the "License");
+Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT License (the "License").
 
 ## We Value and Adhere to the Microsoft Open Source Code of Conduct
 

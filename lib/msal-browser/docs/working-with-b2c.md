@@ -11,7 +11,7 @@ With B2C:
 - Users **can** authenticate with their social identities.
 - Users **can** be authorized to access **B2C protected** resources (but not AAD protected resources).
 - Users **cannot** obtain tokens for Microsoft APIs (e.g. MS Graph API) using [delegated permissions](#b2c-and-delegated-permissions).
-- Applications **can** obtain tokens for Microsoft APIs using [application permissions](#b2c-and-application-permissions) (management scenarios).
+- Applications **can** obtain tokens for Microsoft APIs using [application permissions](#b2c-and-application-permissions) (user management scenarios).
 
 ## B2C App Configuration
 
@@ -67,9 +67,7 @@ A user's B2C authentication cannot be used to authorize to AAD protected apps, o
 
 ### OpenID Connect Permissions
 
-The exception to the rule above comes from a special set of scopes known as **OpenID Connect** (OIDC) permissions, which includes `openid` and `profile`. Another special permission is the `offline_access`, which gives your app access to a resources on behalf of the user for an extended time (using a **Refresh Token**). MSAL.js will supply `openid`, and `profile` by default during `loginPopup()` and `loginRedirect()` requests.
-
-> :information_source: At the moment, `offline_access` must be added to scopes when requesting a token from B2C endpoint. If you're reasonably certain that the token is valid and available in the cache then you may omit `offline_access` in an `acquireTokenSilent()` call in order to retrieve the **Access Token** from the cache. However, when the token must be renewed you must make sure to include `offline_access`.
+The exception to the rule above comes from a special set of scopes known as **OpenID Connect** (OIDC) permissions, which includes `openid` and `profile`. Another special permission is the `offline_access`, which gives your app access to a resources on behalf of the user for an extended time (using a **Refresh Token**). MSAL.js will supply `openid`, `profile` and `offline_access` by default during `loginPopup()` and `loginRedirect()` requests.
 
 ### AAD Authentication against a B2C Tenant
 
@@ -99,6 +97,28 @@ During application registration, you are prompted to select an **audience**. The
 | #2               | Accounts in any organizational directory (multi-tenant).          | AAD Authentication  |
 | #3               | Accounts in any organizational directory or any identity provider | B2C Authentication  |
 
+### Acquiring an access token for your own API
+
+There are 2 ways to acquire an access token for your own API: 
+
+1. Request your clientId as a scope:
+
+```javascript
+msal.loginRedirect({
+    scopes: ["client_Id"]
+});
+```
+
+Read more [here](https://docs.microsoft.com/azure/active-directory-b2c/authorization-code-flow#2-get-an-access-token)
+
+2. Expose your own custom scope on your app registration and request this scope:
+
+```javascript
+msal.loginRedirect({
+    scopes: ["api://clientId/customScope.Read"]
+});
+```
+
 ### B2C and Sign-out Experience
 
 The sign-out clears the user's *single sign-on* state with **Azure AD B2C**, but it might not sign the user out of their **social identity provider** session. If the user selects the same identity provider during a subsequent sign-in, they might re-authenticate without entering their credentials. Here the assumption is that, if a user wants to sign out of the application, it doesn't necessarily mean they want to sign out of their social account (*e.g.* Facebook) itself.
@@ -116,3 +136,7 @@ MSAL.js will only process tokens which it originally requested. If your flow req
 ```
 3. App is redirected to B2C service where the user enters credentials/signs up
 4. B2C service redirects back to your app which calls `await msal.handleRedirectPromise()` to process the response and save the tokens
+
+### B2C and iframe usage
+
+**Azure AD B2C** offers an [embedded sign-in experience](https://docs.microsoft.com/azure/active-directory-b2c/embedded-login), which allows rendering a custom login UI in an iframe. Since MSAL prevents redirect in iframes by default, you'll need to set the [allowRedirectInIframe](./configuration.md#system-config-options) configuration option to **true** in order to make use of this feature. For other considerations when using iframes, please refer to: [Using MSAL in iframed apps](./iframe-usage.md)

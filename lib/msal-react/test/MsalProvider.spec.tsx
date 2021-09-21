@@ -3,15 +3,15 @@
  * Licensed under the MIT License.
  */
 
+/* eslint-disable react/no-multi-comp */
 import React from "react";
 import { act, render, screen } from "@testing-library/react";
 import "@testing-library/jest-dom";
-import { AccountInfo, Configuration, EventCallbackFunction, EventMessage, EventType, InteractionType, PublicClientApplication } from "@azure/msal-browser";
+import { AccountInfo, Configuration, EventCallbackFunction, EventMessage, EventType, InteractionType, InteractionStatus, PublicClientApplication } from "@azure/msal-browser";
 import { testAccount, TEST_CONFIG } from "./TestConstants";
 import { IMsalContext, MsalConsumer, MsalProvider } from "../src/index";
-import { InteractionStatus } from "../src/utils/Constants";
 
-describe("withMsal tests", () => {
+describe("MsalProvider tests", () => {
     let pca: PublicClientApplication;
     const msalConfig: Configuration = {
         auth: {
@@ -19,24 +19,42 @@ describe("withMsal tests", () => {
         }
     };
 
-    let eventCallback: EventCallbackFunction;
+    let eventCallbacks: EventCallbackFunction[];
     let cachedAccounts: AccountInfo[] = [];
 
     beforeEach(() => {
+        eventCallbacks = [];
+        let eventId = 0;
         pca = new PublicClientApplication(msalConfig);
         jest.spyOn(pca, "addEventCallback").mockImplementation((callbackFn) => {
-            eventCallback = callbackFn;
-            return "callbackId";
+            eventCallbacks.push(callbackFn);
+            eventId += 1;
+            return eventId.toString();
         });
         jest.spyOn(pca, "handleRedirectPromise").mockImplementation(() => {
-            const eventMessage: EventMessage = {
+            const eventStart: EventMessage = {
+                eventType: EventType.HANDLE_REDIRECT_START,
+                interactionType: InteractionType.Redirect,
+                payload: null,
+                error: null,
+                timestamp: 10000
+            };
+
+            eventCallbacks.forEach((callback) => {
+                callback(eventStart);
+            });
+
+            const eventEnd: EventMessage = {
                 eventType: EventType.HANDLE_REDIRECT_END,
                 interactionType: InteractionType.Redirect,
                 payload: null,
                 error: null,
                 timestamp: 10000
             };
-            eventCallback(eventMessage);
+
+            eventCallbacks.forEach((callback) => {
+                callback(eventEnd);
+            });
             return Promise.resolve(null);
         });
 
@@ -50,7 +68,7 @@ describe("withMsal tests", () => {
     });
 
     describe("Event callback tests", () => {
-        test("HandleRedirect Start and End", async () => {              
+        test("HandleRedirect Start and End", async () => {
             const TestComponent = ({accounts, inProgress}: IMsalContext) => {    
                 if (accounts.length === 1 && inProgress === InteractionStatus.None) {
                     return <p>Test Success!</p>;
@@ -79,7 +97,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("In Progress")).toBeInTheDocument();
@@ -94,10 +114,184 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();
+        });
+
+        test("LOGIN_SUCCESS event does not reset inProgress while handleRedirect is in progress", async () => {
+            const TestComponent = ({accounts, inProgress}: IMsalContext) => {    
+                if (accounts.length === 1 && inProgress === InteractionStatus.HandleRedirect) {
+                    return <p>Test Success!</p>;
+                } else if (accounts.length === 0 && inProgress === InteractionStatus.HandleRedirect) {
+                    return <p>In Progress</p>;
+                }
+                
+                return null;
+            };
+    
+            render(
+                <MsalProvider instance={pca}>
+                    <MsalConsumer>
+                        {TestComponent}
+                    </MsalConsumer>
+                </MsalProvider>
+            );
+
+            let eventMessage: EventMessage = {
+                eventType: EventType.HANDLE_REDIRECT_START,
+                interactionType: InteractionType.Redirect,
+                payload: null,
+                error: null,
+                timestamp: 10000
+            };
+            cachedAccounts = [];
+
+            act(() => {
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
+            });
+    
+            expect(await screen.findByText("In Progress")).toBeInTheDocument();
+
+            eventMessage = {
+                eventType: EventType.LOGIN_SUCCESS,
+                interactionType: InteractionType.Redirect,
+                payload: null,
+                error: null,
+                timestamp: 10000
+            };
+            cachedAccounts = [testAccount];
+
+            act(() => {
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
+            });
+    
+            expect(await screen.findByText("Test Success!")).toBeInTheDocument();
+        });
+
+        test("LOGIN_FAILURE event does not reset inProgress while handleRedirect is in progress", async () => {
+            const TestComponent = ({inProgress}: IMsalContext) => {    
+                if (inProgress === InteractionStatus.HandleRedirect) {
+                    return <p>In Progress</p>;
+                }
+                
+                return null;
+            };
+    
+            render(
+                <MsalProvider instance={pca}>
+                    <MsalConsumer>
+                        {TestComponent}
+                    </MsalConsumer>
+                </MsalProvider>
+            );
+
+            let eventMessage: EventMessage = {
+                eventType: EventType.HANDLE_REDIRECT_START,
+                interactionType: InteractionType.Redirect,
+                payload: null,
+                error: null,
+                timestamp: 10000
+            };
+
+            act(() => {
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
+            });
+    
+            expect(await screen.findByText("In Progress")).toBeInTheDocument();
+
+            eventMessage = {
+                eventType: EventType.LOGIN_FAILURE,
+                interactionType: InteractionType.Redirect,
+                payload: null,
+                error: null,
+                timestamp: 10000
+            };
+
+            act(() => {
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
+            });
+    
+            expect(await screen.findByText("In Progress")).toBeInTheDocument();
+        });
+
+        test("HANDLE_REDIRECT_END event does not reset inProgress when login is in progress", async () => {
+            const TestComponent = ({inProgress}: IMsalContext) => {    
+                if (inProgress === InteractionStatus.HandleRedirect) {
+                    return <p>In Progress</p>;
+                } else if (inProgress === InteractionStatus.Login) {
+                    return <p>Login In Progress</p>;
+                }
+                
+                return null;
+            };
+    
+            render(
+                <MsalProvider instance={pca}>
+                    <MsalConsumer>
+                        {TestComponent}
+                    </MsalConsumer>
+                </MsalProvider>
+            );
+
+            let eventMessage: EventMessage = {
+                eventType: EventType.HANDLE_REDIRECT_START,
+                interactionType: InteractionType.Redirect,
+                payload: null,
+                error: null,
+                timestamp: 10000
+            };
+
+            act(() => {
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
+            });
+    
+            expect(await screen.findByText("In Progress")).toBeInTheDocument();
+
+            eventMessage = {
+                eventType: EventType.LOGIN_START,
+                interactionType: InteractionType.Redirect,
+                payload: null,
+                error: null,
+                timestamp: 10000
+            };
+
+            act(() => {
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
+            });
+    
+            expect(await screen.findByText("Login In Progress")).toBeInTheDocument();
+
+            eventMessage = {
+                eventType: EventType.HANDLE_REDIRECT_END,
+                interactionType: InteractionType.Redirect,
+                payload: null,
+                error: null,
+                timestamp: 10000
+            };
+
+            act(() => {
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
+            });
+    
+            expect(await screen.findByText("Login In Progress")).toBeInTheDocument();
         });
 
         test("Login Success", async () => {              
@@ -129,7 +323,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("In Progress")).toBeInTheDocument();
@@ -144,7 +340,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();
@@ -179,7 +377,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("In Progress")).toBeInTheDocument();
@@ -194,7 +394,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();
@@ -229,7 +431,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("In Progress")).toBeInTheDocument();
@@ -244,7 +448,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();
@@ -279,7 +485,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("In Progress")).toBeInTheDocument();
@@ -294,7 +502,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();
@@ -329,13 +539,15 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("In Progress")).toBeInTheDocument();
 
             eventMessage = {
-                eventType: EventType.LOGOUT_FAILURE,
+                eventType: EventType.LOGOUT_END,
                 interactionType: InteractionType.Redirect,
                 payload: null,
                 error: null,
@@ -344,7 +556,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();
@@ -379,7 +593,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("In Progress")).toBeInTheDocument();
@@ -394,14 +610,20 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();
         });
 
-        test("AcquireTokenRedirect Failure", async () => {              
-            const TestComponent = ({accounts, inProgress}: IMsalContext) => {    
+        test("AcquireTokenRedirect Failure", async () => {        
+            jest.spyOn(pca, "handleRedirectPromise").mockImplementation(() => {
+                return Promise.reject(new Error("TEST ERROR: This should not break application flow"));
+            });      
+
+            const TestComponent = ({accounts, inProgress}: IMsalContext) => {
                 if (accounts.length === 1 && inProgress === InteractionStatus.None) {
                     return <p>Test Success!</p>;
                 } else if (accounts.length === 0 && inProgress === InteractionStatus.AcquireToken) {
@@ -429,7 +651,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("In Progress")).toBeInTheDocument();
@@ -444,7 +668,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();
@@ -479,7 +705,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("In Progress")).toBeInTheDocument();
@@ -494,14 +722,16 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();
         });
 
         test("AcquireTokenPopup Failure", async () => {              
-            const TestComponent = ({accounts, inProgress}: IMsalContext) => {    
+            const TestComponent = ({accounts, inProgress}: IMsalContext) => {   
                 if (accounts.length === 1 && inProgress === InteractionStatus.None) {
                     return <p>Test Success!</p>;
                 } else if (accounts.length === 0 && inProgress === InteractionStatus.AcquireToken) {
@@ -529,7 +759,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("In Progress")).toBeInTheDocument();
@@ -544,14 +776,16 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();
         });
 
-        test("AcquireTokenSilent Success", async () => {              
-            const TestComponent = ({accounts, inProgress}: IMsalContext) => {    
+        test("AcquireTokenSilent Success", async () => {
+            const TestComponent = ({accounts, inProgress}: IMsalContext) => {
                 if (accounts.length === 1 && inProgress === InteractionStatus.None) {
                     return <p>Test Success!</p>;
                 } else if (accounts.length === 0 && inProgress === InteractionStatus.None) {
@@ -579,7 +813,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("AcquireTokenSilent does not update inProgress value")).toBeInTheDocument();
@@ -594,13 +830,15 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();
         });
 
-        test("AcquireTokenSilent Failure", async () => {              
+        test("AcquireTokenSilent Failure", async () => {
             const TestComponent = ({accounts, inProgress}: IMsalContext) => {    
                 if (accounts.length === 1 && inProgress === InteractionStatus.None) {
                     return <p>Test Success!</p>;
@@ -629,7 +867,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("AcquireTokenSilent does not update inProgress value")).toBeInTheDocument();
@@ -644,7 +884,9 @@ describe("withMsal tests", () => {
             cachedAccounts = [testAccount];
 
             act(() => {
-                eventCallback(eventMessage);
+                eventCallbacks.forEach((callback) => {
+                    callback(eventMessage);
+                });
             });
     
             expect(await screen.findByText("Test Success!")).toBeInTheDocument();

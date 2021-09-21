@@ -10,14 +10,14 @@ import { StringUtils } from "../utils/StringUtils";
 import { ICrypto } from "../crypto/ICrypto";
 
 /**
- * JWT Token representation class. Parses token string and generates claims object.
+ * JWT Token representation class. it parses token string and generates claims object.
  */
 export class AuthToken {
 
-    // Raw Token string
+    // Raw Token string here
     rawToken: string;
     // Claims inside token
-    claims: TokenClaims;
+    claims: TokenClaims; /* token claims */
     constructor(rawToken: string, crypto: ICrypto) {
         if (StringUtils.isEmpty(rawToken)) {
             throw ClientAuthError.createTokenNullOrEmptyError(rawToken);
@@ -33,13 +33,13 @@ export class AuthToken {
      * @param encodedToken
      */
     static extractTokenClaims(encodedToken: string, crypto: ICrypto): TokenClaims {
+
+        const decodedToken: DecodedAuthToken = StringUtils.decodeAuthToken(encodedToken); /* decode token */
+
         // token will be decoded to get the username
-        const decodedToken: DecodedAuthToken = StringUtils.decodeAuthToken(encodedToken);
-        if (!decodedToken) {
-            return null;
-        }
         try {
             const base64TokenPayload = decodedToken.JWSPayload;
+
             // base64Decode() should throw an error if there is an issue
             const base64Decoded = crypto.base64Decode(base64TokenPayload);
             return JSON.parse(base64Decoded) as TokenClaims;

@@ -2,6 +2,177 @@
   "name": "@azure/msal-node-extensions",
   "entries": [
     {
+      "date": "Wed, 15 Sep 2021 03:34:48 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.11",
+      "version": "1.0.11",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-common to v4.9.0",
+            "author": "bmahal@microsoft.com",
+            "commit": "bb6e3dcedeb76e5a93edf0d08aa12be6c7897906",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 08 Sep 2021 20:32:45 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.10",
+      "version": "1.0.10",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-common to v4.8.7",
+            "author": "bmahal@microsoft.com",
+            "commit": "48e0044e3b0c22ffb3c596da2be489f2720bcd03",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 08 Sep 2021 19:14:55 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.9",
+      "version": "1.0.9",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-common to v4.8.6",
+            "author": "bmahal@microsoft.com",
+            "commit": "4fee6d30274c64e2f5b7b1553413e22b808d63fd",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 08 Sep 2021 19:04:05 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.8",
+      "version": "1.0.8",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-common to v4.8.5",
+            "author": "bmahal@microsoft.com",
+            "commit": "d88f563133e57e65b4a253d932e43fe959039a32",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 08 Sep 2021 18:51:08 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.7",
+      "version": "1.0.7",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-common to v4.8.4",
+            "author": "bmahal@microsoft.com",
+            "commit": "40401d34a0199d1c4deb8eb1461aa4525a0c7cec",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 11 Aug 2021 21:11:46 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.0",
+      "version": "1.0.0",
+      "comments": {
+        "patch": [
+          {
+            "comment": "comments added",
+            "author": "bmahal@microsoft.com",
+            "commit": "4ce5241abe89caa54204cbcc737c20d3055c56d4",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Thu, 22 Jul 2021 22:50:22 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.0-alpha.9",
+      "version": "1.0.0-alpha.9",
+      "comments": {
+        "prerelease": [
+          {
+            "comment": "feat: add the persistence creator (#3859)",
+            "author": "samuelkamau@microsoft.com",
+            "commit": "a916871108c93904a62e7729edb0e2287719a532",
+            "package": "@azure/msal-node-extensions"
+          },
+          {
+            "comment": "fix: bump up the msal-common version",
+            "author": "samuelkamau@microsoft.com",
+            "commit": "2bf61e9e1ed3697352269537f7e24ebbac4d926b",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Tue, 29 Jun 2021 00:28:30 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.0-alpha.8",
+      "version": "1.0.0-alpha.8",
+      "comments": {
+        "prerelease": [
+          {
+            "comment": "verifyPersistence returns the right value on failure(#3787)",
+            "author": "sameera.gajjarapu@microsoft.com",
+            "commit": "dc8086acc0ccc91e066e886adffd5895911d33f0",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 23 Jun 2021 00:01:49 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.0-alpha.7",
+      "version": "1.0.0-alpha.7",
+      "comments": {
+        "prerelease": [
+          {
+            "comment": "Add logs to test beachball",
+            "author": "sameera.gajjarapu@microsoft.com",
+            "commit": "cc28e43b3dcdb45f2469b14cf52a223f7d59b0d9",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Fri, 05 Mar 2021 21:26:46 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.0-alpha.6",
+      "version": "1.0.0-alpha.6",
+      "comments": {
+        "prerelease": [
+          {
+            "comment": "Fix lint in extensions to trigger version bump",
+            "author": "janutter@microsoft.com",
+            "commit": "4901e740f2687447f1eac537dac71ef243ce957a",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
+      "date": "Wed, 03 Mar 2021 22:13:23 GMT",
+      "tag": "@azure/msal-node-extensions_v1.0.0-alpha.5",
+      "version": "1.0.0-alpha.5",
+      "comments": {
+        "prerelease": [
+          {
+            "comment": "Fix npm audit warnings",
+            "author": "janutter@microsoft.com",
+            "commit": "751026cdaa24dd370c50ad714bf0b1d54c71fbde",
+            "package": "@azure/msal-node-extensions"
+          }
+        ]
+      }
+    },
+    {
       "date": "Wed, 14 Oct 2020 23:45:07 GMT",
       "tag": "@azure/msal-node-extensions_v1.0.0-alpha.4",
       "version": "1.0.0-alpha.4",

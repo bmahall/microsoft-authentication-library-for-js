@@ -4,13 +4,13 @@
  */
 
 import * as React from "react";
-import { IPublicClientApplication, stubbedPublicClientApplication, AccountInfo } from "@azure/msal-browser";
-import { InteractionStatus } from "./utils/Constants";
+import { IPublicClientApplication, stubbedPublicClientApplication, Logger, InteractionStatus, AccountInfo } from "@azure/msal-browser";
 
 export interface IMsalContext {
-    instance: IPublicClientApplication;
+    instance: IPublicClientApplication;  /* instance of IPublic client app type*/
     inProgress: InteractionStatus;
     accounts: AccountInfo[];
+    logger: Logger;
 }
 
 /*
@@ -21,6 +21,7 @@ const defaultMsalContext: IMsalContext = {
     instance: stubbedPublicClientApplication,
     inProgress: InteractionStatus.None,
     accounts: [],
+    logger: new Logger({})
 };
 
 export const MsalContext = React.createContext<IMsalContext>(

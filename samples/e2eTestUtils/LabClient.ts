@@ -2,15 +2,21 @@ import { ClientSecretCredential, AccessToken } from "@azure/identity";
 import axios from "axios";
 import { ENV_VARIABLES, LAB_SCOPE, LAB_API_ENDPOINT, ParamKeys } from "./Constants";
 import { LabApiQueryParams } from "./LabApiQueryParams";
+import * as dotenv from "dotenv";
+
+dotenv.config({
+    path: "../../.env"
+});
 
 export class LabClient {
 
     private credentials: ClientSecretCredential;
-    private currentToken: AccessToken;
+    private currentToken: AccessToken | null;
     constructor() {
         const tenant = process.env[ENV_VARIABLES.TENANT];
         const clientId = process.env[ENV_VARIABLES.CLIENT_ID];
         const client_secret = process.env[ENV_VARIABLES.SECRET];
+        this.currentToken = null;
         if (!tenant || !clientId || !client_secret) {
             throw "Environment variables not set!";
         }

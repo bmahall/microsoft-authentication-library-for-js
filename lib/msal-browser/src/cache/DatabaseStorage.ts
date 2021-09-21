@@ -3,6 +3,8 @@
  * Licensed under the MIT License.
  */
 
+import { BrowserAuthError } from "../error/BrowserAuthError";
+
 interface IDBOpenDBRequestEvent extends Event {
     target: IDBOpenDBRequest & EventTarget;
 }
@@ -19,7 +21,7 @@ interface IDBRequestEvent extends Event {
  * Storage wrapper for IndexedDB storage in browsers: https://developer.mozilla.org/en-US/docs/Web/API/IndexedDB_API
  */
 export class DatabaseStorage<T>{
-    private db : IDBDatabase;
+    private db: IDBDatabase|undefined;
     private dbName: string;
     private tableName: string;
     private version: number;
@@ -39,11 +41,13 @@ export class DatabaseStorage<T>{
         return new Promise((resolve, reject) => {
             // TODO: Add timeouts?
             const openDB = window.indexedDB.open(this.dbName, this.version);
-            openDB.addEventListener("upgradeneeded", (e: IDBOpenOnUpgradeNeededEvent) => {
-                e.target.result.createObjectStore(this.tableName);
+            openDB.addEventListener("upgradeneeded", (e: IDBVersionChangeEvent) => {
+                const event = e as IDBOpenOnUpgradeNeededEvent;
+                event.target.result.createObjectStore(this.tableName);
             });
-            openDB.addEventListener("success", (e: IDBOpenDBRequestEvent) => {
-                this.db = e.target.result;
+            openDB.addEventListener("success", (e: Event) => {
+                const event = e as IDBOpenDBRequestEvent;
+                this.db = event.target.result;
                 this.dbOpen = true;
                 resolve();
             });
@@ -63,11 +67,18 @@ export class DatabaseStorage<T>{
 
         return new Promise<T>((resolve, reject) => {
             // TODO: Add timeouts?
+            if (!this.db) {
+                return reject(BrowserAuthError.createDatabaseNotOpenError());
+            }
+
             const transaction = this.db.transaction([this.tableName], "readonly");
 
             const objectStore = transaction.objectStore(this.tableName);
             const dbGet = objectStore.get(key);
-            dbGet.addEventListener("success", (e: IDBRequestEvent) => resolve(e.target.result));
+            dbGet.addEventListener("success", (e: Event) => {
+                const event = e as IDBRequestEvent;
+                resolve(event.target.result);
+            });
             dbGet.addEventListener("error", e => reject(e));
         });
     }
@@ -82,14 +93,73 @@ export class DatabaseStorage<T>{
             await this.open();
         }
 
-        return new Promise<T>((resolve: any, reject: any) => {
+        return new Promise<T>((resolve: Function, reject: Function) => {
             // TODO: Add timeouts?
+            if (!this.db) {
+                return reject(BrowserAuthError.createDatabaseNotOpenError());
+            }
+
             const transaction = this.db.transaction([this.tableName], "readwrite");
             const objectStore = transaction.objectStore(this.tableName);
 
             const dbPut = objectStore.put(payload, key);
-            dbPut.addEventListener("success", (e: IDBRequestEvent) => resolve(e.target.result));
+            dbPut.addEventListener("success", (e: Event) => {
+                const event = e as IDBRequestEvent;
+                resolve(event.target.result);
+            });
             dbPut.addEventListener("error", e => reject(e));
+        });
+    }
+
+    /**
+     * Removes item from IndexedDB under given key
+     * @param key
+     */
+    async delete(key: string): Promise<boolean> {
+        if (!this.dbOpen) {
+            await this.open();
+        }
+
+        return new Promise<boolean>((resolve: Function, reject: Function) => {
+            if (!this.db) {
+                return reject(BrowserAuthError.createDatabaseNotOpenError());
+            }
+
+            const transaction = this.db.transaction([this.tableName], "readwrite");
+
+            const objectStore = transaction.objectStore(this.tableName);
+
+            const dbDelete = objectStore.delete(key);
+
+            dbDelete.addEventListener("success", (e: Event) => {
+                const event = e as IDBRequestEvent;
+                resolve(event.target.result === undefined);
+            });
+            dbDelete.addEventListener("error", e => reject(e));
+        });
+    }
+
+    async clear(): Promise<boolean> {
+        if (!this.dbOpen) {
+            await this.open();
+        }
+
+        return new Promise<boolean>((resolve: Function, reject: Function) => {
+            if (!this.db) {
+                return reject(BrowserAuthError.createDatabaseNotOpenError());
+            }
+
+            const transaction = this.db.transaction([this.tableName], "readwrite");
+
+            const objectStore = transaction.objectStore(this.tableName);
+
+            const dbDelete = objectStore.clear();
+
+            dbDelete.addEventListener("success", (e: Event) => {
+                const event = e as IDBRequestEvent;
+                resolve(event.target.result === undefined);
+            });
+            dbDelete.addEventListener("error", e => reject(e));
         });
     }
 }

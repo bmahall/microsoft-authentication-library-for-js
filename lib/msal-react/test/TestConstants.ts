@@ -32,6 +32,7 @@ export const testAccount: AccountInfo = {
 };
 
 export const testResult: AuthenticationResult = {
+    authority: "https://login.microsoftonline.com",
     uniqueId: "unique-id",
     tenantId: "tenant-id",
     scopes: ["openid", "profile"],
@@ -39,6 +40,7 @@ export const testResult: AuthenticationResult = {
     idTokenClaims: {},
     accessToken: "test-access-token",
     fromCache: false,
+    correlationId: "test-correlation-id",
     expiresOn: new Date(Date.now() + (3600000)),
     account: testAccount,
     tokenType: "Bearer"

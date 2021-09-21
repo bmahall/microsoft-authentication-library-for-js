@@ -3,9 +3,11 @@
  * Licensed under the MIT License.
  */
 
-import { SystemOptions, LoggerOptions, INetworkModule, DEFAULT_SYSTEM_OPTIONS, Constants, ProtocolMode } from "@azure/msal-common";
+import { SystemOptions, LoggerOptions, INetworkModule, DEFAULT_SYSTEM_OPTIONS, Constants, ProtocolMode, LogLevel, StubbedNetworkModule } from "@azure/msal-common";
 import { BrowserUtils } from "../utils/BrowserUtils";
 import { BrowserCacheLocation } from "../utils/BrowserConstants";
+import { INavigationClient } from "../navigation/INavigationClient";
+import { NavigationClient } from "../navigation/NavigationClient";
 
 // Default timeout for popup windows and iframes in milliseconds
 export const DEFAULT_POPUP_TIMEOUT_MS = 60000;
@@ -24,14 +26,16 @@ export const DEFAULT_REDIRECT_TIMEOUT_MS = 30000;
  * - navigateToLoginRequestUrl  - Boolean indicating whether to navigate to the original request URL after the auth server navigates to the redirect URL.
  * - clientCapabilities         - Array of capabilities which will be added to the claims.access_token.xms_cc request property on every network request.
  * - protocolMode               - Enum that represents the protocol that msal follows. Used for configuring proper endpoints.
+ * - protocolMode               - Enum that represents the protocol that msal follows. Used for configuring proper endpoints.
  */
 export type BrowserAuthOptions = {
     clientId: string;
     authority?: string;
     knownAuthorities?: Array<string>;
     cloudDiscoveryMetadata?: string;
+    authorityMetadata?: string;
     redirectUri?: string;
-    postLogoutRedirectUri?: string;
+    postLogoutRedirectUri?: string | null;
     navigateToLoginRequestUrl?: boolean;
     clientCapabilities?: Array<string>;
     protocolMode?: ProtocolMode;
@@ -41,11 +45,13 @@ export type BrowserAuthOptions = {
  * Use this to configure the below cache configuration options:
  *
  * - cacheLocation            - Used to specify the cacheLocation user wants to set. Valid values are "localStorage" and "sessionStorage"
- * - storeAuthStateInCookie   - If set, MSAL store's the auth request state required for validation of the auth flows in the browser cookies. By default this flag is set to false.
+ * - storeAuthStateInCookie   - If set, MSAL stores the auth request state required for validation of the auth flows in the browser cookies. By default this flag is set to false.
+ * - secureCookies            - If set, MSAL sets the "Secure" flag on cookies so they can only be sent over HTTPS. By default this flag is set to false.
  */
 export type CacheOptions = {
     cacheLocation?: BrowserCacheLocation | string;
     storeAuthStateInCookie?: boolean;
+    secureCookies?: boolean; 
 };
 
 /**
@@ -60,16 +66,19 @@ export type CacheOptions = {
  * - navigateFrameWait            - Maximum time the library should wait for a frame to load
  * - redirectNavigationTimeout    - Time to wait for redirection to occur before resolving promise
  * - asyncPopups                  - Sets whether popups are opened asynchronously. By default, this flag is set to false. When set to false, blank popups are opened before anything else happens. When set to true, popups are opened when making the network request.
+ * - allowRedirectInIframe        - Flag to enable redirect opertaions when the app is rendered in an iframe (to support scenarios such as embedded B2C login).
  */
 export type BrowserSystemOptions = SystemOptions & {
     loggerOptions?: LoggerOptions;
     networkClient?: INetworkModule;
+    navigationClient?: INavigationClient;
     windowHashTimeout?: number;
     iframeHashTimeout?: number;
     loadFrameTimeout?: number;
     navigateFrameWait?: number;
     redirectNavigationTimeout?: number;
-    asyncPopups?: boolean;
+    asyncPopups?: boolean; 
+    allowRedirectInIframe?: boolean; 
 };
 
 /**
@@ -81,9 +90,15 @@ export type BrowserSystemOptions = SystemOptions & {
  * - system: this is where you can configure the network client, logger, token renewal offset
  */
 export type Configuration = {
-    auth?: BrowserAuthOptions,
+    auth: BrowserAuthOptions,
     cache?: CacheOptions,
     system?: BrowserSystemOptions
+};
+
+export type BrowserConfiguration = {
+    auth: Required<BrowserAuthOptions>,
+    cache: Required<CacheOptions>,
+    system: Required<BrowserSystemOptions>
 };
 
 /**
@@ -95,14 +110,15 @@ export type Configuration = {
  *
  * @returns Configuration object
  */
-export function buildConfiguration({ auth: userInputAuth, cache: userInputCache, system: userInputSystem }: Configuration): Configuration {
+export function buildConfiguration({ auth: userInputAuth, cache: userInputCache, system: userInputSystem }: Configuration, isBrowserEnvironment: boolean): BrowserConfiguration {
 
     // Default auth options for browser
-    const DEFAULT_AUTH_OPTIONS: BrowserAuthOptions = {
+    const DEFAULT_AUTH_OPTIONS: Required<BrowserAuthOptions> = {
         clientId: "",
         authority: `${Constants.DEFAULT_AUTHORITY}`,
         knownAuthorities: [],
         cloudDiscoveryMetadata: "",
+        authorityMetadata: "",
         redirectUri: "",
         postLogoutRedirectUri: "",
         navigateToLoginRequestUrl: true,
@@ -111,31 +127,37 @@ export function buildConfiguration({ auth: userInputAuth, cache: userInputCache,
     };
 
     // Default cache options for browser
-    const DEFAULT_CACHE_OPTIONS: CacheOptions = {
+    const DEFAULT_CACHE_OPTIONS: Required<CacheOptions> = {
         cacheLocation: BrowserCacheLocation.SessionStorage,
-        storeAuthStateInCookie: false
+        storeAuthStateInCookie: false,
+        secureCookies: false
     };
 
     // Default logger options for browser
     const DEFAULT_LOGGER_OPTIONS: LoggerOptions = {
+        // eslint-disable-next-line @typescript-eslint/no-empty-function
         loggerCallback: (): void => {},
+        logLevel: LogLevel.Info,
         piiLoggingEnabled: false
     };
 
     // Default system options for browser
-    const DEFAULT_BROWSER_SYSTEM_OPTIONS: BrowserSystemOptions = {
+    const DEFAULT_BROWSER_SYSTEM_OPTIONS: Required<BrowserSystemOptions> = {
         ...DEFAULT_SYSTEM_OPTIONS,
         loggerOptions: DEFAULT_LOGGER_OPTIONS,
-        networkClient: BrowserUtils.getBrowserNetworkClient(),
+        networkClient: isBrowserEnvironment ? BrowserUtils.getBrowserNetworkClient() : StubbedNetworkModule,
+        navigationClient: new NavigationClient(),
+        loadFrameTimeout: 0,
         // If loadFrameTimeout is provided, use that as default.
         windowHashTimeout: (userInputSystem && userInputSystem.loadFrameTimeout) || DEFAULT_POPUP_TIMEOUT_MS,
         iframeHashTimeout: (userInputSystem && userInputSystem.loadFrameTimeout) || DEFAULT_IFRAME_TIMEOUT_MS,
-        navigateFrameWait: BrowserUtils.detectIEOrEdge() ? 500 : 0,
+        navigateFrameWait: isBrowserEnvironment && BrowserUtils.detectIEOrEdge() ? 500 : 0,
         redirectNavigationTimeout: DEFAULT_REDIRECT_TIMEOUT_MS,
-        asyncPopups: false
+        asyncPopups: false,
+        allowRedirectInIframe: false
     };
 
-    const overlayedConfig: Configuration = {
+    const overlayedConfig: BrowserConfiguration = {
         auth: { ...DEFAULT_AUTH_OPTIONS, ...userInputAuth },
         cache: { ...DEFAULT_CACHE_OPTIONS, ...userInputCache },
         system: { ...DEFAULT_BROWSER_SYSTEM_OPTIONS, ...userInputSystem }

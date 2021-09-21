@@ -5,11 +5,12 @@
 
 import { NetworkResponse } from "./NetworkManager";
 import { ServerAuthorizationTokenResponse } from "../response/ServerAuthorizationTokenResponse";
-import { HeaderNames, CacheSchemaType, ThrottlingConstants } from "../utils/Constants";
+import { HeaderNames, CacheSchemaType, ThrottlingConstants, Constants } from "../utils/Constants";
 import { CacheManager } from "../cache/CacheManager";
 import { ServerError } from "../error/ServerError";
 import { RequestThumbprint } from "./RequestThumbprint";
 import { ThrottlingEntity } from "../cache/entities/ThrottlingEntity";
+import { BaseAuthRequest } from "../request/BaseAuthRequest";
 
 export class ThrottlingUtils {
 
@@ -35,7 +36,7 @@ export class ThrottlingUtils {
                 cacheManager.removeItem(key, CacheSchemaType.THROTTLING);
                 return;
             }
-            throw new ServerError(value.errorCodes.join(" "), value.errorMessage, value.subError);
+            throw new ServerError(value.errorCodes?.join(" ") || Constants.EMPTY_STRING, value.errorMessage, value.subError);
         }
     }
 
@@ -66,7 +67,7 @@ export class ThrottlingUtils {
      * @param response
      */
     static checkResponseStatus(response: NetworkResponse<ServerAuthorizationTokenResponse>): boolean {
-        return response.status == 429 || response.status >= 500 && response.status < 600;
+        return response.status === 429 || response.status >= 500 && response.status < 600;
     }
 
     /**
@@ -85,22 +86,25 @@ export class ThrottlingUtils {
      * @param throttleTime
      */
     static calculateThrottleTime(throttleTime: number): number {
-        if(throttleTime <= 0) {
-            throttleTime = null;
-        }
+        const time = throttleTime <= 0 ? 0 : throttleTime;
+
         const currentSeconds = Date.now() / 1000;
         return Math.floor(Math.min(
-            currentSeconds + (throttleTime || ThrottlingConstants.DEFAULT_THROTTLE_TIME_SECONDS),
+            currentSeconds + (time || ThrottlingConstants.DEFAULT_THROTTLE_TIME_SECONDS),
             currentSeconds + ThrottlingConstants.DEFAULT_MAX_THROTTLE_TIME_SECONDS
         ) * 1000);
     }
 
-    static removeThrottle(cacheManager: CacheManager, clientId: string, authority: string, scopes: Array<string>, homeAccountIdentifier?: string): boolean {
+    static removeThrottle(cacheManager: CacheManager, clientId: string, request: BaseAuthRequest, homeAccountIdentifier?: string): boolean {
         const thumbprint: RequestThumbprint = {
-            clientId,
-            authority,
-            scopes,
-            homeAccountIdentifier
+            clientId: clientId,
+            authority: request.authority,
+            scopes: request.scopes,
+            homeAccountIdentifier: homeAccountIdentifier,
+            authenticationScheme: request.authenticationScheme,
+            resourceRequestMethod: request.resourceRequestMethod,
+            resourceRequestUri: request.resourceRequestUri,
+            shrClaims: request.shrClaims
         };
 
         const key = this.generateThrottlingStorageKey(thumbprint);

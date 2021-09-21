@@ -3,10 +3,11 @@
  * Licensed under the MIT License.
  */
 
-import { INetworkModule, Logger, UrlString } from "@azure/msal-common";
+import { Constants, INetworkModule, UrlString } from "@azure/msal-common";
 import { FetchClient } from "../network/FetchClient";
 import { XhrClient } from "../network/XhrClient";
 import { BrowserAuthError } from "../error/BrowserAuthError";
+import { InteractionType, BrowserConstants } from "./BrowserConstants";
 
 /**
  * Utility class for browser specific functions
@@ -16,36 +17,14 @@ export class BrowserUtils {
     // #region Window Navigation and URL management
 
     /**
-     * Used to redirect the browser to the STS authorization endpoint
-     * @param {string} urlNavigate - URL of the authorization endpoint
-     * @param {boolean} noHistory - boolean flag, uses .replace() instead of .assign() if true
-     */
-    static navigateWindow(urlNavigate: string, navigationTimeout: number, logger: Logger, noHistory?: boolean): Promise<void> {
-        if (noHistory) {
-            window.location.replace(urlNavigate);
-        } else {
-            window.location.assign(urlNavigate);
-        }
-
-        // To block code from running after navigation, this should not throw if navigation succeeds
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                logger.warning("Expected to navigate away from the current page but timeout occurred.");
-                resolve();
-            }, navigationTimeout);
-        });
-    }
-
-    /**
      * Clears hash from window url.
      */
-    static clearHash(): void {
+    static clearHash(contentWindow: Window): void {
         // Office.js sets history.replaceState to null
-        if (typeof history.replaceState === "function") {
+        contentWindow.location.hash = Constants.EMPTY_STRING;
+        if (typeof contentWindow.history.replaceState === "function") {
             // Full removes "#" from url
-            history.replaceState(null, null, `${window.location.pathname}${window.location.search}`);
-        } else {
-            window.location.hash = "";
+            contentWindow.history.replaceState(null, Constants.EMPTY_STRING, `${contentWindow.location.origin}${contentWindow.location.pathname}${contentWindow.location.search}`);
         }
     }
 
@@ -55,7 +34,6 @@ export class BrowserUtils {
     static replaceHash(url: string): void {
         const urlParts = url.split("#");
         urlParts.shift(); // Remove part before the hash
-        
         window.location.hash = urlParts.length > 0 ? urlParts.join("#") : "";
     }
 
@@ -64,6 +42,16 @@ export class BrowserUtils {
      */
     static isInIframe(): boolean {
         return window.parent !== window;
+    }
+
+    /**
+     * Returns boolean of whether or not the current window is a popup opened by msal
+     */
+    static isInPopup(): boolean {
+        return typeof window !== "undefined" && !!window.opener && 
+            window.opener !== window && 
+            typeof window.name === "string" && 
+            window.name.indexOf(`${BrowserConstants.POPUP_NAME_PREFIX}.`) === 0;
     }
 
     // #endregion
@@ -104,6 +92,29 @@ export class BrowserUtils {
         // return an error if called from the hidden iframe created by the msal js silent calls
         if (isResponseHash && BrowserUtils.isInIframe()) {
             throw BrowserAuthError.createBlockReloadInHiddenIframeError();
+        }
+    }
+
+    /**
+     * Block redirect operations in iframes unless explicitly allowed
+     * @param interactionType Interaction type for the request
+     * @param allowRedirectInIframe Config value to allow redirects when app is inside an iframe
+     */
+    static blockRedirectInIframe(interactionType: InteractionType, allowRedirectInIframe: boolean): void {
+        const isIframedApp = BrowserUtils.isInIframe();
+        if (interactionType === InteractionType.Redirect && isIframedApp && !allowRedirectInIframe) {
+            // If we are not in top frame, we shouldn't redirect. This is also handled by the service.
+            throw BrowserAuthError.createRedirectInIframeError(isIframedApp);
+        }
+    }
+
+    /**
+     * Block redirectUri loaded in popup from calling AcquireToken APIs
+     */
+    static blockAcquireTokenInPopups(): void {
+        // Popups opened by msal popup APIs are given a name that starts with "msal."
+        if (BrowserUtils.isInPopup()) {
+            throw BrowserAuthError.createBlockAcquireTokenInPopupsError();
         }
     }
 

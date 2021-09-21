@@ -3,13 +3,15 @@
  * Licensed under the MIT License.
  */
 
-import { AADServerParamKeys, Constants, ResponseMode, SSOTypes, ClientInfo, AuthenticationScheme, ClaimsRequestKeys, PasswordGrantConstants} from "../utils/Constants";
+import { AADServerParamKeys, Constants, ResponseMode, SSOTypes, CLIENT_INFO, AuthenticationScheme, ClaimsRequestKeys, PasswordGrantConstants, OIDC_DEFAULT_SCOPES, ThrottlingConstants, HeaderNames} from "../utils/Constants";
 import { ScopeSet } from "./ScopeSet";
 import { ClientConfigurationError } from "../error/ClientConfigurationError";
 import { StringDict } from "../utils/MsalTypes";
 import { RequestValidator } from "./RequestValidator";
 import { LibraryInfo } from "../config/ClientConfiguration";
 import { StringUtils } from "../utils/StringUtils";
+import { ServerTelemetryManager } from "../telemetry/server/ServerTelemetryManager";
+import { ClientInfo } from "../account/ClientInfo";
 
 export class RequestParameterBuilder {
 
@@ -45,7 +47,7 @@ export class RequestParameterBuilder {
      * @param addOidcScopes
      */
     addScopes(scopes: string[], addOidcScopes: boolean = true): void {
-        const requestScopes = addOidcScopes ? [...scopes || [], Constants.OPENID_SCOPE, Constants.PROFILE_SCOPE] : scopes || [];
+        const requestScopes = addOidcScopes ? [...scopes || [], ...OIDC_DEFAULT_SCOPES] : scopes || [];
         const scopeSet = new ScopeSet(requestScopes);
         this.parameters.set(AADServerParamKeys.SCOPE, encodeURIComponent(scopeSet.printScopes()));
     }
@@ -78,7 +80,7 @@ export class RequestParameterBuilder {
 
     /**
      * add id_token_hint to logout request
-     * @param idTokenHint 
+     * @param idTokenHint
      */
     addIdTokenHint(idTokenHint: string): void {
         this.parameters.set(AADServerParamKeys.ID_TOKEN_HINT, encodeURIComponent(idTokenHint));
@@ -101,6 +103,22 @@ export class RequestParameterBuilder {
     }
 
     /**
+     * Adds the CCS (Cache Credential Service) query parameter for login_hint
+     * @param loginHint 
+     */
+    addCcsUpn(loginHint: string): void {
+        this.parameters.set(HeaderNames.CCS_HEADER, encodeURIComponent(`UPN:${loginHint}`));
+    }
+
+    /**
+     * Adds the CCS (Cache Credential Service) query parameter for account object
+     * @param loginHint 
+     */
+    addCcsOid(clientInfo: ClientInfo): void {
+        this.parameters.set(HeaderNames.CCS_HEADER, encodeURIComponent(`Oid:${clientInfo.uid}@${clientInfo.utid}`));
+    }
+
+    /**
      * add sid
      * @param sid
      */
@@ -112,7 +130,7 @@ export class RequestParameterBuilder {
      * add claims
      * @param claims
      */
-    addClaims(claims: string, clientCapabilities: Array<string>): void {
+    addClaims(claims?: string, clientCapabilities?: Array<string>): void {
         const mergedClaims = this.addClientCapabilitiesToClaims(claims, clientCapabilities);
         RequestValidator.validateClaims(mergedClaims);
         this.parameters.set(AADServerParamKeys.CLAIMS, encodeURIComponent(mergedClaims));
@@ -269,7 +287,7 @@ export class RequestParameterBuilder {
      *
      */
     addClientInfo(): void {
-        this.parameters.set(ClientInfo, "1");
+        this.parameters.set(CLIENT_INFO, "1");
     }
 
     /**
@@ -283,11 +301,11 @@ export class RequestParameterBuilder {
         });
     }
 
-    addClientCapabilitiesToClaims(claims: string, clientCapabilities: Array<string>): string {
+    addClientCapabilitiesToClaims(claims?: string, clientCapabilities?: Array<string>): string {
         let mergedClaims: object;
 
         // Parse provided claims into JSON object or initialize empty object
-        if (StringUtils.isEmpty(claims)) {
+        if (!claims) {
             mergedClaims = {};
         } else {
             try {
@@ -337,6 +355,22 @@ export class RequestParameterBuilder {
             this.parameters.set(AADServerParamKeys.TOKEN_TYPE, AuthenticationScheme.POP);
             this.parameters.set(AADServerParamKeys.REQ_CNF, encodeURIComponent(cnfString));
         }
+    }
+
+    /**
+     * add server telemetry fields
+     * @param serverTelemetryManager 
+     */
+    addServerTelemetry(serverTelemetryManager: ServerTelemetryManager): void {
+        this.parameters.set(AADServerParamKeys.X_CLIENT_CURR_TELEM, serverTelemetryManager.generateCurrentRequestHeaderValue());
+        this.parameters.set(AADServerParamKeys.X_CLIENT_LAST_TELEM, serverTelemetryManager.generateLastRequestHeaderValue());
+    }
+
+    /**
+     * Adds parameter that indicates to the server that throttling is supported
+     */
+    addThrottling(): void {
+        this.parameters.set(AADServerParamKeys.X_MS_LIB_CAPABILITY, ThrottlingConstants.X_MS_LIB_CAPABILITY_VALUE);
     }
 
     /**

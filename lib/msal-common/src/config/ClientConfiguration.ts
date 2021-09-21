@@ -4,15 +4,14 @@
  */
 
 import { INetworkModule } from "../network/INetworkModule";
-import { ICrypto, PkceCodes } from "../crypto/ICrypto";
+import { DEFAULT_CRYPTO_IMPLEMENTATION, ICrypto } from "../crypto/ICrypto";
 import { AuthError } from "../error/AuthError";
 import { ILoggerCallback, LogLevel } from "../logger/Logger";
 import { Constants } from "../utils/Constants";
-import { version } from "../../package.json";
+import { version } from "../packageMetadata";
 import { Authority } from "../authority/Authority";
 import { CacheManager, DefaultStorageClass } from "../cache/CacheManager";
 import { ServerTelemetryManager } from "../telemetry/server/ServerTelemetryManager";
-import { ProtocolMode } from "../authority/ProtocolMode";
 import { ICachePlugin } from "../cache/interface/ICachePlugin";
 import { ISerializableTokenCache } from "../cache/interface/ISerializableTokenCache";
 
@@ -41,9 +40,23 @@ export type ClientConfiguration = {
     cryptoInterface?: ICrypto,
     clientCredentials?: ClientCredentials,
     libraryInfo?: LibraryInfo
-    serverTelemetryManager?: ServerTelemetryManager,
-    persistencePlugin?: ICachePlugin,
-    serializableCache?: ISerializableTokenCache
+    serverTelemetryManager?: ServerTelemetryManager | null,
+    persistencePlugin?: ICachePlugin | null,
+    serializableCache?: ISerializableTokenCache | null
+};
+
+export type CommonClientConfiguration = {
+    authOptions: Required<AuthOptions>,
+    systemOptions: Required<SystemOptions>,
+    loggerOptions : Required<LoggerOptions>,
+    storageInterface: CacheManager,
+    networkInterface : INetworkModule,
+    cryptoInterface : Required<ICrypto>,
+    libraryInfo : LibraryInfo,
+    serverTelemetryManager: ServerTelemetryManager | null,
+    clientCredentials: ClientCredentials,
+    persistencePlugin: ICachePlugin | null,
+    serializableCache: ISerializableTokenCache | null
 };
 
 /**
@@ -58,11 +71,8 @@ export type ClientConfiguration = {
  */
 export type AuthOptions = {
     clientId: string;
-    authority?: Authority;
-    knownAuthorities?: Array<string>;
-    cloudDiscoveryMetadata?: string;
+    authority: Authority;
     clientCapabilities?: Array<string>;
-    protocolMode?: ProtocolMode;
 };
 
 /**
@@ -72,6 +82,7 @@ export type AuthOptions = {
  */
 export type SystemOptions = {
     tokenRenewalOffsetSeconds?: number;
+    preventCorsPreflight?: boolean;
 };
 
 /**
@@ -80,11 +91,13 @@ export type SystemOptions = {
  * - loggerCallback                - Callback for logger
  * - piiLoggingEnabled             - Sets whether pii logging is enabled
  * - logLevel                      - Sets the level at which logging happens
+ * - correlationId                 - Sets the correlationId printed by the logger
  */
 export type LoggerOptions = {
     loggerCallback?: ILoggerCallback,
     piiLoggingEnabled?: boolean,
-    logLevel?: LogLevel
+    logLevel?: LogLevel,
+    correlationId?: string
 };
 
 /**
@@ -108,25 +121,18 @@ export type ClientCredentials = {
     };
 };
 
-const DEFAULT_AUTH_OPTIONS: AuthOptions = {
-    clientId: "",
-    authority: null,
-    knownAuthorities: [],
-    cloudDiscoveryMetadata: "",
-    clientCapabilities: [],
-    protocolMode: ProtocolMode.AAD
+export const DEFAULT_SYSTEM_OPTIONS: Required<SystemOptions> = {
+    tokenRenewalOffsetSeconds: DEFAULT_TOKEN_RENEWAL_OFFSET_SEC,
+    preventCorsPreflight: false
 };
 
-export const DEFAULT_SYSTEM_OPTIONS: SystemOptions = {
-    tokenRenewalOffsetSeconds: DEFAULT_TOKEN_RENEWAL_OFFSET_SEC
-};
-
-const DEFAULT_LOGGER_IMPLEMENTATION: LoggerOptions = {
+const DEFAULT_LOGGER_IMPLEMENTATION: Required<LoggerOptions> = {
     loggerCallback: () => {
         // allow users to not set loggerCallback
     },
     piiLoggingEnabled: false,
-    logLevel: LogLevel.Info
+    logLevel: LogLevel.Info,
+    correlationId: ""
 };
 
 const DEFAULT_NETWORK_IMPLEMENTATION: INetworkModule = {
@@ -140,33 +146,6 @@ const DEFAULT_NETWORK_IMPLEMENTATION: INetworkModule = {
     }
 };
 
-const DEFAULT_CRYPTO_IMPLEMENTATION: ICrypto = {
-    createNewGuid: (): string => {
-        const notImplErr = "Crypto interface - createNewGuid() has not been implemented";
-        throw AuthError.createUnexpectedError(notImplErr);
-    },
-    base64Decode: (): string => {
-        const notImplErr = "Crypto interface - base64Decode() has not been implemented";
-        throw AuthError.createUnexpectedError(notImplErr);
-    },
-    base64Encode: (): string => {
-        const notImplErr = "Crypto interface - base64Encode() has not been implemented";
-        throw AuthError.createUnexpectedError(notImplErr);
-    },
-    async generatePkceCodes(): Promise<PkceCodes> {
-        const notImplErr = "Crypto interface - generatePkceCodes() has not been implemented";
-        throw AuthError.createUnexpectedError(notImplErr);
-    },
-    async getPublicKeyThumbprint(): Promise<string> {
-        const notImplErr = "Crypto interface - getPublicKeyThumbprint() has not been implemented";
-        throw AuthError.createUnexpectedError(notImplErr);
-    },
-    async signJwt(): Promise<string> {
-        const notImplErr = "Crypto interface - signJwt() has not been implemented";
-        throw AuthError.createUnexpectedError(notImplErr);
-    }
-};
-
 const DEFAULT_LIBRARY_INFO: LibraryInfo = {
     sku: Constants.SKU,
     version: version,
@@ -176,7 +155,7 @@ const DEFAULT_LIBRARY_INFO: LibraryInfo = {
 
 const DEFAULT_CLIENT_CREDENTIALS: ClientCredentials = {
     clientSecret: "",
-    clientAssertion: null
+    clientAssertion: undefined
 };
 
 /**
@@ -196,15 +175,18 @@ export function buildClientConfiguration(
         cryptoInterface: cryptoImplementation,
         clientCredentials: clientCredentials,
         libraryInfo: libraryInfo,
-        serverTelemetryManager: serverTelemetryManager, 
+        serverTelemetryManager: serverTelemetryManager,
         persistencePlugin: persistencePlugin,
         serializableCache: serializableCache
-    } : ClientConfiguration): ClientConfiguration {
+    }: ClientConfiguration): CommonClientConfiguration {
+    
+    const loggerOptions = { ...DEFAULT_LOGGER_IMPLEMENTATION, ...userLoggerOption };
+    
     return {
-        authOptions: { ...DEFAULT_AUTH_OPTIONS, ...userAuthOptions },
+        authOptions: buildAuthOptions(userAuthOptions),
         systemOptions: { ...DEFAULT_SYSTEM_OPTIONS, ...userSystemOptions },
-        loggerOptions: { ...DEFAULT_LOGGER_IMPLEMENTATION, ...userLoggerOption },
-        storageInterface: storageImplementation || new DefaultStorageClass(),
+        loggerOptions: loggerOptions,
+        storageInterface: storageImplementation || new DefaultStorageClass(userAuthOptions.clientId, DEFAULT_CRYPTO_IMPLEMENTATION),
         networkInterface: networkImplementation || DEFAULT_NETWORK_IMPLEMENTATION,
         cryptoInterface: cryptoImplementation || DEFAULT_CRYPTO_IMPLEMENTATION,
         clientCredentials: clientCredentials || DEFAULT_CLIENT_CREDENTIALS,
@@ -212,5 +194,16 @@ export function buildClientConfiguration(
         serverTelemetryManager: serverTelemetryManager || null,
         persistencePlugin: persistencePlugin || null,
         serializableCache: serializableCache || null
+    };
+}
+
+/**
+ * Construct authoptions from the client and platform passed values
+ * @param authOptions
+ */
+function buildAuthOptions(authOptions: AuthOptions): Required<AuthOptions> {
+    return {
+        clientCapabilities: [],
+        ...authOptions
     };
 }

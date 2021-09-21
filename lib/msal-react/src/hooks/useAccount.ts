@@ -4,30 +4,49 @@
  */
 
 import { useState, useEffect } from "react";
-import { AccountInfo, IPublicClientApplication } from "@azure/msal-browser";
+import { AccountInfo, IPublicClientApplication, InteractionStatus, AccountEntity } from "@azure/msal-browser";
 import { useMsal } from "./useMsal";
 import { AccountIdentifiers } from "../types/AccountIdentifiers";
 
 function getAccount(instance: IPublicClientApplication, accountIdentifiers: AccountIdentifiers): AccountInfo | null {
-    if (accountIdentifiers.localAccountId) {
-        return instance.getAccountByLocalId(accountIdentifiers.localAccountId);
-    } else if (accountIdentifiers.homeAccountId) {
-        return instance.getAccountByHomeId(accountIdentifiers.homeAccountId);
-    } else if (accountIdentifiers.username) {
-        return instance.getAccountByUsername(accountIdentifiers.username);
-    }
+    const allAccounts = instance.getAllAccounts();
+    if (allAccounts.length > 0 && (accountIdentifiers.homeAccountId || accountIdentifiers.localAccountId || accountIdentifiers.username)) {
+        const matchedAccounts = allAccounts.filter(accountObj => {
+            if (accountIdentifiers.username && accountIdentifiers.username.toLowerCase() !== accountObj.username.toLowerCase()) {
+                return false;
+            }
+            if (accountIdentifiers.homeAccountId && accountIdentifiers.homeAccountId.toLowerCase() !== accountObj.homeAccountId.toLowerCase()) {
+                return false;
+            }
+            if (accountIdentifiers.localAccountId && accountIdentifiers.localAccountId.toLowerCase() !== accountObj.localAccountId.toLowerCase()) {
+                return false;
+            }
 
-    return null;
+            return true;
+        });
+
+        return matchedAccounts[0] || null;
+    } else {
+        return null;
+    }
 }
 
+/**
+ * Given 1 or more accountIdentifiers, returns the Account object if the user is signed-in
+ * @param accountIdentifiers 
+ */
 export function useAccount(accountIdentifiers: AccountIdentifiers): AccountInfo | null {
     const { instance, inProgress } = useMsal();
 
-    const [account, setAccount] = useState<AccountInfo|null>(null);
+    const initialStateValue = inProgress === InteractionStatus.Startup ? null : getAccount(instance, accountIdentifiers);
+    const [account, setAccount] = useState<AccountInfo|null>(initialStateValue);
 
     useEffect(() => {
-        setAccount(getAccount(instance, accountIdentifiers));
-    }, [inProgress, accountIdentifiers, instance]);
+        const currentAccount = getAccount(instance, accountIdentifiers);
+        if (!AccountEntity.accountInfoIsEqual(account, currentAccount, true)) {
+            setAccount(currentAccount);
+        }
+    }, [inProgress, accountIdentifiers, instance, account]);
 
     return account;
 }
