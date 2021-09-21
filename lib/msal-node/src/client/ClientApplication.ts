@@ -56,6 +56,7 @@ export abstract class ClientApplication {
     protected storage: NodeStorage;
     /**
      * Logger object to log the application flow
+     * this is a test comment. 
      */
     protected logger: Logger;
     /**

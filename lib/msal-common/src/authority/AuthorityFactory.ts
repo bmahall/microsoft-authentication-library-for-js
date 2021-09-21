@@ -24,7 +24,10 @@ export class AuthorityFactory {
      * @param protocolMode
      */
     static async createDiscoveredInstance(authorityUri: string, networkClient: INetworkModule, cacheManager: ICacheManager, authorityOptions: AuthorityOptions): Promise<Authority> {
-        // Initialize authority and perform discovery endpoint check.
+        /*
+         *  Initialize authority and perform discovery endpoint check. 
+         * this is a test comment. 
+         */
         const acquireTokenAuthority: Authority = AuthorityFactory.createInstance(authorityUri, networkClient, cacheManager, authorityOptions);
 
         try {
