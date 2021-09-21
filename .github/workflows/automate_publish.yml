@@ -52,7 +52,6 @@ jobs:
     - run: |
               npm install
               npm run build:extensions
-              npm ci 
-              npm update
+              npm install && npm update
               npm run build
               npm publish --dry-run
