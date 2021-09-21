@@ -11,6 +11,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
 
       # Checkout the code
@@ -19,7 +21,6 @@ jobs:
 
     - uses: actions/setup-node@v1
       with:
-          node-version: '14.x'
           registry-url: "https://registry.npmjs.org"
 
     - uses: dorny/paths-filter@v2
@@ -47,7 +48,7 @@ jobs:
       # Run  install to install project packages
     - run: |
               npm install
-      #  to build the project
-    - run: npm build
-      # publish the files to NPM
-    - run: npm publish --dry-run
+              npm run build:extensions
+              npm ci 
+              npm run build
+              npm publish --dry-run
