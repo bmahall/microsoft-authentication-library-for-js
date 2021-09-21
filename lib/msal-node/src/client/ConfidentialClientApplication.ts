@@ -40,7 +40,7 @@ export class ConfidentialClientApplication extends ClientApplication {
      */
     constructor(configuration: Configuration) {
         super(configuration);
-        this.setClientCredential(this.config);
+        this.setClientCredential(this.config); // this is test comment.
     }
 
     /**

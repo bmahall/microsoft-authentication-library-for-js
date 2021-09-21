@@ -1,0 +1,59 @@
+# NPM Publish is the name for this action
+name: NPM Publish
+
+# This action will trigger on every release get created
+on:
+  push:
+      branches:
+      - dev
+
+# Job will run on a ubuntu instance
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    steps:
+
+      # Checkout the code
+    - uses: actions/checkout@v2
+      # Setup node with version 12.x and NPM registry url
+
+    - uses: actions/setup-node@v1
+      with:
+          registry-url: "https://registry.npmjs.org"
+
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+          filters: |
+            core:
+              - 'lib/msal-core/**/**.!(md)'
+            common: &common
+              - 'lib/msal-common/**/**.!(md)'
+            browser: &browser
+              - *browser
+              - *common
+            node:
+              - 'lib/msal-node/**/**.!(md)'
+              - *common
+            angular:
+              - 'lib/msal-angular/**/**.!(md)'
+              - *browser
+            react:
+              - 'lib/msal-react/**/**.!(md)'
+              - *browser
+          list-files: json   
+
+    - name: Printing changed services
+      run: |
+        for val in ${{ join(fromJson(steps.changes.outputs.changes), ' ') }}; do echo $val; done
+
+      # Run  install to install project packages
+    - run: |
+              npm install
+              npm run build:extensions
+              npm ci 
+              npm update
+              npm run build
+              npm publish --dry-run
