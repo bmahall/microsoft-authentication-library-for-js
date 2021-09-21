@@ -12,20 +12,42 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+
       # Checkout the code
-      - uses: actions/checkout@v2
+    - uses: actions/checkout@v2
       # Setup node with version 12.x and NPM registry url
-      - uses: actions/setup-node@v1
-        with:
+
+    - uses: actions/setup-node@v1
+      with:
           node-version: '14.x'
           registry-url: "https://registry.npmjs.org"
+
+    - uses: dorny/paths-filter@v2
+      id: changes
+      with:
+          filters: |
+            core:
+              - 'lib/msal-core/**/**.!(md)'
+            common: &common
+              - 'lib/msal-common/**/**.!(md)'
+            browser: &browser
+              - *common
+            node:
+              - *common
+            angular:
+              - *browser
+            react:
+              - *browser
+          list-files: json   
+
+    - name: Printing changed services
+      run: |
+        for val in ${{ join(fromJson(steps.changes.outputs.changes), ' ') }}; do echo $val; done
+
       # Run  install to install project packages
-      - run: |
+    - run: |
               npm install
       #  to build the project
-      - run: npm build
+    - run: npm build
       # publish the files to NPM
-      - run: npm publish --dry-run
-      # for publishing, npm need authorization. We add the NPM token to the environment which will take care of authorization to publish to the package
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+    - run: npm publish --dry-run
