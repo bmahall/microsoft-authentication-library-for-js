@@ -35,13 +35,13 @@ jobs:
               - *browser
               - *common
             node:
-              - *node
+              - 'lib/msal-node/**/**.!(md)'
               - *common
             angular:
-              - *angular
+              - 'lib/msal-angular/**/**.!(md)'
               - *browser
             react:
-              - *react
+              - 'lib/msal-react/**/**.!(md)'
               - *browser
           list-files: json   
 
