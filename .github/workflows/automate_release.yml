@@ -12,8 +12,6 @@ jobs:
     if: github.event.pull_request.merged == true && !contains(github.head_ref, 'release')
     name: Bump versions and create changelog PR --updation
     runs-on: ubuntu-latest
-    env:
-      RUNNING_NODE_CI: 1
 
     steps:
       # Check-out repo
