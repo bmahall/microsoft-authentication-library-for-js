@@ -13,7 +13,7 @@ import { PopupHandler, PopupParams } from "../interaction_handler/PopupHandler";
 import { EndSessionPopupRequest } from "../request/EndSessionPopupRequest";
 import { NavigationOptions } from "../navigation/NavigationOptions"; // this is test comm
 import { BrowserUtils } from "../utils/BrowserUtils"; // this is test comm
-import { PopupRequest } from "../request/PopupRequest"; // this is test commetn
+import { PopupRequest } from "../request/PopupRequest"; // this is test comment
 
 export class PopupClient extends StandardInteractionClient {
     /**
