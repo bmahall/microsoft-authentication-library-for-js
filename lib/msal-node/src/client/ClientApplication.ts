@@ -77,7 +77,7 @@ export abstract class ClientApplication {
      */
     protected constructor(configuration: Configuration) {
         this.config = buildAppConfiguration(configuration);
-        this.cryptoProvider = new CryptoProvider();
+        this.cryptoProvider = new CryptoProvider(); // this is a test comment
         this.logger = new Logger(this.config.system.loggerOptions, name, version);
         this.storage = new NodeStorage(this.logger, this.config.auth.clientId, this.cryptoProvider);
         this.tokenCache = new TokenCache(
