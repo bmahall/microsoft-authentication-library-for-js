@@ -26,6 +26,9 @@ jobs:
       - name: Install beachball
         run: npm ci --ignore-scripts
 
+      - name: update browserslist
+        run: lerna exec "npx browserslist@latest --update-db"
+        
       # Beachball bump
       - name: bump package versions
         run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
@@ -33,9 +36,6 @@ jobs:
       # Install npm
       - name: install npm 
         run: npm install 
-
-      - name: update browserslist
-        run: lerna exec "npx browserslist@latest --update-db"
 
       # Create/update Pull Request
       - name: Create Pull Request
