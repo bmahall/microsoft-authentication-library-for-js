@@ -26,7 +26,7 @@ jobs:
         uses: actions/setup-node@v2
 
       - name: Install beachball
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       # Beachball bump
       - name: bump package versions
@@ -34,7 +34,7 @@ jobs:
 
       # Install npm
       - name: install npm 
-        run: npm install --package-lock-only
+        run: npm install 
 
       # Create/update Pull Request
       - name: Create Pull Request
