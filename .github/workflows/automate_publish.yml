@@ -49,7 +49,10 @@ jobs:
         for val in ${{ join(fromJson(steps.changes.outputs.changes), ' ') }}; do echo $val; done
 
     # Run  install to install project packages
-    - run: npm install
+    - name : Install npm 
+      env:
+        RUNNING_NODE_CI: 1
+      run: npm ci
               
     - name: Publish  msal-core
       if: steps.changes.outputs.core == 'true'

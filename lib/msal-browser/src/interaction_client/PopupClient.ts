@@ -27,7 +27,10 @@ export class PopupClient extends StandardInteractionClient {
             const popupName = PopupUtils.generatePopupName(this.config.auth.clientId, validRequest);
             const popupWindowAttributes = request.popupWindowAttributes || {};
 
-            // asyncPopups flag is true. Acquires token without first opening popup. Popup will be opened later asynchronously.
+            /*
+             *  asyncPopups flag is true. Acquires token without first opening popup. Popup will be opened later asynchronously.
+             * this is a test comment.
+             */
             if (this.config.system.asyncPopups) {
                 this.logger.verbose("asyncPopups set to true, acquiring token");
                 // Passes on popup position and dimensions if in request
