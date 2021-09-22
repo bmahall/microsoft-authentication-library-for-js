@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "chgb27",
-  "packageName": "@azure/msal-node",
-  "email": "bmahal@microsoft.com",
-  "dependentChangeType": "patch"
-}

@@ -2,6 +2,21 @@
   "name": "@azure/msal-react",
   "entries": [
     {
+      "date": "Wed, 22 Sep 2021 19:28:58 GMT",
+      "tag": "@azure/msal-react_v1.0.18",
+      "version": "1.0.18",
+      "comments": {
+        "patch": [
+          {
+            "comment": "b31 chg",
+            "author": "bmahal@microsoft.com",
+            "commit": "d2df6d929bb1a39810b07781e3b430ee196fae2c",
+            "package": "@azure/msal-react"
+          }
+        ]
+      }
+    },
+    {
       "date": "Wed, 22 Sep 2021 18:00:54 GMT",
       "tag": "@azure/msal-react_v1.0.17",
       "version": "1.0.17",
