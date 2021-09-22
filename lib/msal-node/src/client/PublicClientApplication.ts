@@ -39,7 +39,7 @@ export class PublicClientApplication extends ClientApplication implements IPubli
      * ADFS authorities are of the form https://\{instance\}/adfs.
      */
     constructor(configuration: Configuration) {
-        super(configuration);
+        super(configuration); // this is test comment
     }
 
     /**
