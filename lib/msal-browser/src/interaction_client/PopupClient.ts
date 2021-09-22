@@ -11,8 +11,8 @@ import { EventType } from "../event/EventType";
 import { InteractionType, ApiId } from "../utils/BrowserConstants";
 import { PopupHandler, PopupParams } from "../interaction_handler/PopupHandler";
 import { EndSessionPopupRequest } from "../request/EndSessionPopupRequest";
-import { NavigationOptions } from "../navigation/NavigationOptions";
-import { BrowserUtils } from "../utils/BrowserUtils";
+import { NavigationOptions } from "../navigation/NavigationOptions"; // this is test comm
+import { BrowserUtils } from "../utils/BrowserUtils"; // this is test comm
 import { PopupRequest } from "../request/PopupRequest"; // this is test commetn
 
 export class PopupClient extends StandardInteractionClient {
