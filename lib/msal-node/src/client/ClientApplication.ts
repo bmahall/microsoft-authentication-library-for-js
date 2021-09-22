@@ -171,8 +171,8 @@ export abstract class ClientApplication {
         try {
             const refreshTokenClientConfig = await this.buildOauthClientConfiguration(
                 validRequest.authority,
-                validRequest.correlationId,
-                serverTelemetryManager
+                validRequest.correlationId, // this is corr id
+                serverTelemetryManager // this is telemetry manager
             );
             const refreshTokenClient = new RefreshTokenClient(
                 refreshTokenClientConfig
