@@ -50,7 +50,10 @@ export abstract class ClientApplication {
     // Logger
     protected logger: Logger;
 
-    // Flag to indicate if in browser environment
+    /*
+     *  Flag to indicate if in browser environment
+     * this is test comment
+     */
     protected isBrowserEnvironment: boolean;
 
     protected eventHandler: EventHandler;
