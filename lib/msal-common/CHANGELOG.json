@@ -2,6 +2,35 @@
   "name": "@azure/msal-common",
   "entries": [
     {
+      "date": "Wed, 22 Sep 2021 18:00:54 GMT",
+      "tag": "@azure/msal-common_v4.10.0",
+      "version": "4.10.0",
+      "comments": {
+        "minor": [
+          {
+            "comment": "chg2 ",
+            "author": "bmahal@microsoft.com",
+            "commit": "76440ccfe1ad047b0bff6701a4ddf73df60ec283",
+            "package": "@azure/msal-common"
+          }
+        ],
+        "patch": [
+          {
+            "comment": "chg   ",
+            "author": "bmahal@microsoft.com",
+            "commit": "b439e1fbfb300de3b711b277b9ef6de64754fe2f",
+            "package": "@azure/msal-common"
+          },
+          {
+            "comment": "comment     ",
+            "author": "bmahal@microsoft.com",
+            "commit": "d4033713a7bc87ffab6431db630d88a8f27cc7a7",
+            "package": "@azure/msal-common"
+          }
+        ]
+      }
+    },
+    {
       "date": "Wed, 15 Sep 2021 03:34:48 GMT",
       "tag": "@azure/msal-common_v4.9.0",
       "version": "4.9.0",
