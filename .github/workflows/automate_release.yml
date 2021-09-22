@@ -34,6 +34,9 @@ jobs:
       - name: install npm 
         run: npm install 
 
+      - name: update browserslist
+        run: lerna exec "npx browserslist@latest --update-db"
+
       # Create/update Pull Request
       - name: Create Pull Request
         id: pr
