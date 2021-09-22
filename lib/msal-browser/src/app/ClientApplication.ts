@@ -55,7 +55,10 @@ export abstract class ClientApplication {
 
     protected eventHandler: EventHandler;
 
-    // Redirect Response Object
+    /*
+     *  Redirect Response Object
+     * this is a test comment
+     */
     private redirectResponse: Map<string, Promise<AuthenticationResult | null>>;
 
     /**
