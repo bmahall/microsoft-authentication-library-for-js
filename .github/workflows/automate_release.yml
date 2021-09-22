@@ -34,7 +34,7 @@ jobs:
 
       # Install npm
       - name: install npm 
-        run: npm install --package-lock
+        run: rm -f package-lock.json && npm install
 
       # Create/update Pull Request
       - name: Create Pull Request
