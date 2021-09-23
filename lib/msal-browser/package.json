@@ -81,10 +81,10 @@
     "ts-jest": "^27.0.2",
     "tslib": "^1.10.0",
     "tslint": "^5.20.0",
-    "typescript": "^3.8.3",
-    "@azure/msal-common": "^4.8.6"
+    "typescript": "^3.8.3"
   },
   "dependencies": {
-    "caniuse-lite": "^1.0.30001255"
+    "caniuse-lite": "^1.0.30001255",
+    "@azure/msal-common": "^4.8.6"
   }
 }

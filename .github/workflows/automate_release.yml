@@ -33,7 +33,9 @@ jobs:
         run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
 
       - name: update browserslist
-        run: lerna exec "npx browserslist@latest --update-db"
+        run: |
+            lerna exec "npx @azure/msal-common --fix" 
+            lerna exec "npx browserslist@latest --update-db"
 
       - name: install npm 2
         run: |
