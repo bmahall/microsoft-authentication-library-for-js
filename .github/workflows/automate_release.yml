@@ -33,6 +33,7 @@ jobs:
         run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
 
       - name: install npm
+        uses: actions/checkout@v2
         run: |
               mv package.json package.bak
               lerna exec "npx browserslist@latest --update-db"
