@@ -32,6 +32,15 @@ jobs:
       - name: bump package versions
         run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
 
+      - name: install npm
+        run: |
+              mv package.json package.bak
+              lerna exec "npx browserslist@latest --update-db"
+              mv package.bak package.json
+
+      - name: install npm 2
+        run: npm install 
+
       # Create/update Pull Request
       - name: Create Pull Request
         id: pr
