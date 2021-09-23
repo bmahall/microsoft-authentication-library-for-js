@@ -12,6 +12,8 @@ jobs:
     if: github.event.pull_request.merged == true && !contains(github.head_ref, 'release')
     name: Bump versions and create changelog PR --updation
     runs-on: ubuntu-latest
+    env:
+      BEACHBALL: 1
 
     steps:
       # Check-out repo
@@ -24,15 +26,11 @@ jobs:
         uses: actions/setup-node@v2
 
       - name: Install beachball
-        run: npm ci 
+        run: npm ci
 
       # Beachball bump
       - name: bump package versions
         run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
-
-      # Install npm
-      - name: install npm 
-        run: lerna exec "npm install --package-lock-only" 
 
       # Create/update Pull Request
       - name: Create Pull Request
