@@ -1,13 +1,12 @@
 # NPM Publish is the name for this action
 name: NPM Publish
 
-# This action will trigger on every successful release 
+# This action will trigger on every successful release
 on:
   pull_request:
     types: [closed]
     branches:
       - dev
-
 
 # Job will run on a ubuntu instance
 jobs:
@@ -17,18 +16,16 @@ jobs:
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
-
       # Checkout the code
-    - uses: actions/checkout@v2
-      # Setup node with version 12.x and NPM registry url
-
-    - uses: actions/setup-node@v1
-      with:
+      - uses: actions/checkout@v2
+        # Setup node with version 12.x and NPM registry url
+      - uses: actions/setup-node@v1
+        with:
           registry-url: "https://registry.npmjs.org"
 
-    - uses: dorny/paths-filter@v2
-      id: changes
-      with:
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
           filters: |
             core:
               - 'lib/msal-core/src/packageMetadata.ts'
@@ -42,53 +39,53 @@ jobs:
               - 'lib/msal-angular/src/packageMetadata.ts'
             react:
               - 'lib/msal-react/src/packageMetadata.ts'
-          list-files: json   
+          list-files: json
 
-    - name: Printing changed services
-      run: |
-        for val in ${{ join(fromJson(steps.changes.outputs.changes), ' ') }}; do echo $val; done
+      - name: Printing changed services
+        run: |
+          for val in ${{ join(fromJson(steps.changes.outputs.changes), ' ') }}; do echo $val; done
 
-    # Run  install to install project packages
-    - name : Install npm 
-      env:
-        RUNNING_NODE_CI: 1
-      run: npm ci
-              
-    - name: Publish  msal-core
-      if: steps.changes.outputs.core == 'true'
-      working-directory: lib/msal-core
-      run:
-        npm publish --dry-run
+      - name: Publish  msal-core
+        if: steps.changes.outputs.core == 'true'
+        working-directory: lib/msal-core
+        run: |
+          npm install
+          npm publish --dry-run
 
-    - name: Publish  msal-common
-      if: steps.changes.outputs.common == 'true'
-      working-directory: lib/msal-common
-      run:
-        npm publish --dry-run
+      - name: Publish  msal-common
+        if: steps.changes.outputs.common == 'true'
+        working-directory: lib/msal-common
+        run: |
+          npm install
+          npm publish --dry-run
 
-    - name: Publish  msal-browser
-      if: steps.changes.outputs.browser == 'true'
-      working-directory: lib/msal-browser
-      run:
-        npm publish --dry-run
+      - name: Publish  msal-browser
+        if: steps.changes.outputs.browser == 'true'
+        working-directory: lib/msal-browser
+        run: |
+          npm install
+          npm publish --dry-run
 
-    - name: Publish  msal-node
-      if: steps.changes.outputs.node == 'true'
-      working-directory: lib/msal-node
-      run:
-        npm publish --dry-run
+      - name: Publish  msal-node
+        if: steps.changes.outputs.node == 'true'
+        working-directory: lib/msal-node
+        run: |
+          npm install
+          npm publish --dry-run
 
-    - name: Publish  msal-angular
-      if: steps.changes.outputs.angular == 'true'
-      working-directory: lib/msal-angular
-      run:
-        npm publish --dry-run
+      - name: Publish  msal-angular
+        if: steps.changes.outputs.angular == 'true'
+        working-directory: lib/msal-angular
+        run: |
+          npm install
+          npm publish --dry-run
 
-    - name: Publish  msal-react
-      if: steps.changes.outputs.react == 'true'
-      working-directory: lib/msal-react
-      run:
-        npm publish --dry-run
+      - name: Publish  msal-react
+        if: steps.changes.outputs.react == 'true'
+        working-directory: lib/msal-react
+        run: |
+          npm install
+          npm publish --dry-run
 
   master:
     needs: build
@@ -101,7 +98,7 @@ jobs:
         with:
           fetch-depth: 0
           ref: master
-        
+
       - name: Reset promotion branch
         run: |
           git fetch origin dev:dev
@@ -115,7 +112,7 @@ jobs:
           commit-message: Post-release dev-master sync
           branch: dev
           base: master
-          title: 'Update master from dev post-release' 
+          title: "Update master from dev post-release"
           body: |
-            Master-dev sync PR : This PR aims to bring master up-to-date with latest dev changes post successful publish. 
+            Master-dev sync PR : This PR aims to bring master up-to-date with latest dev changes post successful publish.
           draft: false
