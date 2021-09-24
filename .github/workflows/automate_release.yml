@@ -36,11 +36,27 @@ jobs:
               cd lib/msal-browser
               mv package.json package.bak
 
+      - run: |
+              cd lib/msal-node
+              mv package.json package.bak
+
+      - run: |
+              cd lib/msal-react
+              mv package.json package.bak
+      
+
       - name: update browserslist
         run: lerna exec "npx browserslist@latest --update-db"
 
       - run: |
               cd lib/msal-browser
+              mv package.bak package.json 
+      - run: |
+              cd lib/msal-node
+              mv package.bak package.json 
+
+      - run: |
+              cd lib/msal-react
               mv package.bak package.json 
 
       - name: install npm 
