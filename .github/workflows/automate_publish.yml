@@ -11,7 +11,7 @@ on:
 # Job will run on a ubuntu instance
 jobs:
   build:
-    if: github.event.pull_request.merged == true && contains(github.head_ref, 'release')
+    if: github.event.pull_request.merged == true && contains(github.head_ref, 'release-staging')
     runs-on: ubuntu-latest
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -50,6 +50,7 @@ jobs:
         working-directory: lib/msal-core
         run: |
           npm install
+          npm run cdn
           npm publish --dry-run
 
       - name: Publish  msal-common
@@ -64,6 +65,7 @@ jobs:
         working-directory: lib/msal-browser
         run: |
           npm install
+          npm run cdn
           npm publish --dry-run
 
       - name: Publish  msal-node
@@ -87,32 +89,20 @@ jobs:
           npm install
           npm publish --dry-run
 
-  master:
-    needs: build
-    runs-on: ubuntu-latest
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-    steps:
-      # Check-out repo
-      - uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
-          ref: master
+      - name: Update package-locks
+        run: npm install
 
-      - name: Reset promotion branch
-        run: |
-          git fetch origin dev:dev
-          git reset --hard dev
+      - name: Create Github Releases and Discussions
+        run: npm run beachball:release
 
       # Create Pull Request from dev to master for sync post-publish
       - name: Create Pull Request
         id: pr
         uses: peter-evans/create-pull-request@v3
         with:
-          commit-message: Post-release dev-master sync
-          branch: dev
-          base: master
-          title: "Update master from dev post-release"
+          commit-message: Post-release
+          branch: Post-release
+          title: "Post release"
           body: |
-            Master-dev sync PR : This PR aims to bring master up-to-date with latest dev changes post successful publish.
+            This PR contains package lock updates & cdn README updates for msal-browser and msal-core.
           draft: false

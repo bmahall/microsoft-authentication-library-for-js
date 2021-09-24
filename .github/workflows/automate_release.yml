@@ -32,16 +32,22 @@ jobs:
       - name: bump package versions
         run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
 
-      - name: update browserslist
-        run: |
-            lerna exec "npx @azure/msal-common --fix" 
-            lerna exec "npx browserslist@latest --update-db"
+      - run: |
+              cd msal-browser
+              mv package.json package.bak
 
-      - name: install npm 2
+      - name: update browserslist
+        run: lerna exec "npx browserslist@latest --update-db"
+
+      - run: |
+              cd msal-browser
+              mv package.bak package.json 
+
+      - name: install npm 
         run: |
-               rm -rm node_modules
-               rm package-lock.json
-               npm i
+               rm -rf node_modules
+               # Update just the lock file
+               npm i --package-lock-only
 
       # Create/update Pull Request
       - name: Create Pull Request
