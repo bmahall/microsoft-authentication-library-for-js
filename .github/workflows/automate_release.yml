@@ -33,14 +33,14 @@ jobs:
         run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
 
       - run: |
-              cd msal-browser
+              cd lib/msal-browser
               mv package.json package.bak
 
       - name: update browserslist
         run: lerna exec "npx browserslist@latest --update-db"
 
       - run: |
-              cd msal-browser
+              cd lib/msal-browser
               mv package.bak package.json 
 
       - name: install npm 
