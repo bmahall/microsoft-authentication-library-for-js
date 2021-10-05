@@ -19,6 +19,7 @@ jobs:
           registry-url: "https://registry.npmjs.org"
 
       - name: build extensions
+        working-directory: extensions/msal-node-extensions
         run: |
           npm install
           npm run build
