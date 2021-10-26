@@ -2,6 +2,21 @@
   "name": "@azure/msal-react",
   "entries": [
     {
+      "date": "Tue, 26 Oct 2021 20:06:01 GMT",
+      "tag": "@azure/msal-react_v1.0.19",
+      "version": "1.0.19",
+      "comments": {
+        "patch": [
+          {
+            "comment": "Bump @azure/msal-browser to v2.19.7",
+            "author": "bmahal@microsoft.com",
+            "commit": "00f939bb5087eac4dc40a1c39ad3e41130c04c59",
+            "package": "@azure/msal-react"
+          }
+        ]
+      }
+    },
+    {
       "date": "Wed, 22 Sep 2021 19:28:58 GMT",
       "tag": "@azure/msal-react_v1.0.18",
       "version": "1.0.18",
