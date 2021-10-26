@@ -30,7 +30,42 @@ jobs:
 
       # Beachball bump
       - name: bump package versions
-        run: npm run beachball:bump
+        run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
+
+      - run: |
+              cd lib/msal-browser
+              mv package.json package.bak
+
+      - run: |
+              cd lib/msal-node
+              mv package.json package.bak
+
+      - run: |
+              cd lib/msal-react
+              mv package.json package.bak
+
+      - run: |
+              cd lib/msal-angular
+              mv package.json package.bak
+      
+
+      - name: update browserslist
+        run: lerna exec "npx browserslist@latest --update-db"
+
+      - run: |
+              cd lib/msal-browser
+              mv package.bak package.json 
+      - run: |
+              cd lib/msal-node
+              mv package.bak package.json 
+
+      - run: |
+              cd lib/msal-react
+              mv package.bak package.json 
+
+      - run: |
+              cd lib/msal-angular
+              mv package.bak package.json 
 
       - name: Get release date
         id: release-date

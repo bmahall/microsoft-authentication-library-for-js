@@ -14,7 +14,7 @@ export class EventHandler {
     private logger: Logger;
     private browserCrypto: ICrypto;
 
-    constructor(logger: Logger, browserCrypto: ICrypto) {
+    constructor(logger: Logger, browserCrypto: ICrypto) { /* constructor for Eventhandler Class*/
         this.eventCallbacks = new Map();
         this.logger = logger;
         this.browserCrypto = browserCrypto;
@@ -53,7 +53,7 @@ export class EventHandler {
      * @param error
      */
     emitEvent(eventType: EventType, interactionType?: InteractionType, payload?: EventPayload, error?: EventError): void {
-        if (typeof window !== "undefined") {
+        if (typeof window !== "undefined") { /* undefined window */
             const message: EventMessage = {
                 eventType: eventType,
                 interactionType: interactionType || null,

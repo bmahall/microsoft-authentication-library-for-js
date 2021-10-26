@@ -45,7 +45,7 @@ export class AuthorizationCodeClient extends BaseClient {
      *
      * Once the user inputs their credentials and consents, the authority will send a response to the redirect URI
      * sent in the request and should contain an authorization code, which can then be used to acquire tokens via
-     * acquireToken(AuthorizationCodeRequest)
+     * acquireToken(AuthorizationCodeRequest) hereee
      * @param request
      */
     async getAuthCodeUrl(request: CommonAuthorizationUrlRequest): Promise<string> {
@@ -57,6 +57,7 @@ export class AuthorizationCodeClient extends BaseClient {
     /**
      * API to acquire a token in exchange of 'authorization_code` acquired by the user in the first leg of the
      * authorization_code_grant
+     * this is test comment 
      * @param request
      */
     async acquireToken(request: CommonAuthorizationCodeRequest, authCodePayload?: AuthorizationCodePayload): Promise<AuthenticationResult> {
