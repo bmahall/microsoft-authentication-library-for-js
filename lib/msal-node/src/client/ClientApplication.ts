@@ -56,6 +56,7 @@ export abstract class ClientApplication {
     protected storage: NodeStorage;
     /**
      * Logger object to log the application flow
+     * this is a test comment. 
      */
     protected logger: Logger;
     /**
@@ -76,7 +77,7 @@ export abstract class ClientApplication {
      */
     protected constructor(configuration: Configuration) {
         this.config = buildAppConfiguration(configuration);
-        this.cryptoProvider = new CryptoProvider();
+        this.cryptoProvider = new CryptoProvider(); // this is a test comment
         this.logger = new Logger(this.config.system.loggerOptions, name, version);
         this.storage = new NodeStorage(this.logger, this.config.auth.clientId, this.cryptoProvider);
         this.tokenCache = new TokenCache(
@@ -170,8 +171,8 @@ export abstract class ClientApplication {
         try {
             const refreshTokenClientConfig = await this.buildOauthClientConfiguration(
                 validRequest.authority,
-                validRequest.correlationId,
-                serverTelemetryManager
+                validRequest.correlationId, // this is corr id //this is test comm
+                serverTelemetryManager // this is telemetry manager
             );
             const refreshTokenClient = new RefreshTokenClient(
                 refreshTokenClientConfig

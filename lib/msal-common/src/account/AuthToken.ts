@@ -10,11 +10,11 @@ import { StringUtils } from "../utils/StringUtils";
 import { ICrypto } from "../crypto/ICrypto";
 
 /**
- * JWT Token representation class. Parses token string and generates claims object.
+ * JWT Token representation class. it parses token string and generates claims object.
  */
 export class AuthToken {
 
-    // Raw Token string
+    // Raw Token string here
     rawToken: string;
     // Claims inside token
     claims: TokenClaims; /* token claims */
@@ -34,7 +34,7 @@ export class AuthToken {
      */
     static extractTokenClaims(encodedToken: string, crypto: ICrypto): TokenClaims {
 
-        const decodedToken: DecodedAuthToken = StringUtils.decodeAuthToken(encodedToken);
+        const decodedToken: DecodedAuthToken = StringUtils.decodeAuthToken(encodedToken); /* decode token */
 
         // token will be decoded to get the username
         try {
