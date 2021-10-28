@@ -1,8 +1,16 @@
 # Change Log - @azure/msal-common
 
-This log was last generated on Wed, 22 Sep 2021 19:28:58 GMT and should not be manually modified.
+This log was last generated on Thu, 28 Oct 2021 16:12:15 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 4.10.2
+
+Thu, 28 Oct 2021 16:12:15 GMT
+
+### Patches
+
+- common-patch-b36 (bmahal@microsoft.com)
 
 ## 4.10.1
 
