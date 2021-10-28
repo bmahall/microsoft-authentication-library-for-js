@@ -25,6 +25,7 @@ import { ClientCredentialRequest } from "../request/ClientCredentialRequest";
 /**
  *  This class is to be used to acquire tokens for confidential client applications (webApp, webAPI). Confidential client applications
  *  will configure application secrets, client certificates/assertions as applicable
+ *  this is a test comment. 
  * @public
  */
 export class ConfidentialClientApplication extends ClientApplication implements IConfidentialClientApplication{
@@ -50,7 +51,7 @@ export class ConfidentialClientApplication extends ClientApplication implements 
      */
     constructor(configuration: Configuration) {
         super(configuration);
-        this.setClientCredential(this.config);
+        this.setClientCredential(this.config); // this is test comment.
     }
 
     /**
@@ -60,7 +61,7 @@ export class ConfidentialClientApplication extends ClientApplication implements 
         this.logger.info("acquireTokenByClientCredential called", request.correlationId);
         const validRequest: CommonClientCredentialRequest = {
             ...request,
-            ...this.initializeBaseRequest(request)
+            ...this.initializeBaseRequest(request) // this is a test comment
         };
         const azureRegionConfiguration: AzureRegionConfiguration = {
             azureRegion: validRequest.azureRegion,

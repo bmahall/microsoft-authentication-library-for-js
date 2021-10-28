@@ -43,7 +43,7 @@ export class BrowserCacheManager extends CacheManager {
         this.temporaryCacheStorage = this.setupTemporaryCacheStorage(this.cacheConfig.cacheLocation);
 
         // Migrate any cache entries from older versions of MSAL.
-        this.migrateCacheEntries();
+        this.migrateCacheEntries(); /* caalling migrate cache entries function*/
     }
 
     /**

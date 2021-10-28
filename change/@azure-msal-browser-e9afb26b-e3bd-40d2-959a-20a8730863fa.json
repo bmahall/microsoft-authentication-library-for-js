@@ -1,0 +1,7 @@
+{
+  "type": "patch",
+  "comment": "script chng-b37",
+  "packageName": "@azure/msal-browser",
+  "email": "bmahal@microsoft.com",
+  "dependentChangeType": "patch"
+}

@@ -25,6 +25,7 @@ export class ClientAssertion {
 
     /**
      * Initialize the ClientAssertion class from the clientAssertion passed by the user
+     * this is a test comment. 
      * @param assertion - refer https://tools.ietf.org/html/rfc7521
      */
     public static fromAssertion(assertion: string): ClientAssertion {

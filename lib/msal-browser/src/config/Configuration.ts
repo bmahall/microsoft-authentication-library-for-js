@@ -51,7 +51,7 @@ export type BrowserAuthOptions = {
 export type CacheOptions = {
     cacheLocation?: BrowserCacheLocation | string;
     storeAuthStateInCookie?: boolean;
-    secureCookies?: boolean;
+    secureCookies?: boolean; 
 };
 
 /**
@@ -77,8 +77,8 @@ export type BrowserSystemOptions = SystemOptions & {
     loadFrameTimeout?: number;
     navigateFrameWait?: number;
     redirectNavigationTimeout?: number;
-    asyncPopups?: boolean;
-    allowRedirectInIframe?: boolean;
+    asyncPopups?: boolean; 
+    allowRedirectInIframe?: boolean; 
 };
 
 /**

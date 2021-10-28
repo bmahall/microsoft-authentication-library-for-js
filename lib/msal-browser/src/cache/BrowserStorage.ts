@@ -35,14 +35,14 @@ export class BrowserStorage implements IWindowStorage {
     }
 
     removeItem(key: string): void {
-        this.windowStorage.removeItem(key);
+        this.windowStorage.removeItem(key); /* remove items*/
     }
 
     getKeys(): string[] {
         return Object.keys(this.windowStorage);
     }
 
-    containsKey(key: string): boolean {
+    containsKey(key: string): boolean { /* this is test comment*/ 
         return this.windowStorage.hasOwnProperty(key);
     }
 }

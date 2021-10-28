@@ -1,13 +1,13 @@
 # Change Log - msal
 
-This log was last generated on Wed, 11 Aug 2021 20:45:13 GMT and should not be manually modified.
+This log was last generated on Wed, 22 Sep 2021 19:28:58 GMT and should not be manually modified.
 
 <!-- Start content -->
 
-## 1.4.13
+## 1.4.16
 
-Wed, 11 Aug 2021 20:45:13 GMT
+Wed, 22 Sep 2021 19:28:58 GMT
 
 ### Patches
 
-- comments added  (bmahal@microsoft.com)
+- chgb27 (bmahal@microsoft.com)

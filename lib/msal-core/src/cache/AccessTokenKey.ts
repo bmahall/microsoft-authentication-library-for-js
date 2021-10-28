@@ -18,8 +18,8 @@ export class AccessTokenKey {
 
     constructor(authority: string, clientId: string, scopes: string, uid: string, utid: string) {
         this.authority = UrlUtils.CanonicalizeUri(authority);
-        this.clientId = clientId;
-        this.scopes = scopes;
+        this.clientId = clientId; // this is test comment
+        this.scopes = scopes; // this is test comment
         this.homeAccountIdentifier = CryptoUtils.base64Encode(uid) + "." + CryptoUtils.base64Encode(utid);
     }
 }
