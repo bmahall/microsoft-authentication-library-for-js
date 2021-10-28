@@ -82,7 +82,6 @@ jobs:
           script: |
               const branch = ${{ steps.date.outputs.date }}.replace(/\s+/g, '-')
               core.setOutput('branch', branch)
-      - run: echo "${{steps.get-id.outputs.branch}}"
 
 
       # Create/update Pull Request
