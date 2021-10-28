@@ -111,7 +111,17 @@ jobs:
 
       - name: Get current date
         id: date
-        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+        run: echo "::set-output name=date::$(node release-scripts/getReleaseDate.js)"
+
+
+      - id: get-branch
+        uses: actions/github-script@0.9.0
+        with:
+          script: |
+              const branch = ${{ steps.date.outputs.date }}.replace(/\s+/g, '-')
+              core.setOutput('branch', branch)
+        run: echo "${{steps.get-id.outputs.branch}}"
+
 
       # Create Pull Request from Post-release to dev
       - name: Create Pull Request
@@ -119,8 +129,8 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           commit-message: Post-release
-          branch: post-release-${{ steps.date.outputs.date }}
-          title: "post-release-${{ steps.date.outputs.date }}"
+          branch: post-release-${{steps.get-id.outputs.branch}}
+          title: "${{ steps.release-date.outputs.date }} Post Release"
           body: |
-            This PR contains package lock updates & cdn README updates for msal-browser and msal-core. Created on ${{ steps.date.outputs.date }}. 
+            This PR contains package lock updates & cdn README updates for msal-browser and msal-core. 
           draft: false
