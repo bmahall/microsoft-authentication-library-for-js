@@ -36,7 +36,7 @@ export abstract class BaseClient {
     protected cacheManager: CacheManager;
 
     // Network Interface
-    protected networkClient: INetworkModule;
+    protected networkClient: INetworkModule; /* this is network interface */
 
     // Server Telemetry Manager
     protected serverTelemetryManager: ServerTelemetryManager | null;
@@ -63,13 +63,13 @@ export abstract class BaseClient {
         // Set the network interface
         this.networkClient = this.config.networkInterface;
 
-        // Set the NetworkManager
+        // Set the NetworkManager here
         this.networkManager = new NetworkManager(this.networkClient, this.cacheManager);
 
-        // Set TelemetryManager
+        // Set TelemetryManager here
         this.serverTelemetryManager = this.config.serverTelemetryManager;
 
-        // set Authority
+        // set Authority here
         this.authority = this.config.authOptions.authority;
     }
 

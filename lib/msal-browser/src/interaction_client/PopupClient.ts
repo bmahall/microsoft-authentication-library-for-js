@@ -11,13 +11,14 @@ import { EventType } from "../event/EventType";
 import { InteractionType, ApiId } from "../utils/BrowserConstants";
 import { PopupHandler, PopupParams } from "../interaction_handler/PopupHandler";
 import { EndSessionPopupRequest } from "../request/EndSessionPopupRequest";
-import { NavigationOptions } from "../navigation/NavigationOptions";
-import { BrowserUtils } from "../utils/BrowserUtils";
-import { PopupRequest } from "../request/PopupRequest";
+import { NavigationOptions } from "../navigation/NavigationOptions"; // this is test comm
+import { BrowserUtils } from "../utils/BrowserUtils"; // this is test comm
+import { PopupRequest } from "../request/PopupRequest"; // this is test comment
 
 export class PopupClient extends StandardInteractionClient {
     /**
      * Acquires tokens by opening a popup window to the /authorize endpoint of the authority
+     * this is popup client class 
      * @param request 
      */
     acquireToken(request: PopupRequest): Promise<AuthenticationResult> {
@@ -26,7 +27,10 @@ export class PopupClient extends StandardInteractionClient {
             const popupName = PopupUtils.generatePopupName(this.config.auth.clientId, validRequest);
             const popupWindowAttributes = request.popupWindowAttributes || {};
 
-            // asyncPopups flag is true. Acquires token without first opening popup. Popup will be opened later asynchronously.
+            /*
+             *  asyncPopups flag is true. Acquires token without first opening popup. Popup will be opened later asynchronously.
+             * this is a test comment.
+             */
             if (this.config.system.asyncPopups) {
                 this.logger.verbose("asyncPopups set to true, acquiring token");
                 // Passes on popup position and dimensions if in request
