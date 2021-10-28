@@ -32,17 +32,6 @@ jobs:
       - name: bump package versions
         run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
 
-      - run: |
-          cd lib/msal-browser
-          mv package.json package.bak
-
-      - name: update browserslist
-        run: lerna exec "npx browserslist@latest --update-db"
-
-      - run: |
-          cd lib/msal-browser
-          mv package.bak package.json
-
       - name: Get release date
         id: release-date
         run: echo "::set-output name=date::$(node release-scripts/getReleaseDate.js)"
