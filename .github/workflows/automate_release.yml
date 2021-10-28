@@ -30,7 +30,41 @@ jobs:
 
       # Beachball bump
       - name: bump package versions
-        run: npm run beachball:bump
+        run: node node_modules/beachball/bin/beachball bump -b origin/dev --bumpDeps false && node release-scripts/updateVersion.js
+
+      - run: |
+          cd lib/msal-browser
+          mv package.json package.bak
+
+      - run: |
+          cd lib/msal-node
+          mv package.json package.bak
+
+      - run: |
+          cd lib/msal-react
+          mv package.json package.bak
+
+      - run: |
+          cd lib/msal-angular
+          mv package.json package.bak
+
+      - name: update browserslist
+        run: lerna exec "npx browserslist@latest --update-db"
+
+      - run: |
+          cd lib/msal-browser
+          mv package.bak package.json
+      - run: |
+          cd lib/msal-node
+          mv package.bak package.json
+
+      - run: |
+          cd lib/msal-react
+          mv package.bak package.json
+
+      - run: |
+          cd lib/msal-angular
+          mv package.bak package.json
 
       - name: Get release date
         id: release-date
@@ -45,10 +79,8 @@ jobs:
         uses: actions/github-script@0.9.0
         with:
           script: |
-              const branch = ${{ steps.date.outputs.date }}.replace(/\s+/g, '-')
-              core.setOutput('branch', branch)
-        run: echo "${{steps.get-id.outputs.branch}}"
-
+            const branch = ${{ steps.date.outputs.date }}.replace(/\s+/g, '-')
+            core.setOutput('branch', branch)
 
       # Create/update Pull Request
       - name: Create Pull Request
@@ -59,5 +91,5 @@ jobs:
           branch: post-release-${{steps.get-id.outputs.branch}}
           title: "Release-${{ steps.date.outputs.date }}"
           body: |
-            Release PR : This PR contains the changelogs and version bumps for the ${{ steps.month.outputs.month }} releases. 
+            Release PR : This PR contains the changelogs and version bumps for the ${{ steps.month.outputs.month }} releases.
           draft: true
