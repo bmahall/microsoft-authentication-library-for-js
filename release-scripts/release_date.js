@@ -22,3 +22,4 @@ if (dateOfNextRelease > 7) {
 const delimiter = noSpaces ? '-' : ' ';
 const dateComponents = [months[month], year]
 const formattedDate = dateComponents.join(delimiter)
+console.log(formattedDate) //returns formatted date
