@@ -44,7 +44,8 @@ jobs:
       - name: Get release date
         id: release-date
         run: |
-          export date=node release-scripts/release_date.js -branch
+          export date
+          date=node release-scripts/release_date.js -branch
           echo "::set-output name=date::$date"
 
 
