@@ -45,9 +45,11 @@ jobs:
         id: release-date
         run: |
           br= node release-scripts/release_date.js -branch
-          echo "::set-output name=date::$br"
-          shell: bash
+          echo "::set-env name=date::$br"
 
+
+      - run: echo $date
+          
       -   name: Echo branch
           run: echo "${{ steps.release-date.outputs.date }} Release"
 
@@ -58,7 +60,7 @@ jobs:
         with:
           commit-message: Bump package versions
           branch: release-staging
-          title: "${{ steps.release-date.outputs.date }} Release"
+          title: "${{ date }} Release"
           body: |
             Release PR : This PR contains the changelogs and version bumps for the ${{ steps.month.outputs.month }} releases.
           draft: true
