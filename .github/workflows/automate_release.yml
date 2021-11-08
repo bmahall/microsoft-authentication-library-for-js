@@ -44,16 +44,16 @@ jobs:
       - name: Get release date
         id: release-date
         run: |
-          br= node release-scripts/release_date.js -branch
-          echo "::set-output name=date::$(br)"
+          export date=node release-scripts/release_date.js -branch
+          echo "::set-output name=date::$date"
 
 
       - name: step-2
-        run: echo "${{ steps.release-date.outputs.date }}"
+        run: echo $date
 
 
       -   name: Echo branch
-          run: echo "${{ steps.release-date.outputs.date }} Release"
+          run: echo "$date Release"
 
       # Create/update Pull Request
       - name: Create Pull Request
