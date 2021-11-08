@@ -35,7 +35,7 @@ jobs:
 
       - name: Get release date
         id: release-date
-        run: echo "::set-output name=date::$(node release-scripts/getReleaseDate.js -branch)"
+        run: echo "::set-output name=date::$(node release-scripts/release_date.js -branch)"
 
       # Create/update Pull Request
       - name: Create Pull Request
