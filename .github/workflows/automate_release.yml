@@ -45,7 +45,7 @@ jobs:
         id: release-date
         run: |
           br= node release-scripts/release_date.js -branch
-          echo "::set-output name=date::$br"
+          echo "::set-output name=date::$(br)"
 
 
       - name: step-2
