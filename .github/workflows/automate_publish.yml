@@ -16,8 +16,6 @@ jobs:
   build:
     if: (github.event.pull_request.merged == true && contains(github.head_ref,'release-staging'))
     runs-on: ubuntu-latest
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     steps:
       # Checkout the code
@@ -55,7 +53,7 @@ jobs:
 
 
       - name: Echo branch
-        run: echo "${{ steps.release-date.outputs.date }} Release"
+        run: echo "post-release-${{ steps.release-date.outputs.date }}"
 
 
       # Create Pull Request from Post-release to dev- containing the package lock and cdn README updations
@@ -64,8 +62,8 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           commit-message: Post-release
-          branch: "${{ steps.release-date.outputs.date }}-post-release" 
-          title: "Post release"
+          branch: "post-release-${{ steps.release-date.outputs.date }}" 
+          title: "${{ steps.release-date.outputs.date }} Post Release"
           body: |
             This PR contains package lock updates & cdn README updates for msal-browser and msal-core.
           draft: false
