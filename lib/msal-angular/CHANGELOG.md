@@ -1,12 +1,15 @@
 # Change Log - @azure/msal-angular
 
+
 This log was last generated on Tue, 09 Nov 2021 19:46:37 GMT and should not be manually modified.
+
 
 <!-- Start content -->
 
 ## 2.0.20
 
 Tue, 09 Nov 2021 19:46:37 GMT
+
 
 ### Patches
 
