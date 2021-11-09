@@ -46,15 +46,15 @@ jobs:
 
       - name: Get release date
         id: release-date
-        run: echo "::set-output name=date::$(node release-scripts/release_date.js)"
+        run: echo "::set-output name=date::$(node release-scripts/release_date.js -branch)"
 
-      # Create/update Pull Request
+      # Create/update Pull Request here
       - name: Create Pull Request
         id: pr
         uses: peter-evans/create-pull-request@v3
         with:
           commit-message: Bump package versions
-          branch: release-staging
+          branch: "${{ steps.release-date.outputs.date }}-release-staging"
           title: "${{ steps.release-date.outputs.date }} Release"
           body: |
             Release PR : This PR contains the changelogs and version bumps for the ${{ steps.month.outputs.month }} releases.
