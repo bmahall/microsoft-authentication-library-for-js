@@ -8,13 +8,14 @@ on:
     branches:
       - dev
 
+concurrency:
+    group: npm-publish
+
 # Job will run on a ubuntu instance
 jobs:
   build:
-    if: (github.event.pull_request.merged == true && github.head_ref == 'release-staging')
+    if: (github.event.pull_request.merged == true && contains(github.head_ref,'release-staging'))
     runs-on: ubuntu-latest
-    env:
-      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
     steps:
       # Checkout the code
@@ -44,70 +45,16 @@ jobs:
               - 'extensions/msal-node-extensions/package.json'
           list-files: json
 
-      - name: Publish  msal-core
-        if: steps.changes.outputs.core == 'true'
-        working-directory: lib/msal-core
-        env:
-          CDN_EUNO_SAS: ${{ secrets.CDN_EUNO_SAS}}
-          CDN_USWE_SAS: ${{ secrets.CDN_USWE_SAS}}
+ 
+      - name: Get release date
+        id: release-date
         run: |
-          npm install
-          npm run cdn
-          npm publish
+          echo "::set-output name=date::$(node release-scripts/release_date.js -branch)"
 
-      - name: Publish  msal-common
-        if: steps.changes.outputs.common == 'true'
-        working-directory: lib/msal-common
-        run: |
-          npm install
-          npm publish
 
-      - name: Publish  msal-browser
-        if: steps.changes.outputs.browser == 'true'
-        working-directory: lib/msal-browser
-        env:
-          CDN_EUNO_SAS: ${{ secrets.CDN_EUNO_SAS}}
-          CDN_USWE_SAS: ${{ secrets.CDN_USWE_SAS}}
-        run: |
-          npm install
-          npm run cdn
-          npm publish
+      - name: Echo branch
+        run: echo "post-release-${{ steps.release-date.outputs.date }}"
 
-      - name: Publish  msal-node
-        if: steps.changes.outputs.node == 'true'
-        working-directory: lib/msal-node
-        run: |
-          npm install
-          npm publish
-
-      - name: Publish  msal-angular
-        if: steps.changes.outputs.angular == 'true'
-        working-directory: lib/msal-angular
-        run: |
-          npm install
-          npm run deploy
-
-      - name: Publish  msal-react
-        if: steps.changes.outputs.react == 'true'
-        working-directory: lib/msal-react
-        run: |
-          npm install
-          npm publish
-
-      - name: Publish node-extensions
-        if: steps.changes.outputs.node-extensions== 'true'
-        working-directory: extensions/msal-node-extensions
-        run: |
-          npm install
-          npm publish
-
-      - name: Create Github Releases and Discussions
-        env:
-          GITHUB_AUTH: ${{ secrets.GITHUB_TOKEN}}
-        run: npm run beachball:release
-
-      - name: Update package-locks
-        run: npm install
 
       # Create Pull Request from Post-release to dev- containing the package lock and cdn README updations
       - name: Create Pull Request
@@ -115,8 +62,8 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           commit-message: Post-release
-          branch: Post-release
-          title: "Post release"
+          branch: "post-release-${{ steps.release-date.outputs.date }}" 
+          title: "${{ steps.release-date.outputs.date }} Post Release"
           body: |
             This PR contains package lock updates & cdn README updates for msal-browser and msal-core.
           draft: false
