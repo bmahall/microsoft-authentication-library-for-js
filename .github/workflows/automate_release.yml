@@ -2,8 +2,7 @@
 name: Automate Release
 
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - dev
 
@@ -13,7 +12,7 @@ concurrency:
 
 jobs:
   release:
-    if: (github.event.pull_request.merged == true && !contains(github.head_ref, 'release'))
+    if: (!contains(github.head_ref, 'release'))
     name: Bump versions and create changelogs
     runs-on: ubuntu-latest
     env:
@@ -45,6 +44,10 @@ jobs:
       - name: Get release date
         id: release-date
         run: echo "::set-output name=date::$(node release-scripts/release_date.js)"
+
+      - name: Get PR source branch
+        run: echo "::set-output name=src::$(git branch --show-current)"
+        
 
       # Create/update Pull Request here
       - name: Create Pull Request
