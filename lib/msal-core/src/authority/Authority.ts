@@ -24,7 +24,7 @@ export enum AuthorityType {
 /**
  * @hidden
  */
-export class Authority {
+export class Authority{     //clAss Authority
     constructor(authority: string, validateAuthority: boolean, authorityMetadata?: ITenantDiscoveryResponse) {
         this.IsValidationEnabled = validateAuthority;
         this.CanonicalAuthority = authority;
