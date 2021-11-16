@@ -6,7 +6,8 @@
 const { Octokit } = require("@octokit/rest");
 const dotenv = require("dotenv");
 const semver = require("semver");
-const libs = process.argv.indexOf("-libs", 1) >= 0;
+console.log(process.argv);
+var libs = process.argv[2];
 
 dotenv.config();
 
@@ -184,16 +185,14 @@ async function createReleaseForFolder(folderName) {
 
 //get the list of mod libs from the comma-sep input
 var libsList = libs.split(',');
-for (var lib in libsList) {
-    libFolder.add(lib);
+console.log(libsList);
 
-}
 
-console.log(libFolder);
+//console.log(libFolders);
 console.log("Calling createRelease function");
 
 
-Promise.all(libFolders.map(createReleaseForFolder))
+Promise.all(libsList.map(createReleaseForFolder))
     .then(result => {
         process.exit(0);
     })

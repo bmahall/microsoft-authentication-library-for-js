@@ -17,7 +17,6 @@ on:
 # Job will run on a ubuntu instance
 jobs:
   build:
-    if: (github.event.pull_request.merged == true && github.head_ref == 'release-staging')
     runs-on: ubuntu-latest
     env:
       NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
