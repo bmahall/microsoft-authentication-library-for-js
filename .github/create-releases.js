@@ -6,6 +6,7 @@
 const { Octokit } = require("@octokit/rest");
 const dotenv = require("dotenv");
 const semver = require("semver");
+const libs = process.argv.indexOf("-libs", 1) >= 0;
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ const octokit = new Octokit({
 });
 
 const { graphql } = require("@octokit/graphql");
+const { consoleTestResultHandler } = require("tslint/lib/test");
 const graphqlWithAuth = graphql.defaults({
     headers: {
         authorization: `token ${process.env.GITHUB_AUTH}`,
@@ -26,14 +28,7 @@ const repoMeta = {
     repo: "microsoft-authentication-library-for-js"
 };
 
-const libFolders = [
-    "msal-angular",
-    "msal-browser",
-    "msal-common",
-    "msal-core",
-    "msal-node",
-    "msal-react",
-];
+var libFolders = [];
 
 const CHANGELOGFILE = "CHANGELOG.json";
 
@@ -159,7 +154,7 @@ async function createReleaseForFolder(folderName) {
         if (milestone) {
             const closeExistingMilestone = await octokit.issues.updateMilestone({
                 ...repoMeta,
-                milestone_number: milestone.number, 
+                milestone_number: milestone.number,
                 state: "closed"
             });
             console.log(`Milestone closed: ${name}@${version}`)
@@ -168,11 +163,11 @@ async function createReleaseForFolder(folderName) {
         }
 
         const currentVersion = new semver.SemVer(version);
-        
+
         // Next patch milestone
         const nextPatchVersion = semver.inc(currentVersion.raw, "patch");
         await createGithubMilestone(name, nextPatchVersion);
-        
+
         if (currentVersion.prerelease.length) {
             // Next prerelease milestone
             const nextPrereleaseVersion = semver.inc(currentVersion.raw, "prerelease")
@@ -186,6 +181,17 @@ async function createReleaseForFolder(folderName) {
         console.log(`Release exists for: ${tag_name}`);
     }
 }
+
+//get the list of mod libs from the comma-sep input
+var libsList = libs.split(',');
+for (var lib in libsList) {
+    libFolder.add(lib);
+
+}
+
+console.log(libFolder);
+console.log("Calling createRelease function");
+
 
 Promise.all(libFolders.map(createReleaseForFolder))
     .then(result => {
