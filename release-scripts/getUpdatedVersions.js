@@ -21,7 +21,7 @@ async function runProcess(command, args) {
     });
 }
 
-const VERSION_DIFF_REGEX = /.*"version":\s*"([0-9\.]+)".*$/
+const VERSION_DIFF_REGEX = /^\+\s*"version":\s*"([0-9\.]+)".*$/
 
 async function getBumpedModules() {
     const modules = fs.readdirSync('./lib');
@@ -34,7 +34,7 @@ async function getBumpedModules() {
         if (diff.trim().length < 1) continue;
 
         const lines = diff.split("\n")
-            .filter(line => /^\+FOO\s*"version"/.test(line.trim()));
+            .filter(line => VERSION_DIFF_REGEX.test(line.trim()));
 
 
         if (lines.length !== 1) {

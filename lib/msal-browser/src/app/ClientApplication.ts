@@ -124,7 +124,10 @@ export abstract class ClientApplication {
         this.tokenCache = new TokenCache(this.config, this.browserStorage, this.logger, this.browserCrypto);
     }
 
-    // #region Redirect Flow
+    /*
+     *  #region Redirect Flow
+     * client application
+     */
 
     /**
      * Event handler function which allows users to fire events after the PublicClientApplication object
