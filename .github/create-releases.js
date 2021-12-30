@@ -3,6 +3,8 @@
  * Licensed under the MIT License.
  */
 
+const libNameIndex = process.argv.indexOf("-lib", 1);
+const libName = libNameIndex >= 0 ? process.argv[libNameIndex + 1] : null;
 const { Octokit } = require("@octokit/rest");
 const dotenv = require("dotenv");
 const semver = require("semver");
@@ -26,14 +28,6 @@ const repoMeta = {
     repo: "microsoft-authentication-library-for-js"
 };
 
-const libFolders = [
-    "msal-angular",
-    "msal-browser",
-    "msal-common",
-    "msal-core",
-    "msal-node",
-    "msal-react",
-];
 
 const CHANGELOGFILE = "CHANGELOG.json";
 
@@ -159,7 +153,7 @@ async function createReleaseForFolder(folderName) {
         if (milestone) {
             const closeExistingMilestone = await octokit.issues.updateMilestone({
                 ...repoMeta,
-                milestone_number: milestone.number, 
+                milestone_number: milestone.number,
                 state: "closed"
             });
             console.log(`Milestone closed: ${name}@${version}`)
@@ -168,11 +162,11 @@ async function createReleaseForFolder(folderName) {
         }
 
         const currentVersion = new semver.SemVer(version);
-        
+
         // Next patch milestone
         const nextPatchVersion = semver.inc(currentVersion.raw, "patch");
         await createGithubMilestone(name, nextPatchVersion);
-        
+
         if (currentVersion.prerelease.length) {
             // Next prerelease milestone
             const nextPrereleaseVersion = semver.inc(currentVersion.raw, "prerelease")
@@ -187,7 +181,11 @@ async function createReleaseForFolder(folderName) {
     }
 }
 
-Promise.all(libFolders.map(createReleaseForFolder))
+if (libName == null) {
+    return;
+}
+
+Promise.resolve(createReleaseForFolder(libName))
     .then(result => {
         process.exit(0);
     })
