@@ -126,7 +126,6 @@ export abstract class ClientApplication {
 
     /*
      *  #region Redirect Flow
-     * client application
      */
 
     /**
