@@ -64,12 +64,9 @@ function formatBumpedModuleMessage(moduleToNewVersion) {
 
     const modList = Object.keys(moduleToNewVersion)
         .map(module => `- ${module}: ${moduleToNewVersion[module]}`)
-        .join("\n")
+        .join("%0A")
 
-    return `The following modules have had their versions bumped: 
-${modList}
-
-    `
+    return `The following modules have had their versions bumped: %0A ${modList}`
 }
 
 process.on('unhandledRejection', (e) => {
