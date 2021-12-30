@@ -30,7 +30,7 @@ export abstract class BaseInteractionClient {
         this.browserStorage = storageImpl;
         this.browserCrypto = browserCrypto;
         this.networkClient = this.config.system.networkClient;
-        this.eventHandler = eventHandler;
+        this.eventHandler = eventHandler; // event handler
         this.correlationId = correlationId || this.browserCrypto.createNewGuid();
         this.logger = logger.clone(BrowserConstants.MSAL_SKU, version, this.correlationId);
     }
