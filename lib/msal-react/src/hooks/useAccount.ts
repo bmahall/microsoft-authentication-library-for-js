@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { AccountInfo, IPublicClientApplication, InteractionStatus, AccountEntity } from "@azure/msal-browser";
 import { useMsal } from "./useMsal";
 import { AccountIdentifiers } from "../types/AccountIdentifiers";
+// get account hook 
 
 function getAccount(instance: IPublicClientApplication, accountIdentifiers: AccountIdentifiers): AccountInfo | null {
     const allAccounts = instance.getAllAccounts();

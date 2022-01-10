@@ -22,6 +22,7 @@ export type MsalProviderProps = PropsWithChildren<{
     instance: IPublicClientApplication;
 }>;
 
+// function msal provider in React
 export function MsalProvider({instance, children}: MsalProviderProps): React.ReactElement {
     useEffect(() => {
         instance.initializeWrapperLibrary(WrapperSKU.React, version);
