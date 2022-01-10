@@ -23,7 +23,7 @@ async function runProcess(command, args) {
 
 const VERSION_DIFF_REGEX = /^\+\s*"version":\s*"([0-9\.]+)".*$/
 
-async function getBumpedModules() {
+async function getModules() {
     const modules = fs.readdirSync('./lib');
     const moduleToNewVersion = {};
 
@@ -35,21 +35,14 @@ async function getBumpedModules() {
 
         const lines = diff.split("\n")
             .filter(line => VERSION_DIFF_REGEX.test(line.trim()));
+            
+        const regexResult = VERSION_DIFF_REGEX.exec(lines);
 
-
-        if (lines.length !== 1) {
-            throw new Error("Cannot determine new version for module " + module)
-        }
-
-        const [line] = lines;
-        const regexResult = VERSION_DIFF_REGEX.exec(line);
-
-        if (!regexResult || !regexResult[1]) {
+        if (!regexResult) {
             throw new Error("Cannot parse version for module " + module)
         }
 
         const newVersion = regexResult[1];
-
         moduleToNewVersion[module] = newVersion;
 
     }
@@ -77,3 +70,4 @@ process.on('unhandledRejection', (e) => {
 (async () => {
     console.log(formatBumpedModuleMessage(await getBumpedModules()));
 })();
+

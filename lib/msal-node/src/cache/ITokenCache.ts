@@ -9,7 +9,7 @@ import { AccountInfo } from "@azure/msal-common";
  * Token cache interface for the client, giving access to cache APIs
  * @public
  */
-export interface ITokenCache {
+export interface ITokenCache { // interface for Token Cache
 
     /** API that retrieves all accounts currently in cache to the user */
     getAllAccounts(): Promise<AccountInfo[]>;

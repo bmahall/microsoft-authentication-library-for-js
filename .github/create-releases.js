@@ -181,9 +181,7 @@ async function createReleaseForFolder(folderName) {
     }
 }
 
-if (libName == null) {
-    return;
-}
+const libFolders = libName ? [libName] : defaultLibFolders;
 
 Promise.resolve(createReleaseForFolder(libName))
     .then(result => {
