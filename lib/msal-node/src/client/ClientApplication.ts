@@ -51,7 +51,7 @@ export abstract class ClientApplication {
     private tokenCache: TokenCache;
 
     /**
-     * Platform storage object
+     * Platform storage object node storage
      */
     protected storage: NodeStorage;
     /**
