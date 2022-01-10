@@ -15,8 +15,9 @@ export const AuthErrorMessage = {
 };
 
 /**
- * General error class thrown by the MSAL.js library.
+ * General error class thrown by the MSAL.js library. Auth Err
  */
+// comemnnttt
 export class AuthError extends Error {
 
     errorCode: string;
