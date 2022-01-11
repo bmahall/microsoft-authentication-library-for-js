@@ -67,8 +67,8 @@ async function getBumpedModules() {
 
     // console.log(moduleToNewVersion);
     modList = Object.keys(moduleToOldVersion)
-        .map(module => `${module} | ${moduleToOldVersion[module]} |  ${moduleToNewVersion[module]}`)
-        .join("\n---  |   ---    | ---\n");
+        .map(module => `| ${module} | ${moduleToOldVersion[module]} |  ${moduleToNewVersion[module]} |`)
+        .join("\n| :---: | :---: | :---: |\n");
 
     console.log(modList);
 
