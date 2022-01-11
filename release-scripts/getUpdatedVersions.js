@@ -62,11 +62,6 @@ async function getBumpedModules() {
         moduleToNewVersion[module] = newVersion;
         moduleToOldVersion[module] = oldVersion;
 
-
-
-
-
-
     }
 
 
@@ -74,6 +69,8 @@ async function getBumpedModules() {
     modList = Object.keys(moduleToOldVersion)
         .map(module => ` | ${module} | ${moduleToOldVersion[module]} |  ${moduleToNewVersion[module]} |`)
         .join("\n | ----  |   ---    | ---   |\n");
+
+    console.log(modList);
 
     return `The following modules have had their versions bumped: %0A ${modList}`
 
