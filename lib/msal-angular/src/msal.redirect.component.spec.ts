@@ -19,6 +19,7 @@ function MSALInstanceFactory(): IPublicClientApplication {
 
 function initializeMsal() {
   TestBed.resetTestingModule();
+  //this is a test comment 
 
   TestBed.configureTestingModule({
     declarations: [MsalRedirectComponent],
