@@ -51,7 +51,7 @@ export abstract class ClientApplication {
     private tokenCache: TokenCache;
 
     /**
-     * Platform storage object node storage
+     * Platform storage object node storage ... adding a new test comment here to test for PR population
      */
     protected storage: NodeStorage;
     /**
