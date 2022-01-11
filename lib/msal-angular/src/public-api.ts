@@ -8,7 +8,7 @@
  * @module @azure/msal-angular
  */
 
-export { MsalService } from "./msal.service";
+export { MsalService } from "./msal.service"; // this is a test comm
 export { IMsalService } from "./IMsalService";
 export { MsalGuard } from "./msal.guard";
 export { MsalGuardConfiguration, MsalGuardAuthRequest } from "./msal.guard.config";
