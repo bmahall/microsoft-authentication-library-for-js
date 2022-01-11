@@ -56,6 +56,7 @@ export abstract class ClientApplication {
     protected storage: NodeStorage;
     /**
      * Logger object to log the application flow
+     * test comment
      */
     protected logger: Logger;
     /**
@@ -68,6 +69,7 @@ export abstract class ClientApplication {
     protected clientAssertion: ClientAssertion;
     /**
      * Client secret passed by the user for confidential client flows
+     * test comment....
      */
     protected clientSecret: string;
 
