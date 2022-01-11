@@ -22,10 +22,13 @@ async function runProcess(command, args) {
 }
 
 const VERSION_DIFF_REGEX = /^\+\s*"version":\s*"([0-9\.]+)".*$/
+const VERSION_DIFF_OLD_REGEX = /^\-\s*"version":\s*"([0-9\.]+)".*$/
+var modList = []
 
 async function getBumpedModules() {
     const modules = fs.readdirSync('./lib');
     const moduleToNewVersion = {};
+    const moduleToOldVersion = {};
 
     for (let i in modules) {
         const module = modules[i];
@@ -36,44 +39,47 @@ async function getBumpedModules() {
         const lines = diff.split("\n")
             .filter(line => VERSION_DIFF_REGEX.test(line.trim()));
 
+        const lines_old = diff.split("\n")
+            .filter(line => VERSION_DIFF_OLD_REGEX.test(line.trim()));
 
-        if (lines.length !== 1) {
-            throw new Error("Cannot determine new version for module " + module)
-        }
+        // console.log(lines_old);
 
         const [line] = lines;
+        var [line_old] = lines_old;
         const regexResult = VERSION_DIFF_REGEX.exec(line);
 
         if (!regexResult || !regexResult[1]) {
             throw new Error("Cannot parse version for module " + module)
         }
 
+
+        line_old = line_old.split(':')[1].replace(/,/g, "");
+        line_old = line_old.replace(/"/g, "").trim();
+
         const newVersion = regexResult[1];
+        const oldVersion = line_old;
 
         moduleToNewVersion[module] = newVersion;
+        moduleToOldVersion[module] = oldVersion;
+
+
+
+
+
 
     }
 
-    return moduleToNewVersion;
+
+    // console.log(moduleToNewVersion);
+    modList = Object.keys(moduleToOldVersion)
+        .map(module => ` | ${module} | ${moduleToOldVersion[module]} |  ${moduleToNewVersion[module]} |`)
+        .join("\n | ----  |   ---    | ---   |\n");
+
+    return `The following modules have had their versions bumped: %0A ${modList}`
 
 
 };
 
-function formatBumpedModuleMessage(moduleToNewVersion) {
-    if (Object.keys(moduleToNewVersion) < 1) return '** No modules have been version-bumped **';
-
-    const modList = Object.keys(moduleToNewVersion)
-        .map(module => `- ${module}: ${moduleToNewVersion[module]}`)
-        .join("%0A")
-
-    return `The following modules have had their versions bumped: %0A ${modList}`
-}
-
-process.on('unhandledRejection', (e) => {
-    console.error("An error has occurred", e);
-    process.exit(-1);
-});
-
 (async () => {
-    console.log(formatBumpedModuleMessage(await getBumpedModules()));
+    getBumpedModules();
 })();
