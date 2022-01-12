@@ -1,8 +1,21 @@
 # Change Log - @azure/msal-common
 
-This log was last generated on Tue, 07 Dec 2021 00:17:01 GMT and should not be manually modified.
+This log was last generated on Wed, 12 Jan 2022 23:13:08 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 5.3.0
+
+Wed, 12 Jan 2022 23:13:08 GMT
+
+### Minor changes
+
+- Gracefully handle tokenType set as bearer for ADFS #4318 (janutter@microsoft.com)
+
+### Patches
+
+- comment (bmahal@microsoft.com)
+- comm (bmahal@microsoft.com)
 
 ## 5.2.0
 

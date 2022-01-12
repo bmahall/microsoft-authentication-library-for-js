@@ -1,7 +1,0 @@
-{
-  "type": "patch",
-  "comment": "comm",
-  "packageName": "@azure/msal-common",
-  "email": "bmahal@microsoft.com",
-  "dependentChangeType": "patch"
-}

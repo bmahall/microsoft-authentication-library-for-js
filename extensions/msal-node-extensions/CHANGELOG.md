@@ -1,8 +1,16 @@
 # Change Log - @azure/msal-node-extensions
 
-This log was last generated on Tue, 07 Dec 2021 00:17:01 GMT and should not be manually modified.
+This log was last generated on Wed, 12 Jan 2022 23:13:09 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 1.0.0-alpha.14
+
+Wed, 12 Jan 2022 23:13:09 GMT
+
+### Changes
+
+- Bump @azure/msal-common to v5.3.0
 
 ## 1.0.0-alpha.13
 

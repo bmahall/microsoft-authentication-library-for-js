@@ -1,8 +1,18 @@
 # Change Log - @azure/msal-browser
 
-This log was last generated on Tue, 07 Dec 2021 00:17:01 GMT and should not be manually modified.
+This log was last generated on Wed, 12 Jan 2022 23:13:08 GMT and should not be manually modified.
 
 <!-- Start content -->
+
+## 2.20.1
+
+Wed, 12 Jan 2022 23:13:08 GMT
+
+### Patches
+
+- comment  (bmahal@microsoft.com)
+- comment (bmahal@microsoft.com)
+- Bump @azure/msal-common to v5.3.0
 
 ## 2.20.0
 

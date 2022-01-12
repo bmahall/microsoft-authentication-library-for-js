@@ -2,6 +2,35 @@
   "name": "@azure/msal-common",
   "entries": [
     {
+      "date": "Wed, 12 Jan 2022 23:13:08 GMT",
+      "tag": "@azure/msal-common_v5.3.0",
+      "version": "5.3.0",
+      "comments": {
+        "minor": [
+          {
+            "author": "janutter@microsoft.com",
+            "package": "@azure/msal-common",
+            "commit": "a517a4f2ea228e4278cba6da20c8919c61ad252b",
+            "comment": "Gracefully handle tokenType set as bearer for ADFS #4318"
+          }
+        ],
+        "patch": [
+          {
+            "author": "bmahal@microsoft.com",
+            "package": "@azure/msal-common",
+            "commit": "eeabc1fc68464abc7bded3f95bf8b56295f6fe7b",
+            "comment": "comment"
+          },
+          {
+            "author": "bmahal@microsoft.com",
+            "package": "@azure/msal-common",
+            "commit": "57d769beaca41e34618a5ac0440c169cfd7feeaa",
+            "comment": "comm"
+          }
+        ]
+      }
+    },
+    {
       "date": "Tue, 07 Dec 2021 00:17:01 GMT",
       "tag": "@azure/msal-common_v5.2.0",
       "version": "5.2.0",
