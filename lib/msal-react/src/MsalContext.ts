@@ -16,6 +16,7 @@ export interface IMsalContext {
 /*
  * Stubbed context implementation
  * Only used when there is no provider, which is an unsupported scenario
+ * this is a test comment
  */
 const defaultMsalContext: IMsalContext = {
     instance: stubbedPublicClientApplication,
