@@ -1,4 +1,4 @@
-const { spawn } = require("child_process")
+const { spawn } = require("child_process");
 const fs = require('fs');
 const process = require('process')
 
@@ -23,7 +23,23 @@ async function runProcess(command, args) {
 
 const VERSION_DIFF_REGEX = /^\+\s*"version":\s*"([0-9\.]+)".*$/
 const VERSION_DIFF_OLD_REGEX = /^\-\s*"version":\s*"([0-9\.]+)".*$/
-var modList = []
+
+function formatForGithubActions(markdownString) {
+    return markdownString.replace(/\n/g, "%0A");
+}
+
+function extractVersionFromLines(lines, regex) {
+    const [line] = lines
+            .filter(line => regex.test(line));
+            
+    const regexResult = regex.exec(line);
+
+    if (!regexResult || !regexResult[1]) {
+        throw new Error("Cannot parse version for module " + module) 
+    }
+
+    return regexResult[1];
+}
 
 async function getBumpedModules() {
     const modules = fs.readdirSync('./lib');
@@ -36,28 +52,10 @@ async function getBumpedModules() {
 
         if (diff.trim().length < 1) continue;
 
-        const lines = diff.split("\n")
-            .filter(line => VERSION_DIFF_REGEX.test(line.trim()));
+        const lines = diff.split("\n");
 
-        const lines_old = diff.split("\n")
-            .filter(line => VERSION_DIFF_OLD_REGEX.test(line.trim()));
-
-        // console.log(lines_old);
-
-        const [line] = lines;
-        var [line_old] = lines_old;
-        const regexResult = VERSION_DIFF_REGEX.exec(line);
-
-        if (!regexResult || !regexResult[1]) {
-            throw new Error("Cannot parse version for module " + module)
-        }
-
-
-        line_old = line_old.split(':')[1].replace(/,/g, "");
-        line_old = line_old.replace(/"/g, "").trim();
-
-        const newVersion = regexResult[1];
-        const oldVersion = line_old;
+        const newVersion = extractVersionFromLines(lines, VERSION_DIFF_REGEX);
+        const oldVersion = extractVersionFromLines(lines, VERSION_DIFF_OLD_REGEX);
 
         moduleToNewVersion[module] = newVersion;
         moduleToOldVersion[module] = oldVersion;
@@ -66,17 +64,19 @@ async function getBumpedModules() {
 
 
     // console.log(moduleToNewVersion);
-    modList = Object.keys(moduleToOldVersion)
+    const modList = Object.keys(moduleToOldVersion)
         .map(module => `| ${module} | ${moduleToOldVersion[module]} |  ${moduleToNewVersion[module]} |`)
-        .join("\n| :---: | :---: | :---: |\n");
+        .join("\n");
 
-    console.log(modList);
+    // console.log(modList);
 
-    return `The following modules have had their versions bumped: %0A ${modList}`
+    let tableHeader = "| Module | Old Version | New Version |\n";
+    tableHeader +=    "| ---    | ---         | ---         |\n"
 
 
+    return formatForGithubActions(`The following modules have had their versions bumped:\n ${tableHeader}${modList}`);
 };
 
 (async () => {
-    getBumpedModules();
+    console.log(await getBumpedModules());
 })();

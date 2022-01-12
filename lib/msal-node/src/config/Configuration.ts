@@ -24,7 +24,7 @@ import { NetworkUtils } from "../utils/NetworkUtils";
  */
 export type NodeAuthOptions = {
     clientId: string;
-    authority?: string;
+    authority?: string; // this is a test comment
     clientSecret?: string;
     clientAssertion?:string;
     clientCertificate?: {
